@@ -1,0 +1,37 @@
+#!/usr/bin/env lua
+
+local V = require 'vanilla.v.vanilla'
+
+local help_description = [[GIN v]] .. V.version .. [[, A Opentresty Web Framework For PHPER.
+
+Usage: vanilla COMMAND [ARGS] [OPTIONS]
+
+The available vanilla commands are:
+ new [name]             Create a new Vanilla application
+ start                  Starts the Vanilla server
+ stop                   Stops the Vanilla server
+ console                Start a Vanilla console
+
+Options:
+ --trace                Shows additional logs
+]]
+
+local launcher = require 'vanilla.cli.launcher'
+local application = require 'vanilla.cli.application'
+local migrations = require 'vanilla.cli.migrations'
+local console = require 'vanilla.cli.console'
+
+-- check trace
+V_TRACE = false
+if arg[#arg] == '--trace' then
+  table.remove(arg, #arg)
+  V_TRACE = true
+end
+
+-- check args
+if arg[1] == 'new' and arg[2] then application.new(arg[2])
+elseif arg[1] == 'start' then launcher.start()
+elseif arg[1] == 'stop' then launcher.stop()
+elseif arg[1] == 'console' or arg[1] == 'c' then console.start()
+else print(help_description)
+end
