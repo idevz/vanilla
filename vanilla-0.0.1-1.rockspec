@@ -36,6 +36,7 @@ build = {
         ["vanilla.v.router"] = "vanilla/v/router.lua",
         ["vanilla.v.routes"] = "vanilla/v/routes.lua",
         ["vanilla.v.vanilla"] = "vanilla/v/vanilla.lua",
+        ["vanilla.v.libs.utils"] = "vanilla/v/libs/utils.lua",
     },
     install = {
         bin = { "bin/vanilla" }
