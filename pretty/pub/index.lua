@@ -3,5 +3,6 @@ function pp( ... )
     helpers.pp(...)
     helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
 end
-app = require('vanilla.v.application').new(require('config.application'))
+app = require('vanilla.v.application').new(ngx, require('config.application'))
+pp(app)
 app:run()

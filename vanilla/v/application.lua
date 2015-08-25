@@ -27,11 +27,17 @@ local function tappend(t, v) t[#t+1] = v end
 -- init Application and set routes
 local Application = {}
 
-function Application.new(config)
-    pp(ngx)
-
+function Application.new(ngx, config)
+    if config then
+        local config = config
+    else
+        local config = require('vanilla.v.config')
+    end
+    
     local instance = {
+        ngx = ngx,
         run = Application.run,
+        config = config
     }
 
     setmetatable(instance, Application)
