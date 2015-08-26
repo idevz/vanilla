@@ -1,6 +1,5 @@
 -- perf
 local error = error
-local jencode = json.encode
 local pairs = pairs
 local pcall = pcall
 local require = require

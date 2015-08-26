@@ -9,7 +9,9 @@ function Bootstrap:initPlugin()
 end
 
 function Bootstrap:initRoute()
-	-- local route = require('')
+	-- pp(self)
+	local route = require('vanilla.v.routes.simple'):new(self.dispatcher.getRequest())
+	self.dispatcher.route = route
 end
 
 function Bootstrap:initView()

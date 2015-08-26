@@ -16,6 +16,7 @@ function Bootstrap:new(dispatcher)
 end
 
 function Bootstrap:bootstrap()
+	pp(self)
 	for k,v in pairs(self.bootList()) do
 		local ok, request_or_error = pcall(v())
 	end

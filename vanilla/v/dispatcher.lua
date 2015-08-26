@@ -24,6 +24,7 @@ Dispatcher.__index = Dispatcher
 function Dispatcher:new(application)
     local instance = {
         application = application,
+        route = 'zj',
         dispatch = self.dispatch
     }
     setmetatable(instance, Dispatcher)
@@ -36,6 +37,61 @@ end
 
 function Dispatcher:dispatch()
 
+    -- create request object
+    local request = self.getRequest()
+    if request == false then return end
+
+    -- get routes
+    local ok, controller_name_or_error, action, params, request = pcall(function() return self.route.match() end)
+
+    local response
+
+    if ok == false then
+        -- match returned an error (for instance a 412 for no header match)
+        local err = Error.new(controller_name_or_error.code, controller_name_or_error.custom_attrs)
+        response = Response.new({ status = err.status, body = err.body })
+        Router.respond(ngx, response)
+
+    elseif controller_name_or_error then
+        -- matching routes found
+        response = self.call_controller(request, controller_name_or_error, action, params)
+        Router.respond(ngx, response)
+
+    else
+        -- no matching routes found
+        ngx.exit(ngx.HTTP_NOT_FOUND)
+    end
+end
+
+function Dispatcher:call_controller(request, controller_name, action, params)
+	ngx.say(controller_name)
+    -- load matched controller and set metatable to new instance of controller
+    -- local matched_controller = require(controller_name)
+    -- local controller_instance = Controller.new(request, params)
+    -- setmetatable(matched_controller, { __index = controller_instance })
+
+    -- -- call action
+    -- local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
+
+    -- local response
+
+    -- if ok then
+    --     -- successful
+    --     response = Response.new({ status = status_or_error, headers = headers, body = body })
+    -- else
+    --     -- controller raised an error
+    --     local ok, err = pcall(function() return Error.new(status_or_error.code, status_or_error.custom_attrs) end)
+
+    --     if ok then
+    --         -- API error
+    --         response = Response.new({ status = err.status, headers = err.headers, body = err.body })
+    --     else
+    --         -- another error, throw
+    --         error(status_or_error)
+    --     end
+    -- end
+
+    -- return response
 end
 
 function Dispatcher:setView()
