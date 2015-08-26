@@ -1,8 +1,10 @@
-local Appconf = {}
+local Sysconf = {}
 
-Appconf.route = {
+Sysconf.route = {
     name = 'zzzz',
     yes = 'ok'
 }
 
-return Appconf
+Sysconf.g = 'xxxxx'
+
+return Sysconf
