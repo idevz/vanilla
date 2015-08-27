@@ -25,7 +25,6 @@ function Application:new(ngx, config)
         bootstrap = self.bootstrap,
         dispatcher = require('vanilla.v.dispatcher'):new(self)
     }
-
     setmetatable(instance, Application)
     return instance
 end

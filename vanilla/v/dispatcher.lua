@@ -2,10 +2,10 @@
 local json = require 'cjson'
 
 -- vanilla
-local Controller = require 'vanilla.v.controller'
-local Request = require 'vanilla.v.request'
-local Response = require 'vanilla.v.response'
-local Error = require 'vanilla.v.error'
+-- local Controller = require 'vanilla.v.controller'
+-- local Request = require 'vanilla.v.request'
+-- local Response = require 'vanilla.v.response'
+-- local Error = require 'vanilla.v.error'
 
 -- app
 -- local Routes = require 'config.routes'
@@ -19,7 +19,6 @@ local require = require
 local setmetatable = setmetatable
 
 local Dispatcher = {}
-Dispatcher.__index = Dispatcher
 
 function Dispatcher:new(application)
     local instance = {
@@ -27,8 +26,21 @@ function Dispatcher:new(application)
         route = 'zj',
         dispatch = self.dispatch
     }
-    setmetatable(instance, Dispatcher)
+    setmetatable(instance, {__index = self})
     return instance
+end
+
+function Dispatcher:getRequest()
+	return 'ok'
+    -- local ok, request_or_error = pcall(function() return Request:new(self.application.ngx) end)
+    -- if ok == false then
+    --     -- parsing errors
+    --     local err = Error.new(request_or_error.code, request_or_error.custom_attrs)
+    --     response = Response.new({ status = err.status, body = err.body })
+    --     Router.respond(ngx, response)
+    --     return false
+    -- end
+    -- return request_or_error
 end
 
 function Dispatcher:setRequest(request)
@@ -36,31 +48,32 @@ function Dispatcher:setRequest(request)
 end
 
 function Dispatcher:dispatch()
-
+	ngx.say('=========')
+	ngx.eof()
     -- create request object
-    local request = self.getRequest()
-    if request == false then return end
+    -- local request = self.getRequest()
+    -- if request == false then return end
 
-    -- get routes
-    local ok, controller_name_or_error, action, params, request = pcall(function() return self.route.match() end)
+    -- -- get routes
+    -- local ok, controller_name_or_error, action, params, request = pcall(function() return self.route.match() end)
 
-    local response
+    -- local response
 
-    if ok == false then
-        -- match returned an error (for instance a 412 for no header match)
-        local err = Error.new(controller_name_or_error.code, controller_name_or_error.custom_attrs)
-        response = Response.new({ status = err.status, body = err.body })
-        Router.respond(ngx, response)
+    -- if ok == false then
+    --     -- match returned an error (for instance a 412 for no header match)
+    --     local err = Error.new(controller_name_or_error.code, controller_name_or_error.custom_attrs)
+    --     response = Response.new({ status = err.status, body = err.body })
+    --     Router.respond(ngx, response)
 
-    elseif controller_name_or_error then
-        -- matching routes found
-        response = self.call_controller(request, controller_name_or_error, action, params)
-        Router.respond(ngx, response)
+    -- elseif controller_name_or_error then
+    --     -- matching routes found
+    --     response = self.call_controller(request, controller_name_or_error, action, params)
+    --     Router.respond(ngx, response)
 
-    else
-        -- no matching routes found
-        ngx.exit(ngx.HTTP_NOT_FOUND)
-    end
+    -- else
+    --     -- no matching routes found
+    --     ngx.exit(ngx.HTTP_NOT_FOUND)
+    -- end
 end
 
 function Dispatcher:call_controller(request, controller_name, action, params)
@@ -99,18 +112,6 @@ end
 
 function Dispatcher:getApplication()
 	return self.application
-end
-
-function Dispatcher:getRequest()
-    local ok, request_or_error = pcall(function() return Request:new(self.application.ngx) end)
-    if ok == false then
-        -- parsing errors
-        local err = Error.new(request_or_error.code, request_or_error.custom_attrs)
-        response = Response.new({ status = err.status, body = err.body })
-        Router.respond(ngx, response)
-        return false
-    end
-    return request_or_error
 end
 
 function Dispatcher:getRouter()

@@ -5,25 +5,26 @@ function Bootstrap:initConfig()
 end
 
 function Bootstrap:initPlugin()
-
+	ngx.say('-----------initPlugin')
 end
 
 function Bootstrap:initRoute()
-	-- pp(self)
-	local route = require('vanilla.v.routes.simple'):new(self.dispatcher.getRequest())
+	ngx.say('-----------initRoute')
+	local route = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
 	self.dispatcher.route = route
+	pp(self.dispatcher)
 end
 
 function Bootstrap:initView()
 
 end
 
-function Bootstrap:bootList()
+function Bootstrap:boot_list()
 	return {
-		Bootstrap:initConfig(),
-		Bootstrap:initPlugin(),
-		Bootstrap:initRoute(),
-		Bootstrap:initView()
+		Bootstrap.initConfig,
+		Bootstrap.initPlugin,
+		Bootstrap.initRoute,
+		Bootstrap.initView
 	}
 end
 
