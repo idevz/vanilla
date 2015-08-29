@@ -2,10 +2,10 @@
 local json = require 'cjson'
 
 -- vanilla
--- local Controller = require 'vanilla.v.controller'
--- local Request = require 'vanilla.v.request'
--- local Response = require 'vanilla.v.response'
--- local Error = require 'vanilla.v.error'
+local Controller = require 'vanilla.v.controller'
+local Request = require 'vanilla.v.request'
+local Response = require 'vanilla.v.response'
+local Error = require 'vanilla.v.error'
 
 -- app
 -- local Routes = require 'config.routes'
@@ -31,8 +31,9 @@ function Dispatcher:new(application)
 end
 
 function Dispatcher:getRequest()
-	return 'ok'
-    -- local ok, request_or_error = pcall(function() return Request:new(self.application.ngx) end)
+	pp(self.application.ngx)
+	-- pp(self.application)
+    local ok, request_or_error = pcall(function() return Request:new(self.application.ngx) end)
     -- if ok == false then
     --     -- parsing errors
     --     local err = Error.new(request_or_error.code, request_or_error.custom_attrs)
@@ -41,6 +42,7 @@ function Dispatcher:getRequest()
     --     return false
     -- end
     -- return request_or_error
+	return 'ok'
 end
 
 function Dispatcher:setRequest(request)
