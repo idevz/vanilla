@@ -52,7 +52,7 @@ function Dispatcher:dispatch()
 
     local response
     -- matching routes found
-    response = self:call_controller(request, controller_name_or_error, action, params)
+    response = self.call_controller(request, controller_name_or_error, action, params)
     -- Router.respond(ngx, response)
 
 	ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
