@@ -18,14 +18,14 @@ end
 local Application = {}
 
 function Application:new(ngx, config)
+    self.ngx = ngx
+    self.config = buildconf(config)
     local instance = {
-        ngx = ngx,
-        config = buildconf(config),
         run = self.run,
         bootstrap = self.bootstrap,
         dispatcher = require('vanilla.v.dispatcher'):new(self)
     }
-    setmetatable(instance, {__index = self})
+    setmetatable(instance, Application)
     return instance
 end
 

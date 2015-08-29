@@ -31,8 +31,6 @@ function Dispatcher:new(application)
 end
 
 function Dispatcher:getRequest()
-	pp(self.application.ngx)
-	-- pp(self.application)
     local ok, request_or_error = pcall(function() return Request:new(self.application.ngx) end)
     -- if ok == false then
     --     -- parsing errors
