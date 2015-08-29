@@ -23,7 +23,7 @@ local Dispatcher = {}
 function Dispatcher:new(application)
     local instance = {
         application = application,
-        route = 'zj',
+        router = 'zj',
         dispatch = self.dispatch
     }
     setmetatable(instance, {__index = self})
@@ -40,7 +40,7 @@ function Dispatcher:getRequest()
     --     return false
     -- end
     -- return request_or_error
-	return 'ok'
+	return request_or_error
 end
 
 function Dispatcher:setRequest(request)
@@ -48,8 +48,15 @@ function Dispatcher:setRequest(request)
 end
 
 function Dispatcher:dispatch()
-	ngx.say('=========')
-	ngx.eof()
+	local ok, controller_name_or_error, action, params, request = pcall(function() return self.router:match() end)
+
+    local response
+    -- matching routes found
+    response = self:call_controller(request, controller_name_or_error, action, params)
+    -- Router.respond(ngx, response)
+
+	ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
+	-- ngx.eof()
     -- create request object
     -- local request = self.getRequest()
     -- if request == false then return end
@@ -77,7 +84,6 @@ function Dispatcher:dispatch()
 end
 
 function Dispatcher:call_controller(request, controller_name, action, params)
-	ngx.say(controller_name)
     -- load matched controller and set metatable to new instance of controller
     -- local matched_controller = require(controller_name)
     -- local controller_instance = Controller.new(request, params)
@@ -105,6 +111,8 @@ function Dispatcher:call_controller(request, controller_name, action, params)
     -- end
 
     -- return response
+	ngx.say(controller_name .. '-----' .. action)
+	ngx.eof()
 end
 
 function Dispatcher:setView()

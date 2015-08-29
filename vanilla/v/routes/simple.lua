@@ -4,6 +4,7 @@ local Simple = {}
 function Simple:new(request)
 
     local instance = {
+        route_name = 'Simple',
     	request = request
     }
 
@@ -15,7 +16,7 @@ function Simple:match()
     local uri = self.request.uri
     local method = self.request.method
 
-    return '/index', 'index'
+    return './index', 'index'
     -- return major_version .. '/' .. dispatcher[method].controller, dispatcher[method].action, params, request
 
     -- -- match version based on headers

@@ -11,8 +11,8 @@ end
 
 function Bootstrap:initRoute()
 	ngx.say('-----------initRoute' .. self.zzz)
-	local route = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
-	self.dispatcher.route = route
+	local router = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
+	self.dispatcher.router = router
 end
 
 function Bootstrap:initView()

@@ -12,7 +12,7 @@ local setmetatable = setmetatable
 local Request = {}
 Request.__index = Request
 
-function Request.new(ngx)
+function Request:new(ngx)
     -- read body
     ngx.req.read_body()
     local body_raw = ngx.req.get_body_data()
