@@ -52,10 +52,10 @@ function Dispatcher:dispatch()
 
     local response
     -- matching routes found
-    response = self.call_controller(request, controller_name_or_error, action, params)
+    response = self:call_controller(controller_name_or_error, action, params)
     -- Router.respond(ngx, response)
 
-	ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
+	-- ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
 	-- ngx.eof()
     -- create request object
     -- local request = self.getRequest()
@@ -83,14 +83,14 @@ function Dispatcher:dispatch()
     -- end
 end
 
-function Dispatcher:call_controller(request, controller_name, action, params)
+function Dispatcher:call_controller(controller_name, action, params)
     -- load matched controller and set metatable to new instance of controller
-    local matched_controller = require(controller_name)
-    local controller_instance = Controller.new(request, params)
+    local matched_controller = require(self.application.config.app_root .. 'application/controllers/' .. controller_name)
+    local controller_instance = Controller.new(self.request, params)
     setmetatable(matched_controller, { __index = controller_instance })
 
-    -- -- call action
-    -- local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
+    -- call action
+    local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
 
     -- local response
 

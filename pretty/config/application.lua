@@ -1,6 +1,6 @@
 local Appconf = {}
 
 Appconf.route = require('vanilla.v.routes.simple').new()
-Appconf.root = '////'
+Appconf.app_root = '../'
 
 return Appconf
