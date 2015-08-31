@@ -1,15 +1,15 @@
 local helpers = require 'gin.helpers.common'
-local TestController = {}
+local IndexController = {}
 
-function TestController:index()
+function IndexController:index()
 	ngx.say('============hello vanilla===============')
 end
 
-function TestController:get()
+function IndexController:get()
     return 200, { message = "-------!" .. self.params.p }
 end
 
-function TestController:sendheader()
+function IndexController:sendheader()
 	-- ngx.log(ngx.ERR, '=============================' .. ngx.get_now_ts() .. '--' .. ngx.time())
 	-- local cfg = ngx.config
 	-- ngx.req.read_body()
@@ -21,7 +21,7 @@ function TestController:sendheader()
 	return 200, { message = "---fffvv----!-----"}, { ["Cache-Control"] = "max-age=1", ["Retry-After"] = "120" }
 end
 
-function TestController:fuck()
+function IndexController:fuck()
 	-- helpers.pp_to_file(self, '/Users/zj-gin/sina/zj')
 	if self.request.api_version == "1.0.2-rc1" then
 		self:raise_error(1000, { missing_fields = { "first_name", "last_name" } })
@@ -31,7 +31,7 @@ function TestController:fuck()
 	end
 end
 
-function TestController:dopost()
+function IndexController:dopost()
 	ngx.req.read_body()
 	-- helpers.pp_to_file(ngx.req.get_body_data(), '/Users/zj-gin/sina/zj')
 	local params = self:accepted_params({ 'name' }, self.request.body)
@@ -39,4 +39,4 @@ function TestController:dopost()
 	return 200, { message = "---nnxvv----!--" .. self.params[1]}
 end
 
-return TestController
+return IndexController
