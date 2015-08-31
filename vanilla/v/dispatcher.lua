@@ -55,7 +55,7 @@ function Dispatcher:dispatch()
     response = self.call_controller(request, controller_name_or_error, action, params)
     -- Router.respond(ngx, response)
 
-	-- ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
+	ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
 	-- ngx.eof()
     -- create request object
     -- local request = self.getRequest()
