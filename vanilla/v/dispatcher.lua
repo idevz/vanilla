@@ -21,26 +21,26 @@ local setmetatable = setmetatable
 local Dispatcher = {}
 
 function Dispatcher:new(application)
+	self:init(application)
     local instance = {
         application = application,
-        router = 'zj',
+        router = require('vanilla.v.routes.simple'):new(self.request),
         dispatch = self.dispatch
     }
     setmetatable(instance, {__index = self})
     return instance
 end
 
+function Dispatcher:init(application)
+	local ok, request_or_error = pcall(function() return Request:new(application.ngx) end)
+	if ok == false then
+		ngx.say('------Request:new Err')
+	end
+	self.request = request_or_error
+end
+
 function Dispatcher:getRequest()
-    local ok, request_or_error = pcall(function() return Request:new(self.application.ngx) end)
-    -- if ok == false then
-    --     -- parsing errors
-    --     local err = Error.new(request_or_error.code, request_or_error.custom_attrs)
-    --     response = Response.new({ status = err.status, body = err.body })
-    --     Router.respond(ngx, response)
-    --     return false
-    -- end
-    -- return request_or_error
-	return request_or_error
+	return self.request
 end
 
 function Dispatcher:setRequest(request)
@@ -55,7 +55,7 @@ function Dispatcher:dispatch()
     response = self.call_controller(request, controller_name_or_error, action, params)
     -- Router.respond(ngx, response)
 
-	ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
+	-- ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
 	-- ngx.eof()
     -- create request object
     -- local request = self.getRequest()
@@ -111,8 +111,8 @@ function Dispatcher:call_controller(request, controller_name, action, params)
     -- end
 
     -- return response
-	ngx.say(controller_name .. '-----' .. action)
-	ngx.eof()
+	-- ngx.say(controller_name .. '-----' .. action)
+	-- ngx.eof()
 end
 
 function Dispatcher:setView()
