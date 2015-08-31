@@ -85,9 +85,9 @@ end
 
 function Dispatcher:call_controller(request, controller_name, action, params)
     -- load matched controller and set metatable to new instance of controller
-    -- local matched_controller = require(controller_name)
-    -- local controller_instance = Controller.new(request, params)
-    -- setmetatable(matched_controller, { __index = controller_instance })
+    local matched_controller = require(controller_name)
+    local controller_instance = Controller.new(request, params)
+    setmetatable(matched_controller, { __index = controller_instance })
 
     -- -- call action
     -- local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
