@@ -2,7 +2,7 @@ local helpers = require 'gin.helpers.common'
 local IndexController = {}
 
 function IndexController:index()
-	ngx.say('============hello vanilla===============')
+	return 200, { message = "-------!" .. self.params.p }
 end
 
 function IndexController:get()

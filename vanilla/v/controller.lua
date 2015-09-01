@@ -18,6 +18,36 @@ function Controller.new(request, params)
     return instance
 end
 
+function Controller:display()
+end
+
+function Controller:forward()
+end
+
+function Controller:getRequest()
+end
+
+function Controller:getResponse()
+end
+
+function Controller:getView()
+end
+
+function Controller:getViewpath()
+end
+
+function Controller:initView()
+end
+
+function Controller:redirect()
+end
+
+function Controller:render()
+end
+
+function Controller:setViewpath ()
+end
+
 function Controller:raise_error(code, custom_attrs)
     error({ code = code, custom_attrs = custom_attrs })
 end

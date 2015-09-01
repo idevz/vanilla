@@ -115,14 +115,14 @@ function Dispatcher:call_controller(controller_name, action, params)
 	-- ngx.eof()
 end
 
-function Dispatcher:setView()
-end
-
 function Dispatcher:getApplication()
 	return self.application
 end
 
 function Dispatcher:getRouter()
+end
+
+function Dispatcher:setView()
 end
 
 function Dispatcher:initView()
