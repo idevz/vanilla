@@ -2,7 +2,12 @@ local helpers = require 'gin.helpers.common'
 local IndexController = {}
 
 function IndexController:index()
-	return 200, { message = "-------!" .. self.params.p }
+	local view = self:getView()
+	
+	local cc = view:render('./index/index.html', {message = '============'})
+	-- view:assign(message, '-----------')
+	-- view:display()
+	-- return 200, { message = "-------!" .. self.params.p }
 end
 
 function IndexController:get()

@@ -26,15 +26,6 @@ end
 function Response:clearHeaders()
 end
 
-function Response:__clone()
-end
-
-function Response:__construct()
-end
-
-function Response:__destruct()
-end
-
 function Response:getBody()
 end
 
@@ -57,9 +48,6 @@ function Response:setHeader()
 end
 
 function Response:setRedirect()
-end
-
-function Response:__toString ()
 end
 
 return Response

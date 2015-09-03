@@ -85,34 +85,34 @@ end
 
 function Dispatcher:call_controller(controller_name, action, params)
     -- load matched controller and set metatable to new instance of controller
-    local matched_controller = require(self.application.config.app_root .. 'application/controllers/' .. controller_name)
-    local controller_instance = Controller.new(self.request, params)
+    local controller_path = self.application.config.controller_path or self.application.config.app_root .. 'application/controllers/'
+    local view_path = self.application.config.view_path or self.application.config.app_root .. 'application/views/'
+    local matched_controller = require(controller_path .. controller_name)
+    local controller_instance = Controller:new(self.request, params, view_path, controller_name, action)
     setmetatable(matched_controller, { __index = controller_instance })
 
     -- call action
     local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
 
-    -- local response
+    local response
 
-    -- if ok then
-    --     -- successful
-    --     response = Response.new({ status = status_or_error, headers = headers, body = body })
-    -- else
-    --     -- controller raised an error
-    --     local ok, err = pcall(function() return Error.new(status_or_error.code, status_or_error.custom_attrs) end)
+    if ok then
+        -- successful
+        response = Response.new({ status = status_or_error, headers = headers, body = body })
+    else
+        -- controller raised an error
+        local ok, err = pcall(function() return Error.new(status_or_error.code, status_or_error.custom_attrs) end)
 
-    --     if ok then
-    --         -- API error
-    --         response = Response.new({ status = err.status, headers = err.headers, body = err.body })
-    --     else
-    --         -- another error, throw
-    --         error(status_or_error)
-    --     end
-    -- end
+        if ok then
+            -- API error
+            response = Response.new({ status = err.status, headers = err.headers, body = err.body })
+        else
+            -- another error, throw
+            error(status_or_error)
+        end
+    end
 
-    -- return response
-	-- ngx.say(controller_name .. '-----' .. action)
-	-- ngx.eof()
+    return response
 end
 
 function Dispatcher:getApplication()

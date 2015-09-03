@@ -1,3 +1,6 @@
+-- vanilla
+local View = require 'vanilla.v.view'
+
 -- perf
 local error = error
 local pairs = pairs
@@ -7,7 +10,8 @@ local setmetatable = setmetatable
 local Controller = {}
 Controller.__index = Controller
 
-function Controller.new(request, params)
+function Controller:new(request, params, view_path, controller_name, action)
+    self:init(view_path, controller_name, action)
     params = params or {}
 
     local instance = {
@@ -16,6 +20,14 @@ function Controller.new(request, params)
     }
     setmetatable(instance, Controller)
     return instance
+end
+
+function Controller:init(view_path, controller_name, action)
+    local ok, view_or_error = pcall(function() return View:new(view_path, controller_name, action) end)
+    if ok == false then
+        ngx.say('------View:new Err')
+    end
+    self.view = view_or_error
 end
 
 function Controller:display()
@@ -31,6 +43,7 @@ function Controller:getResponse()
 end
 
 function Controller:getView()
+    return self.view
 end
 
 function Controller:getViewpath()
