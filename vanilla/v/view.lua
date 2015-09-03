@@ -14,6 +14,9 @@ local View = {}
 View.__index = View
 
 function View:new(view_path, controller_name, action)
+    ngx.var.template_root = view_path
+
+    -- ngx.arg.template_root = view_path
     -- init instance
     local instance = {
         view_handle = template,
@@ -42,7 +45,7 @@ function View:getScriptPath()
 end
 
 function View:render(view_tpl, params)
-    pp(template)
+    -- pp(template)
     self.view_handle.render(view_tpl, params)
 end
 
