@@ -5,12 +5,12 @@ function Bootstrap:initConfig()
 end
 
 function Bootstrap:initPlugin()
-	ngx.say('-----------initPlugin' .. self.zzz)
+	-- ngx.say('-----------initPlugin' .. self.zzz)
 	self.zzz = '============'
 end
 
 function Bootstrap:initRoute()
-	ngx.say('-----------initRoute' .. self.zzz)
+	-- ngx.say('-----------initRoute' .. self.zzz)
 	local router = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
 	self.dispatcher.router = router
 end

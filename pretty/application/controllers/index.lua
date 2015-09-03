@@ -3,7 +3,6 @@ local IndexController = {}
 
 function IndexController:index()
 	local view = self:getView()
-	
 	local cc = view:render('index/index.html', {message = '============'})
 	-- pp('=================')
 	-- view:assign(message, '-----------')
