@@ -1,5 +1,5 @@
 -- vanilla
-local View = require 'vanilla.v.view'
+local View = require 'vanilla.v.views.rtpl'
 
 -- perf
 local error = error
@@ -10,11 +10,12 @@ local setmetatable = setmetatable
 local Controller = {}
 Controller.__index = Controller
 
-function Controller:new(request, params, controller_name, action)
-    self:init(controller_name, action)
+function Controller:new(request, params, controller_name, action, app_config)
+    self:init(controller_name, action, app_config)
     params = params or {}
 
     local instance = {
+        app_config = app_config,
         params = params,
         request = request
     }
@@ -22,8 +23,8 @@ function Controller:new(request, params, controller_name, action)
     return instance
 end
 
-function Controller:init(controller_name, action)
-    local ok, view_or_error = pcall(function() return View:new(controller_name, action) end)
+function Controller:init(controller_name, action, app_config)
+    local ok, view_or_error = pcall(function() return View:new(controller_name, action, app_config.view) end)
     if ok == false then
         ngx.say('------View:new Err')
     end
