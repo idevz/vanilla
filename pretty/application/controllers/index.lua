@@ -3,10 +3,11 @@ local IndexController = {}
 
 function IndexController:index()
 	local view = self:getView()
-	local cc = view:render('index/index.html', {message = '============'})
+	-- local cc = view:render('index/index.html', {message = '============'})
 	-- pp('=================')
-	-- view:assign(message, '-----------')
-	-- view:display()
+	view:assign('message', '-----------')
+	-- view:assign()
+	view:display()
 	-- return 200, { message = "-------!" .. self.params.p }
 end
 

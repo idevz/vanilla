@@ -13,14 +13,11 @@ local setmetatable = setmetatable
 local View = {}
 View.__index = View
 
-function View:new(view_path, controller_name, action)
-    ngx.var.template_root = view_path
+function View:new(controller_name, action)
 
-    -- ngx.arg.template_root = view_path
     -- init instance
     local instance = {
         view_handle = template,
-        view_path = view_path,
         controller_name = controller_name,
         action = action
     }
@@ -29,7 +26,14 @@ function View:new(view_path, controller_name, action)
 end
 
 function View:assign(key, value)
-    self.view_handle.key = value
+    -- local v = self.view_handle.new "index/index.html"
+    -- v.key = value
+    -- v:render()
+    local view = template.new "index/index.html"
+    view[key] = value
+    view:render()
+    ngx.eof()
+    -- self.view_handle.message = 'value'
 end
 
 function View:caching(cache)

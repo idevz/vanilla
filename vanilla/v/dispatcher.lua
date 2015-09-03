@@ -90,9 +90,8 @@ function Dispatcher:call_controller(controller_name, action, params)
     local controller_path = self.application.config.controller_path or self.application.config.app_root .. 'application/controllers/'
     local view_path = self.application.config.view_path or self.application.config.app_root .. 'application/views/'
     self.application.ngx.var.template_root=view_path
-    pp(view_path)
     local matched_controller = require(controller_path .. controller_name)
-    local controller_instance = Controller:new(self.request, params, view_path, controller_name, action)
+    local controller_instance = Controller:new(self.request, params, controller_name, action)
     setmetatable(matched_controller, { __index = controller_instance })
 
     -- call action

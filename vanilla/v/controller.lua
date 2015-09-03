@@ -10,8 +10,8 @@ local setmetatable = setmetatable
 local Controller = {}
 Controller.__index = Controller
 
-function Controller:new(request, params, view_path, controller_name, action)
-    self:init(view_path, controller_name, action)
+function Controller:new(request, params, controller_name, action)
+    self:init(controller_name, action)
     params = params or {}
 
     local instance = {
@@ -22,8 +22,8 @@ function Controller:new(request, params, view_path, controller_name, action)
     return instance
 end
 
-function Controller:init(view_path, controller_name, action)
-    local ok, view_or_error = pcall(function() return View:new(view_path, controller_name, action) end)
+function Controller:init(controller_name, action)
+    local ok, view_or_error = pcall(function() return View:new(controller_name, action) end)
     if ok == false then
         ngx.say('------View:new Err')
     end
