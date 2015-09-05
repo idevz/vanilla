@@ -8,10 +8,6 @@ local Response = require 'vanilla.v.response'
 local View = require 'vanilla.v.views.rtpl'
 local Error = require 'vanilla.v.error'
 
--- app
--- local Routes = require 'config.routes'
--- local Application = require 'config.application'
-
 -- perf
 local error = error
 local pairs = pairs
@@ -57,37 +53,15 @@ function Dispatcher:dispatch()
 	local ok, controller_name_or_error, action, params, request = pcall(function() return self.router:match() end)
 
     local response
-    -- matching routes found
-    response = self:call_controller(controller_name_or_error, action, params)
-    -- pp(response)
-    response:response()
 
-	-- ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
-	-- ngx.eof()
-    -- create request object
-    -- local request = self.getRequest()
-    -- if request == false then return end
-
-    -- -- get routes
-    -- local ok, controller_name_or_error, action, params, request = pcall(function() return self.route.match() end)
-
-    -- local response
-
-    -- if ok == false then
-    --     -- match returned an error (for instance a 412 for no header match)
-    --     local err = Error.new(controller_name_or_error.code, controller_name_or_error.custom_attrs)
-    --     response = Response.new({ status = err.status, body = err.body })
-    --     Router.respond(ngx, response)
-
-    -- elseif controller_name_or_error then
-    --     -- matching routes found
-    --     response = self.call_controller(request, controller_name_or_error, action, params)
-    --     Router.respond(ngx, response)
-
-    -- else
-    --     -- no matching routes found
-    --     ngx.exit(ngx.HTTP_NOT_FOUND)
-    -- end
+    if ok and controller_name_or_error then
+        -- matching routes found
+    	response = self:call_controller(controller_name_or_error, action, params)
+        response:response()
+    else
+        -- no matching routes found
+        ngx.exit(self.application.ngx.HTTP_NOT_FOUND)
+    end
 end
 
 function Dispatcher:call_controller(controller_name, action, params)
