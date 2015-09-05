@@ -16,6 +16,7 @@ function Simple:match()
     local uri = self.request.uri
     local method = self.request.method
 
+
     return './index', 'index'
     -- return major_version .. '/' .. dispatcher[method].controller, dispatcher[method].action, params, request
 

@@ -16,6 +16,7 @@ function Request:new(ngx)
     -- read body
     ngx.req.read_body()
     local body_raw = ngx.req.get_body_data()
+    -- ngx.say(ngx.var.uri)
 
     -- parse body
     local body = nil
