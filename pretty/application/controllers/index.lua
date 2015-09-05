@@ -3,28 +3,34 @@ local IndexController = {}
 
 function IndexController:index()
 	local view = self:getView()
-	view:render('index/index.html', {message = '============'})
-	pp(view:caching(true))
-	-- view:assign('message', '-----------')
+	-- view:render('index/index.html', {message = '============'})
+	-- pp(view:caching(true))
+	local resp = self:getResponse()
+	-- resp:setHeader('Content_type', 'application/json')
+	view:assign('message', '-----------')
+	view:assign('kk', '------xxx-----')
+	-- view:assign()
+	view:display()
+	-- return 200, { message = "-------!" .. self.params.p }
+end
+
+function IndexController:get()
+	local view = self:getView()
+	-- view:render('index/index.html', {message = '============'})
+	-- pp(view:caching(true))
+	view:assign('message', '-----------')
 	-- view:assign()
 	-- view:display()
 	-- return 200, { message = "-------!" .. self.params.p }
 end
 
-function IndexController:get()
-    return 200, { message = "-------!" .. self.params.p }
-end
-
 function IndexController:sendheader()
-	-- ngx.log(ngx.ERR, '=============================' .. ngx.get_now_ts() .. '--' .. ngx.time())
-	-- local cfg = ngx.config
-	-- ngx.req.read_body()
-	-- helpers.pp_to_file(ngx.req.read_body(), '/Users/zj-gin/sina/zj')
-	-- ngx.log(ngx.ERR, cfg.nginx_configure())
-	-- local params = self:accepted_params({ 'z', 'j' }, self.request.body)
-	-- helpers.pp_to_file(params, '/Users/zj-gin/sina/zj')
-	-- helpers.pp_to_file(self.request.ngx, '/Users/zj-gin/sina/zj')
-	return 200, { message = "---fffvv----!-----"}, { ["Cache-Control"] = "max-age=1", ["Retry-After"] = "120" }
+    -- local view = template.new "index/index.html"
+    -- view[key] = value
+    -- pp(view)
+    -- view:render()
+    -- ngx.eof()
+    -- pp(key .. value)
 end
 
 function IndexController:fuck()

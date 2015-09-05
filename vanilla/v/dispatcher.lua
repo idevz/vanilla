@@ -5,6 +5,7 @@ local json = require 'cjson'
 local Controller = require 'vanilla.v.controller'
 local Request = require 'vanilla.v.request'
 local Response = require 'vanilla.v.response'
+local View = require 'vanilla.v.views.rtpl'
 local Error = require 'vanilla.v.error'
 
 -- app
@@ -32,11 +33,16 @@ function Dispatcher:new(application)
 end
 
 function Dispatcher:init(application)
-	local ok, request_or_error = pcall(function() return Request:new(application.ngx) end)
-	if ok == false then
+	local req_ok, request_or_error = pcall(function() return Request:new(application.ngx) end)
+	if req_ok == false then
 		ngx.say('------Request:new Err')
 	end
 	self.request = request_or_error
+	local resp_ok, response_or_error = pcall(function() return Response:new(application.ngx) end)
+	if resp_ok == false then
+		ngx.say('------Response:new Err')
+	end
+	self.response = response_or_error
 end
 
 function Dispatcher:getRequest()
@@ -48,14 +54,13 @@ function Dispatcher:setRequest(request)
 end
 
 function Dispatcher:dispatch()
-	self.application.ngx.header['Content_type'] = 'text/html; charset=UTF-8'
-	self.application.ngx.send_headers()
 	local ok, controller_name_or_error, action, params, request = pcall(function() return self.router:match() end)
 
     local response
     -- matching routes found
     response = self:call_controller(controller_name_or_error, action, params)
-    -- Router.respond(ngx, response)
+    -- pp(response)
+    response:response()
 
 	-- ngx.say('=========' .. controller_name_or_error .. '-------' .. action)
 	-- ngx.eof()
@@ -89,19 +94,21 @@ function Dispatcher:call_controller(controller_name, action, params)
     -- load matched controller and set metatable to new instance of controller
     local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
     local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
+
     self.application.ngx.var.template_root=view_path
+    self.view = self:initView()
+    self.view:init(controller_name, action)
+
     local matched_controller = require(controller_path .. controller_name)
-    local controller_instance = Controller:new(self.request, params, controller_name, action, self.application.config)
+    local controller_instance = Controller:new(self.request, params, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
     -- call action
     local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
 
-    local response
-
     if ok then
         -- successful
-        response = Response.new({ status = status_or_error, headers = headers, body = body })
+        return self.response
     else
         -- controller raised an error
         local ok, err = pcall(function() return Error.new(status_or_error.code, status_or_error.custom_attrs) end)
@@ -113,9 +120,8 @@ function Dispatcher:call_controller(controller_name, action, params)
             -- another error, throw
             error(status_or_error)
         end
+        return response
     end
-
-    return response
 end
 
 function Dispatcher:getApplication()
@@ -125,10 +131,19 @@ end
 function Dispatcher:getRouter()
 end
 
-function Dispatcher:setView()
+function Dispatcher:setView(view)
+	self.view = view
 end
 
-function Dispatcher:initView()
+function Dispatcher:initView(controller_name, action)
+	if self.view ~= nil then
+		return self.view
+	end
+    local ok, view_or_error = pcall(function() return View:new(self.application.config.view) end)
+    if ok == false then
+        ngx.say('------View:new Err')
+    end
+    return view_or_error
 end
 
 function Dispatcher:registerPlugin()

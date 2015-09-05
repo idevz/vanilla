@@ -5,13 +5,13 @@ local setmetatable = setmetatable
 local Response = {}
 Response.__index = Response
 
-function Response.new(options)
-    options = options or {}
-
+function Response:new(ngx)
+	ngx.header['Content_type'] = 'text/html; charset=UTF-8'
     local instance = {
-        status = options.status or 200,
-        headers = options.headers or {},
-        body = options.body or {},
+    	ngx = ngx,
+        status = 200,
+        headers = {},
+        body = {},
     }
     setmetatable(instance, Response)
     return instance
@@ -36,6 +36,7 @@ function Response:prependBody()
 end
 
 function Response:response()
+	self.ngx.send_headers()
 end
 
 function Response:setAllHeaders()
@@ -44,7 +45,8 @@ end
 function Response:setBody()
 end
 
-function Response:setHeader()
+function Response:setHeader(key, value)
+	self.ngx.header[key] = value
 end
 
 function Response:setRedirect()
