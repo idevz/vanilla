@@ -10,13 +10,12 @@ local setmetatable = setmetatable
 local Controller = {}
 Controller.__index = Controller
 
-function Controller:new(request, params, response, app_config, view_handle)
+function Controller:new(request, response, app_config, view_handle)
     self:init(app_config)
-    params = params or {}
 
     local instance = {
         app_config = app_config,
-        params = params,
+        params = request.params,
         request = request,
         response = response,
         view = view_handle

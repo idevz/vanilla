@@ -50,13 +50,13 @@ function Dispatcher:setRequest(request)
 end
 
 function Dispatcher:dispatch()
-	local ok, controller_name_or_error, action, params, request = pcall(function() return self.router:match() end)
+	local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
 
     local response
 
     if ok and controller_name_or_error then
         -- matching routes found
-    	response = self:call_controller(controller_name_or_error, action, params)
+    	response = self:call_controller(controller_name_or_error, action)
         response:response()
     else
         -- no matching routes found
@@ -64,7 +64,7 @@ function Dispatcher:dispatch()
     end
 end
 
-function Dispatcher:call_controller(controller_name, action, params)
+function Dispatcher:call_controller(controller_name, action)
     -- load matched controller and set metatable to new instance of controller
     local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
     local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
@@ -74,7 +74,7 @@ function Dispatcher:call_controller(controller_name, action, params)
     self.view:init(controller_name, action)
 
     local matched_controller = require(controller_path .. controller_name)
-    local controller_instance = Controller:new(self.request, params, self.response, self.application.config, self.view)
+    local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
     -- call action
