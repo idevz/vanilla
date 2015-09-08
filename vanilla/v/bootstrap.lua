@@ -1,8 +1,6 @@
 -- perf
-local error = error
 local pairs = pairs
 local pcall = pcall
-local require = require
 local setmetatable = setmetatable
 
 local Bootstrap = {}

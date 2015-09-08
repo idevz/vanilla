@@ -1,6 +1,3 @@
--- vanilla
-local View = require 'vanilla.v.views.rtpl'
-
 -- perf
 local error = error
 local pairs = pairs

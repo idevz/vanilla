@@ -1,10 +1,7 @@
 -- perf
-local error = error
 local pairs = pairs
-local pcall = pcall
 local require = require
 local setmetatable = setmetatable
-local smatch = string.match
 local function tappend(t, v) t[#t+1] = v end
 local function buildconf(config)
     local sys_conf = require('vanilla.v.config')
@@ -14,7 +11,6 @@ local function buildconf(config)
     return sys_conf
 end
 
--- init Application and set routes
 local Application = {}
 
 function Application:new(ngx, config)

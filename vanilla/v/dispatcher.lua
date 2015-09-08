@@ -31,12 +31,12 @@ end
 function Dispatcher:init(application)
 	local req_ok, request_or_error = pcall(function() return Request:new(application.ngx) end)
 	if req_ok == false then
-		ngx.say('------Request:new Err')
+		ngx.say('------Request:new Err' .. request_or_error)
 	end
 	self.request = request_or_error
 	local resp_ok, response_or_error = pcall(function() return Response:new(application.ngx) end)
 	if resp_ok == false then
-		ngx.say('------Response:new Err')
+		ngx.say('------Response:new Err' .. response_or_error)
 	end
 	self.response = response_or_error
 end
@@ -78,7 +78,12 @@ function Dispatcher:call_controller(controller_name, action)
     setmetatable(matched_controller, { __index = controller_instance })
 
     -- call action
-    local ok, status_or_error, body, headers = pcall(function() return matched_controller[action](matched_controller) end)
+    local ok, status_or_error, body, headers = pcall(function()
+        if matched_controller[action] == nil then
+            error({ code = 104, custom_attrs = {'FFFFFF', 'KKKKKK'} })
+        end
+        return matched_controller[action](matched_controller)
+    end)
 
     if ok then
         -- successful
@@ -89,9 +94,10 @@ function Dispatcher:call_controller(controller_name, action)
 
         if ok then
             -- API error
-            response = Response.new({ status = err.status, headers = err.headers, body = err.body })
+            return self.response
+            -- response = Response.new({ status = err.status, headers = err.headers, body = err.body })
         else
-            -- another error, throw
+        --     -- another error, throw
             error(status_or_error)
         end
         return response
