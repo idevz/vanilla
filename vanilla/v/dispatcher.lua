@@ -74,11 +74,13 @@ function Dispatcher:call_controller(controller_name, action)
     self.view:init(controller_name, action)
 
     local matched_controller = require(controller_path .. controller_name)
+    pp(controller_path .. controller_name)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
     -- call action
     local ok, status_or_error, body, headers = pcall(function()
+        -- pp(matched_controller .. action)
         if matched_controller[action] == nil then
             error({ code = 104, custom_attrs = {'FFFFFF', 'KKKKKK'} })
         end
@@ -94,7 +96,9 @@ function Dispatcher:call_controller(controller_name, action)
         -- response = Response.new({ status = 200, headers = err.headers, body = err.body })
     else
         -- controller raised an error
-        local ok, err = pcall(function() return Error.new(status_or_error.code, status_or_error.custom_attrs) end)
+        -- ngx.eof()
+        self:call_controller('error', 'error')
+        local ok, err = pcall(function() return self:call_controller('error', 'error') end)
 
         if ok then
             -- API error

@@ -27,8 +27,8 @@ end
 Error.list = init_errors()
 
 function Error.new(code, custom_attrs)
-    local err = Error.list[code]
-    if err == nil then error("invalid error code") end
+    local err = Error.list[code] or {}
+    -- if err == nil then error("invalid error code") end
 
     local body = {
         code = code,
