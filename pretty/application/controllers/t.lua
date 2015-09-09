@@ -5,12 +5,16 @@ function TController:index()
 	local view = self:getView()
 	-- view:render('index/index.html', {message = '============'})
 	-- pp(view:caching(true))
-	local resp = self:getResponse()
+	-- local resp = self:getResponse()
+	-- resp:clearHeaders()
 	-- resp:setHeader('Content_type', 'application/json')
-	view:assign('message', '-----TTTT------')
-	view:assign('kk', '------Index-----')
-	-- view:assign()
-	view:display()
+	local p = {}
+	p['message'] = '====cc======'
+	p['kk'] = '=====kk====='
+	-- view:assign('message', '-----TTTT------')
+	-- view:assign('kk', '------Index-----')
+	return view:assign(p)
+	-- view:display()
 	-- return 200, { message = "-------!" .. self.params.p }
 end
 

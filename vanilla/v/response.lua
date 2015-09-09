@@ -6,7 +6,7 @@ local Response = {}
 Response.__index = Response
 
 function Response:new(ngx)
-	ngx.header['Content_type'] = 'text/html; charset=UTF-8'
+    ngx.header['Content_type'] = 'text/html; charset=UTF-8'
     local instance = {
     	ngx = ngx,
         status = 200,
@@ -24,6 +24,9 @@ function Response:clearBody()
 end
 
 function Response:clearHeaders()
+    for k,_ in pairs(self.ngx.header) do
+        self.ngx.header[k] = nil
+    end
 end
 
 function Response:getBody()
@@ -36,7 +39,8 @@ function Response:prependBody()
 end
 
 function Response:response()
-	self.ngx.send_headers()
+	-- self.ngx.send_headers()
+    ngx.say(self.body)
 end
 
 function Response:setAllHeaders()

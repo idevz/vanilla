@@ -35,14 +35,9 @@ function Error.new(code, custom_attrs)
         message = err.message
     }
 
-    if custom_attrs ~= nil then
-        for k,v in pairs(custom_attrs) do body[k] = v end
-    end
-
     local instance = {
-        status = err.status,
-        headers = err.headers or {},
-        body = body,
+        err = err,
+        custom_attrs = custom_attrs or {}
     }
     setmetatable(instance, {__index = self})
     return instance

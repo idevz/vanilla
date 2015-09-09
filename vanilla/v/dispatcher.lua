@@ -85,9 +85,13 @@ function Dispatcher:call_controller(controller_name, action)
         return matched_controller[action](matched_controller)
     end)
 
+    local response
+
     if ok then
         -- successful
+        self.response.body = status_or_error
         return self.response
+        -- response = Response.new({ status = 200, headers = err.headers, body = err.body })
     else
         -- controller raised an error
         local ok, err = pcall(function() return Error.new(status_or_error.code, status_or_error.custom_attrs) end)
@@ -100,8 +104,8 @@ function Dispatcher:call_controller(controller_name, action)
         --     -- another error, throw
             error(status_or_error)
         end
-        return response
     end
+    return response
 end
 
 function Dispatcher:getApplication()
