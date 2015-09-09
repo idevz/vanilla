@@ -74,7 +74,6 @@ function Dispatcher:call_controller(controller_name, action)
     self.view:init(controller_name, action)
 
     local matched_controller = require(controller_path .. controller_name)
-    pp(controller_path .. controller_name)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
@@ -96,20 +95,35 @@ function Dispatcher:call_controller(controller_name, action)
         -- response = Response.new({ status = 200, headers = err.headers, body = err.body })
     else
         -- controller raised an error
-        -- ngx.eof()
-        self:call_controller('error', 'error')
-        local ok, err = pcall(function() return self:call_controller('error', 'error') end)
-
+        local ok, errorbody_or_err = pcall(function() return self:raise_error(100, 'FFFFxxxxvv') end)
+        -- pp(errorbody_or_err)
         if ok then
+            self.response.body = errorbody_or_err
             -- API error
             return self.response
             -- response = Response.new({ status = err.status, headers = err.headers, body = err.body })
         else
         --     -- another error, throw
-            error(status_or_error)
+            error(errorbody_or_err)
         end
     end
     return response
+end
+
+function Dispatcher:raise_error(code, msg)
+    -- load matched controller and set metatable to new instance of controller
+    local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
+
+    local error_controller = require(controller_path .. 'error')
+
+    local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
+    setmetatable(error_controller, { __index = controller_instance })
+    -- body
+    self.view:init('error', 'error')
+    error_controller.err = {}
+    error_controller.err.status = code
+    error_controller.err.message = msg
+    return error_controller:error()
 end
 
 function Dispatcher:getApplication()
