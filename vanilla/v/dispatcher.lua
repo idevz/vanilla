@@ -55,17 +55,14 @@ function Dispatcher:dispatch()
     local response
 
     if ok and controller_name_or_error then
-        -- matching routes found
     	response = self:call_controller(controller_name_or_error, action)
         response:response()
     else
-        -- no matching routes found
         ngx.exit(self.application.ngx.HTTP_NOT_FOUND)
     end
 end
 
 function Dispatcher:call_controller(controller_name, action)
-    -- load matched controller and set metatable to new instance of controller
     local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
     local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
 
@@ -77,52 +74,36 @@ function Dispatcher:call_controller(controller_name, action)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
-    -- call action
     local ok, status_or_error, body, headers = pcall(function()
-        -- pp(matched_controller .. action)
         if matched_controller[action] == nil then
-            error({ code = 104, custom_attrs = {'FFFFFF', 'KKKKKK'} })
+            error({ code = 100})
         end
         return matched_controller[action](matched_controller)
     end)
 
-    local response
-
+    local response = self.response
     if ok then
-        -- successful
-        self.response.body = status_or_error
-        return self.response
-        -- response = Response.new({ status = 200, headers = err.headers, body = err.body })
+        response.body = status_or_error
     else
-        -- controller raised an error
-        local ok, errorbody_or_err = pcall(function() return self:raise_error(100, 'FFFFxxxxvv') end)
-        -- pp(errorbody_or_err)
-        if ok then
-            self.response.body = errorbody_or_err
-            -- API error
-            return self.response
-            -- response = Response.new({ status = err.status, headers = err.headers, body = err.body })
+        local e_ok, errorbody_or_err = pcall(function() return self:raise_error(status_or_error) end)
+        if e_ok then
+            response.body = errorbody_or_err
         else
-        --     -- another error, throw
             error(errorbody_or_err)
         end
     end
     return response
 end
 
-function Dispatcher:raise_error(code, msg)
-    -- load matched controller and set metatable to new instance of controller
+function Dispatcher:raise_error(err)
     local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
-
     local error_controller = require(controller_path .. 'error')
 
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(error_controller, { __index = controller_instance })
-    -- body
+
     self.view:init('error', 'error')
-    error_controller.err = {}
-    error_controller.err.status = code
-    error_controller.err.message = msg
+    error_controller.err = Error:new(err.code, err.msg)
     return error_controller:error()
 end
 
@@ -152,6 +133,7 @@ function Dispatcher:registerPlugin()
 end
 
 function Dispatcher:returnResponse()
+    return self.response
 end
 
 function Dispatcher:setDefaultAction()

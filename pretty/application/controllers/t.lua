@@ -9,7 +9,7 @@ function TController:index()
 	-- resp:clearHeaders()
 	-- resp:setHeader('Content_type', 'application/json')
 	local p = {}
-	p['message'] = '====cc======'
+	p['message'] = '====ccc======'
 	p['kk'] = '=====kk====='
 	-- view:assign('message', '-----TTTT------')
 	-- view:assign('kk', '------Index-----')

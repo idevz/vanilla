@@ -21,7 +21,7 @@ function Application:new(ngx, config)
         bootstrap = self.bootstrap,
         dispatcher = require('vanilla.v.dispatcher'):new(self)
     }
-    setmetatable(instance, Application)
+    setmetatable(instance, {__index = self})
     return instance
 end
 
@@ -32,7 +32,16 @@ function Application:bootstrap()
 end
 
 function Application:run()
-    self.dispatcher:dispatch()
+    local ok, status_or_error = pcall(function() return self.dispatcher:dispatch() end)
+    if ok == false then
+        self:error_response(status_or_error)
+    end
+end
+
+function Application:error_response(err)
+    local response = self.dispatcher:returnResponse()
+    response.body = self.dispatcher:raise_error(err)
+    response:response()
 end
 
 return Application

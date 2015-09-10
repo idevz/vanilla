@@ -1,6 +1,5 @@
 -- vanilla
 local helpers = require 'vanilla.v.libs.utils'
-local Controller = require 'vanilla.v.controller'
 
 -- perf
 local error = error
@@ -10,7 +9,7 @@ local setmetatable = setmetatable
 
 -- define error
 Error = {}
--- Error.__index = Error
+Error.__index = Error
 
 local function init_errors()
     -- get app errors
@@ -27,25 +26,24 @@ end
 
 Error.list = init_errors()
 
-function Error:init_controller(request, response, config, view)
-    return Controller:new(request, response, config, view)
-    -- body
-end
-
 function Error:new(code, custom_attrs)
-    local err = Error.list[code] or {}
-    if err == nil then error("invalid error code") end
+    local err = Error.list[code]
+    if err == nil then err = {status = 400, message = 'invalid error code'} end
 
     local body = {
         code = code,
         message = err.message
     }
 
+    if custom_attrs ~= nil then
+        for k,v in pairs(custom_attrs) do body[k] = v end
+    end
+
     local instance = {
-        err = err,
-        custom_attrs = custom_attrs or {}
+        status = err.status,
+        body = body
     }
-    setmetatable(instance, {__index=self})
+    setmetatable(instance, Error)
     return instance
 end
 
