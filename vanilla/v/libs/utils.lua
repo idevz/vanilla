@@ -112,6 +112,10 @@ function Utils.pp_to_file(o, file_path)
     prettyprint.dump(o, file_path)
 end
 
+function Utils.pps(o)
+    return prettyprint.write(o)
+end
+
 -- pretty print
 function Utils.pp(o)
     prettyprint.dump(o)

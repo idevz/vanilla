@@ -15,7 +15,7 @@ local function init_errors()
     -- get app errors
     local errors = helpers.try_require('config.errors', {})
     -- add system errors
-    errors[100] = { status = 412, message = "Accept header not set." }
+    errors[100] = { status = 500, message = 'DisPatcher Err: Request init Error.' }
     errors[101] = { status = 412, message = "Invalid Accept header format." }
     errors[102] = { status = 412, message = "Unsupported version specified in the Accept header." }
     errors[103] = { status = 400, message = "Could not parse JSON in body." }

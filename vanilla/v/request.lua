@@ -15,6 +15,7 @@ local Request = {}
 Request.__index = Request
 
 function Request:new(ngx)
+    -- error('{code = 103}')
     -- read body
     ngx.req.read_body()
     local params = ngx.req.get_uri_args()

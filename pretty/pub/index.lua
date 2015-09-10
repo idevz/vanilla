@@ -4,6 +4,11 @@ function pp( ... )
     helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
 end
 
+function pps( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    return helpers.pps(...)
+end
+
 function err_log(msg)
     ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
 end
