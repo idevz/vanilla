@@ -31,7 +31,7 @@ end
 function Dispatcher:init(application)
 	local req_ok, request_or_error = pcall(function() return Request:new(application.ngx) end)
 	if req_ok == false then
-		ngx.say('Request:new Err' .. pps(request_or_error))
+		error(request_or_error)
 	end
 	self.request = request_or_error
 	local resp_ok, response_or_error = pcall(function() return Response:new(application.ngx) end)

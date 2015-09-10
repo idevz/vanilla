@@ -16,32 +16,47 @@ local Application = {}
 function Application:new(ngx, config)
     self.ngx = ngx
     self.config = buildconf(config)
+    local ok, dispatcher_or_error = pcall(function() return require('vanilla.v.dispatcher'):new(self) end)
+    if ok then
+        dispatcher = dispatcher_or_error
+    else
+        self:raise_syserror(dispatcher_or_error)
+    end
     local instance = {
         run = self.run,
         bootstrap = self.bootstrap,
-        dispatcher = require('vanilla.v.dispatcher'):new(self)
+        dispatcher = dispatcher
     }
     setmetatable(instance, {__index = self})
     return instance
 end
 
 function Application:bootstrap()
-    local bootstrap = require('application.bootstrap'):new(self.dispatcher)
-    bootstrap:bootstrap()
+    local ok, bootstrap_or_error = pcall(function() return require('application.bootstrap'):new(self.dispatcher) end)
+    if ok then
+        bootstrap = bootstrap_or_error
+    else
+        self:raise_syserror(bootstrap_or_error)
+    end
+
+    local ok, bootstarp_or_error = pcall(function() return bootstrap:bootstrap() end)
+    if ok == false then
+        self:raise_syserror(bootstarp_or_error)
+    end
+    
     return self
 end
 
 function Application:run()
     local ok, status_or_error = pcall(function() return self.dispatcher:dispatch() end)
     if ok == false then
-        self:error_response(status_or_error)
+        self:raise_syserror(status_or_error)
     end
 end
 
-function Application:error_response(err)
-    local response = self.dispatcher:returnResponse()
-    response.body = self.dispatcher:raise_error(err)
-    response:response()
+function Application:raise_syserror(err)
+    ngx.say(pps(err))
+    ngx.eof()
 end
 
 return Application
