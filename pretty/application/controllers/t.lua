@@ -2,6 +2,7 @@ local helpers = require 'gin.helpers.common'
 local TController = {}
 
 function TController:index()
+	 error({ code = 100})
 	local view = self:getView()
 	-- view:render('index/index.html', {message = '============'})
 	-- pp(view:caching(true))

@@ -37,7 +37,7 @@ end
 
 function Application:bootstrap()
     bootstrap = self:lpcall(function() return require('application.bootstrap'):new(self.dispatcher) end)
-    self:lpcall(function() return bootstrap:bootstrap() end)
+    self:lpcall(function() bootstrap:bootstrap() end)
     
     return self
 end

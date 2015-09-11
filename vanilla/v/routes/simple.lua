@@ -1,11 +1,11 @@
 -- perf
+local error = error
 local sgmatch = string.gmatch
 
 -- init Simple and set routes
 local Simple = {}
 
 function Simple:new(request)
-
     local instance = {
         route_name = 'Simple',
     	request = request

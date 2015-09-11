@@ -1,7 +1,9 @@
 function pp( ... )
     local helpers = require 'vanilla.v.libs.utils'
-    helpers.pp(...)
-    helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
+    -- helpers.pp(...)
+    -- helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
+    local s = helpers.pps(...)
+    ngx.say(s)
 end
 
 function pps( ... )
