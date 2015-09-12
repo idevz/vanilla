@@ -79,8 +79,7 @@ function Dispatcher:call_controller(controller_name, action)
     local response = self.response
     response.body = self:lpcall(function()
             if matched_controller[action] == nil then
-                -- error({ code = 101, msg = {Nonaction = action}})
-                error({ code = 101})
+                error({ code = 101, msg = {NoAction = action}})
             end
             return matched_controller[action](matched_controller)
         end)
@@ -119,11 +118,7 @@ function Dispatcher:initView(controller_name, action)
 	if self.view ~= nil then
 		return self.view
 	end
-    local ok, view_or_error = pcall(function() return View:new(self.application.config.view) end)
-    if ok == false then
-        ngx.say('------View:new Err')
-    end
-    return view_or_error
+    return self.application:lpcall(function() return View:new(self.application.config.view) end)
 end
 
 function Dispatcher:registerPlugin()

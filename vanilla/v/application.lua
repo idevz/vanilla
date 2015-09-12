@@ -1,3 +1,6 @@
+-- vanilla
+local Error = require 'vanilla.v.error'
+
 -- perf
 local pairs = pairs
 local pcall = pcall
@@ -47,6 +50,9 @@ function Application:run()
 end
 
 function Application:raise_syserror(err)
+    if type(err) == 'table' then
+        err = Error:new(err.code, err.msg)
+    end
     ngx.say(pps(err))
     ngx.eof()
 end
