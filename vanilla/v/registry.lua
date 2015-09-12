@@ -38,9 +38,13 @@ function Registry:new(namespace)
     if namespace == nil then namespace = 'default' end
     if ngx.vanilla_userdata[namespace] == nil then ngx.vanilla_userdata[namespace] = {} end
     local instance = {
-        namespace = namespace
+        namespace = namespace,
+        del = self.del,
+        get = self.get,
+        has = self.has,
+        set = self.set
     }
-    setmetatable(instance, {__index = self})
+    setmetatable(instance, Registry)
     return instance
 end
 

@@ -13,6 +13,7 @@ function TController:index()
 	local rs = '-'
 	-- r:del('zhou')
 	rs = r:get('zhou')
+	-- r:ggg()
 	-- pp(r)
 	-- pp(self:getRequest().ngx)
 	local p = {}
