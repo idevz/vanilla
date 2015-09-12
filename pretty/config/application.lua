@@ -1,6 +1,7 @@
 local Appconf={}
 
 Appconf.route='vanilla.v.routes.simple'
+Appconf.bootstrap='application.bootstrap'
 Appconf.app={}
 Appconf.app.root='/Users/zj-git/vanilla/pretty/'
 

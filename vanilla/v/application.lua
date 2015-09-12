@@ -6,7 +6,6 @@ local pairs = pairs
 local pcall = pcall
 local require = require
 local setmetatable = setmetatable
-local function tappend(t, v) t[#t+1] = v end
 local function buildconf(config)
     local sys_conf = require('vanilla.v.config')
     if config ~= nil then
@@ -39,7 +38,11 @@ function Application:new(ngx, config)
 end
 
 function Application:bootstrap()
-    bootstrap = self:lpcall(function() return require('application.bootstrap'):new(self.dispatcher) end)
+    local lbootstrap = 'application.bootstrap'
+    if self.config['bootstrap'] ~= nil then
+        lbootstrap = self.config['bootstrap']
+    end
+    bootstrap = self:lpcall(function() return require(lbootstrap):new(self.dispatcher) end)
     self:lpcall(function() bootstrap:bootstrap() end)
     
     return self
@@ -53,8 +56,9 @@ function Application:raise_syserror(err)
     if type(err) == 'table' then
         err = Error:new(err.code, err.msg)
     end
-    ngx.say(pps(err))
-    ngx.eof()
+    ngx.say('<pre />')
+    pp(pps(err))
+    self.ngx.eof()
 end
 
 return Application

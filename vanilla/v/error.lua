@@ -15,11 +15,10 @@ local function init_errors()
     -- get app errors
     local errors = helpers.try_require('config.errors', {})
     -- add system errors
-    errors[100] = { status = 500, message = "DisPatcher Err: Request init Error." }
-    errors[101] = { status = 404, message = "DisPatcher Err: Action didn't defined." }
-    errors[102] = { status = 412, message = "Unsupported version specified in the Accept header." }
-    errors[103] = { status = 400, message = "Could not parse JSON in body." }
-    errors[104] = { status = 400, message = "Body should be a JSON hash." }
+    errors[100] = { status = 500, message = "Syntax Err." }
+    errors[101] = { status = 500, message = "DisPatcher Err: Request init Error." }
+    errors[102] = { status = 404, message = "DisPatcher Err: Action didn't defined." }
+    errors[103] = { status = 412, message = "Unsupported version specified in the Accept header." }
 
     return errors
 end
@@ -28,7 +27,7 @@ Error.list = init_errors()
 
 function Error:new(code, custom_attrs)
     local err = Error.list[code]
-    if err == nil then err = {status = 500, message = 'invalid error code'} end
+    if err == nil then return false end
 
     local body = {
         code = code,

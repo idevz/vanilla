@@ -18,7 +18,9 @@ function Dispatcher:new(application)
     self:init(application)
     local instance = {
         application = application,
-        dispatch = self.dispatch
+        dispatch = self.dispatch,
+        error_controller = 'error',
+        error_action = 'error'
     }
     setmetatable(instance, {__index = self})
     return instance
@@ -95,12 +97,17 @@ function Dispatcher:raise_error(err)
         self.view = self:initView()
     end
 
-    local error_controller = require(controller_path .. 'error')
+    local error_controller = require(controller_path .. self.error_controller)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(error_controller, { __index = controller_instance })
-    self.view:init('error', 'error')
-    error_controller.err = Error:new(err.code, err.msg)
-    return error_controller:error()
+    self.view:init(self.error_controller, self.error_action)
+    local error_instance = Error:new(err.code, err.msg)
+    if error_instance ~= false then
+        error_controller.err = error_instance
+    else
+        error_controller.err = Error:new(100, {msg = err})
+    end
+    return error_controller[self.error_action](error_controller)
 end
 
 function Dispatcher:getApplication()
@@ -137,7 +144,13 @@ end
 function Dispatcher:setDefaultModule()
 end
 
-function Dispatcher:setErrorHandler()
+function Dispatcher:setErrorHandler(err_handler)
+    if type(err_handler) == 'table' then
+        if err_handler['controller'] ~= nil then self.error_controller = err_handler['controller'] end
+        if err_handler['action'] ~= nil then self.error_action = err_handler['action'] end
+        return true
+    end
+    return false
 end
 
 function Dispatcher:autoRender()

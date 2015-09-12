@@ -12,4 +12,9 @@ function ErrorController:error()
 	-- return view:assign(p)
 end
 
+function ErrorController:index()
+	pp(self.err)
+	ngx.eof()
+end
+
 return ErrorController

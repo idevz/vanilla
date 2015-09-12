@@ -2,16 +2,19 @@ local helpers = require 'gin.helpers.common'
 local TController = {}
 
 function TController:index()
-	 error({ code = 100})
+	 -- error({ code = 100})
 	local view = self:getView()
 	-- view:render('index/index.html', {message = '============'})
 	-- pp(view:caching(true))
 	-- local resp = self:getResponse()
 	-- resp:clearHeaders()
 	-- resp:setHeader('Content_type', 'application/json')
+	local r = require('vanilla.v.registry'):new('zj')
+	local rs = '-'
+	rs = r:get('zhou')
 	local p = {}
-	p['message'] = '====ccc======'
-	p['kk'] = '=====kk====='
+	p['message'] = '====ccc======' .. rs
+	p['kk'] = '=====kk=====' .. pps(r)
 	-- view:assign('message', '-----TTTT------')
 	-- view:assign('kk', '------Index-----')
 	return view:assign(p)

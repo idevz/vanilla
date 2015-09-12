@@ -10,7 +10,6 @@ local View = {}
 View.__index = View
 
 function View:new(view_config)
-    -- init instance
     local instance = {
         view_config = view_config
     }
@@ -28,7 +27,6 @@ function View:assign(params)
     local ok, body_or_error = pcall(function() return self.view_handle(params) end)
 
     if ok then
-        -- API error
         return body_or_error
     else
         error(body_or_error)

@@ -9,6 +9,10 @@ function Bootstrap:initPlugin()
 	self.zzz = '============'
 end
 
+function Bootstrap:initErrorHandle()
+	self.dispatcher:setErrorHandler({controller = 'error', action = 'index'})
+end
+
 function Bootstrap:initRoute()
 	-- ngx.say('-----------initRoute' .. self.zzz)
 	local router = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
@@ -23,6 +27,7 @@ function Bootstrap:boot_list()
 	return {
 		Bootstrap.initConfig,
 		Bootstrap.initPlugin,
+		-- Bootstrap.initErrorHandle,
 		Bootstrap.initRoute,
 		Bootstrap.initView
 	}
