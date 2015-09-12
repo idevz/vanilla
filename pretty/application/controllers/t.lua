@@ -11,10 +11,14 @@ function TController:index()
 	-- resp:setHeader('Content_type', 'application/json')
 	local r = require('vanilla.v.registry'):new('zj')
 	local rs = '-'
+	-- r:del('zhou')
 	rs = r:get('zhou')
+	-- pp(r)
+	-- pp(self:getRequest().ngx)
 	local p = {}
 	p['message'] = '====ccc======' .. rs
 	p['kk'] = '=====kk=====' .. pps(r)
+
 	-- view:assign('message', '-----TTTT------')
 	-- view:assign('kk', '------Index-----')
 	return view:assign(p)

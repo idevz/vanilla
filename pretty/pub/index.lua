@@ -18,13 +18,10 @@ end
 ngx.header['Content_type'] = 'text/html; charset=UTF-8'
 local r = require('vanilla.v.registry'):new('zj')
 ngx.say('<pre />')
-pp(r)
+-- pp(r)
 r:set('zhou', 'ddd')
 ngx.say(r:get('zhou'))
-pp(ngx)
-
-
-
+-- pp(ngx)
 
 local config = require('config.application')
 local app = require('vanilla.v.application'):new(ngx, config)

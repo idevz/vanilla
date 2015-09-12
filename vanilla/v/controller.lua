@@ -32,6 +32,7 @@ function Controller:forward()
 end
 
 function Controller:getRequest()
+    return self.request
 end
 
 function Controller:getResponse()
