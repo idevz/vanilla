@@ -1,9 +1,4 @@
--- vanilla
-local helpers = require 'vanilla.v.libs.utils'
-
 -- perf
-local error = error
-local pairs = pairs
 local setmetatable = setmetatable
 
 local Registry = {}
@@ -33,6 +28,16 @@ function Registry:set(key, value)
     return true
 end
 
+function Registry:dump(namespace)
+    local rs = {}
+    if namespace ~= nil then
+        rs = ngx.vanilla_userdata[namespace]
+    else
+        rs = ngx.vanilla_userdata
+    end
+    pp(rs)
+end
+
 function Registry:new(namespace)
     if ngx.vanilla_userdata == nil then ngx.vanilla_userdata= {} end
     if namespace == nil then namespace = 'default' end
@@ -42,6 +47,7 @@ function Registry:new(namespace)
         del = self.del,
         get = self.get,
         has = self.has,
+        dump = self.dump,
         set = self.set
     }
     setmetatable(instance, Registry)

@@ -25,8 +25,7 @@ function Application:lpcall( ... )
     end
 end
 
-function Application:new(ngx, config)
-    self.ngx = ngx
+function Application:new(config)
     self.config = buildconf(config)
     local instance = {
         run = self.run,
@@ -57,8 +56,8 @@ function Application:raise_syserror(err)
         err = Error:new(err.code, err.msg)
     end
     ngx.say('<pre />')
-    pp(pps(err))
-    self.ngx.eof()
+    ngx.say(pps(err))
+    ngx.eof()
 end
 
 return Application

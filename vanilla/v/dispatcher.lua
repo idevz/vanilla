@@ -27,8 +27,8 @@ function Dispatcher:new(application)
 end
 
 function Dispatcher:init(application)
-	self.request = Request:new(application.ngx)
-	self.response = Response:new(application.ngx)
+	self.request = Request:new()
+	self.response = Response:new()
     self.router = require('vanilla.v.routes.simple'):new(self.request)
 end
 
@@ -63,14 +63,14 @@ end
 function Dispatcher:errResponse(err)
     self.response.body = self:raise_error(err)
     self.response:response()
-    self.application.ngx.eof()
+    ngx.eof()
 end
 
 function Dispatcher:call_controller(controller_name, action)
     local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
     local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
 
-    self.application.ngx.var.template_root=view_path
+    ngx.var.template_root=view_path
     self.view = self:initView()
     self.view:init(controller_name, action)
 
@@ -81,7 +81,7 @@ function Dispatcher:call_controller(controller_name, action)
     local response = self.response
     response.body = self:lpcall(function()
             if matched_controller[action] == nil then
-                error({ code = 101, msg = {NoAction = action}})
+                error({ code = 102, msg = {NoAction = action}})
             end
             return matched_controller[action](matched_controller)
         end)
@@ -93,7 +93,7 @@ function Dispatcher:raise_error(err)
 
     if self.view == nil then
         local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
-        self.application.ngx.var.template_root=view_path
+        ngx.var.template_root=view_path
         self.view = self:initView()
     end
 

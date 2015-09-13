@@ -3,9 +3,7 @@ local error = error
 local pairs = pairs
 local setmetatable = setmetatable
 
-
 local Controller = {}
-Controller.__index = Controller
 
 function Controller:new(request, response, app_config, view_handle)
     self:init(app_config)
@@ -17,7 +15,7 @@ function Controller:new(request, response, app_config, view_handle)
         response = response,
         view = view_handle
     }
-    setmetatable(instance, Controller)
+    setmetatable(instance, {__index = self})
     return instance
 end
 

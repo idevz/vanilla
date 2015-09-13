@@ -18,6 +18,8 @@ function View:new(view_config)
 end
 
 function View:init(controller_name, action)
+    local v = template.new(controller_name .. '/' .. action .. self.view_config.suffix)
+    pp(v)
     self.view_handle = template.compile(controller_name .. '/' .. action .. self.view_config.suffix)
     self.controller_name = controller_name
     self.action = action
@@ -25,7 +27,6 @@ end
 
 function View:assign(params)
     local ok, body_or_error = pcall(function() return self.view_handle(params) end)
-
     if ok then
         return body_or_error
     else

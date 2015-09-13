@@ -1,6 +1,5 @@
 -- perf
 local pairs = pairs
-local pcall = pcall
 local setmetatable = setmetatable
 
 local Bootstrap = {}
@@ -17,8 +16,6 @@ end
 function Bootstrap:bootstrap()
 	for k,v in pairs(self.boot_list()) do
 		v(self)
-		-- @todo request_or_error
-		-- local ok, request_or_error = pcall(v, self)
 	end
 end
 

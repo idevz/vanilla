@@ -6,7 +6,6 @@ local error = error
 local pairs = pairs
 local setmetatable = setmetatable
 
-
 -- define error
 Error = {}
 Error.__index = Error
@@ -18,7 +17,7 @@ local function init_errors()
     errors[100] = { status = 500, message = "Syntax Err." }
     errors[101] = { status = 500, message = "DisPatcher Err: Request init Error." }
     errors[102] = { status = 404, message = "DisPatcher Err: Action didn't defined." }
-    errors[103] = { status = 412, message = "Unsupported version specified in the Accept header." }
+    errors[103] = { status = 500, message = "Controller Err." }
 
     return errors
 end

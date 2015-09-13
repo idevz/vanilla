@@ -14,7 +14,7 @@ local function tappend(t, v) t[#t+1] = v end
 local Request = {}
 Request.__index = Request
 
-function Request:new(ngx)
+function Request:new()
     -- read body
     ngx.req.read_body()
     local params = ngx.req.get_uri_args()
@@ -24,7 +24,6 @@ function Request:new(ngx)
 
     -- init instance
     local instance = {
-        ngx = ngx,
         uri = ngx.var.uri,
         params = params,
         method = ngx.var.request_method,
@@ -43,7 +42,6 @@ function Request:__index(index)
     if index == 'uri_params' then
         self.__cache[index] = ngx.req.get_uri_args()
         return self.__cache[index]
-
     else
         return rawget(self, index)
     end

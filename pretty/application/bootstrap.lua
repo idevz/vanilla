@@ -1,6 +1,7 @@
 local Bootstrap = require('vanilla.v.bootstrap'):new(dispatcher)
 
 function Bootstrap:initConfig()
+	-- error({code = 101, msg = {Bootstrap = '----------'}})
 	self.zzz = '------------------'
 end
 

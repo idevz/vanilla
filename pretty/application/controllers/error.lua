@@ -4,7 +4,7 @@ local helpers = require 'gin.helpers.common'
 
 function ErrorController:error()
 	local view = self:getView()
-	-- pp(self.err)
+	pp(self.err)
 	-- local p = {}
 	-- p['message'] = '====cc======'
 	-- p['status'] = '=====kk====='
