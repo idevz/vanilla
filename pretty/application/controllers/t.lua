@@ -3,9 +3,11 @@ local TController = {}
 
 function TController:c()
 	local view = self:getView()
+	local req = self:getRequest()
 	local p = {}
 	p['message'] = 'K'
-	return view:assign(p)
+	view:assign(p)
+	return view:display()
 end
 
 function TController:index()

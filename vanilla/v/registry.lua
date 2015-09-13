@@ -35,7 +35,7 @@ function Registry:dump(namespace)
     else
         rs = ngx.vanilla_userdata
     end
-    pp(rs)
+    return rs
 end
 
 function Registry:new(namespace)
@@ -48,10 +48,16 @@ function Registry:new(namespace)
         get = self.get,
         has = self.has,
         dump = self.dump,
-        set = self.set
+        set = self.set,
+        __cache = {}
     }
     setmetatable(instance, Registry)
     return instance
+end
+
+function Registry:__index(index)
+    local out = rawget(rawget(self, '__cache'), index)
+    if out then return out end
 end
 
 return Registry
