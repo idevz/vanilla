@@ -8,7 +8,9 @@ function ErrorController:error()
 	-- local p = {}
 	-- p['message'] = '====cc======'
 	-- p['status'] = '=====kk====='
-	return view:assign(self.err)
+	-- return view:assign(self.err)
+	view:assign(self.err)
+	return view:display()
 	-- return view:assign(p)
 end
 

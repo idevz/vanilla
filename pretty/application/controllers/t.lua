@@ -24,16 +24,15 @@ function TController:index()
 	-- r:ggg()
 	-- pp(r)
 	-- pp(self:getRequest().ngx)
-	local p = {}
-	-- p['message'] = '====ccc======' .. rs
-	-- p['kk'] = '=====kk=====' .. pps(r)
-	p['message'] = '====ccc======'
-	p['kk'] = '=====kk====='
-
-	-- view:assign('message', '-----TTTT------')
-	-- view:assign('kk', '------Index-----')
-	return view:assign(p)
-	-- view:display()
+	-- local p = {}
+	-- -- p['message'] = '====ccc======' .. rs
+	-- -- p['kk'] = '=====kk=====' .. pps(r)
+	-- p['message'] = '====ccc======'
+	-- p['kk'] = '=====kk====='
+	view:assign('message', '-----TTTT------')
+	view:assign('kk', '------Index-----')
+	-- return view:assign(p)
+	return view:display()
 	-- return 200, { message = "-------!" .. self.params.p }
 end
 
