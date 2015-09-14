@@ -1,15 +1,20 @@
 local tservice = require 'application.models.service.user'
 local TController = {}
 
+function TController:_get(key)
+	return key
+end
+
 function TController:c()
 	local view = self:getView()
 	local req = self:getRequest()
 	local p = {}
 	p['message'] = 'K'
 	p['kk'] = tservice:get()
-	-- view:assign(p)
-	return view:render('t/aa.html', p)
-	-- return view:display()
+	view:assign(p)
+	view:assign('zhou', 'jing')
+	return view:display()
+	-- return view:render('t/aa.html', p)
 end
 
 function TController:index()

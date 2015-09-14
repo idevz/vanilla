@@ -7,7 +7,7 @@ source ={
 
 description ={
     summary       ="A Opentresty Web Framework For PHPER",
-    homepage      ="http://idevz.github.io/vanilla/",
+    homepage      ="http://idevz.github.io/vanilla",
     maintainer    ="zhoujing<zhoujing00k@gmail.com>",
     license       ="MIT"
 }
@@ -31,7 +31,7 @@ build ={
         ["vanilla.sys.application"]    ="vanilla/sys/application.lua",
         ["vanilla.v.application"]      ="vanilla/v/application.lua",
         ["vanilla.v.bootstrap"]        ="vanilla/v/bootstrap.lua",
-        ["vanilla.v.config"]           ="vanilla/v/config.lua",
+        ["vanilla.sys.config"]         ="vanilla/sys/config.lua",
         ["vanilla.v.controller"]       ="vanilla/v/controller.lua",
         ["vanilla.v.dispatcher"]       ="vanilla/v/dispatcher.lua",
         ["vanilla.v.error"]            ="vanilla/v/error.lua",

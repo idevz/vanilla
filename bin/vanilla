@@ -1,8 +1,9 @@
 #!/usr/bin/env lua
+package.path="/Users/zhoujing/.luarocks/share/lua/5.1/?.lua;/Users/zhoujing/.luarocks/share/lua/5.1/?/init.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?/init.lua;"..package.path
+package.cpath="/Users/zhoujing/.luarocks/lib/lua/5.1/?.so;/usr/local/luarocks-2.2.2/lib/lua/5.1/?.so;"..package.cpath
+local V = require 'vanilla.sys.config'
 
-local V = require 'vanilla.v.vanilla'
-
-local help_description = [[GIN v]] .. V.version .. [[, A Opentresty Web Framework For PHPER.
+local help_description = [[Vanilla v]] .. V.version .. [[, A Opentresty Web Framework For PHPER.
 
 Usage: vanilla COMMAND [ARGS] [OPTIONS]
 
@@ -16,10 +17,10 @@ Options:
  --trace                Shows additional logs
 ]]
 
-local launcher = require 'vanilla.cli.launcher'
-local application = require 'vanilla.cli.application'
-local migrations = require 'vanilla.cli.migrations'
-local console = require 'vanilla.cli.console'
+--local launcher = require 'vanilla.cli.launcher'
+local application = require 'vanilla.sys.application'
+--local migrations = require 'vanilla.cli.migrations'
+--local console = require 'vanilla.cli.console'
 
 -- check trace
 V_TRACE = false

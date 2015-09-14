@@ -1,6 +1,5 @@
 -- local ErrorController = require('vanilla.v.error'):new(code, custom_attrs)
 local ErrorController = {}
-local helpers = require 'gin.helpers.common'
 
 function ErrorController:error()
 	local view = self:getView()

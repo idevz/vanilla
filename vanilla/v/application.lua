@@ -7,11 +7,16 @@ local pcall = pcall
 local require = require
 local setmetatable = setmetatable
 local function buildconf(config)
-    local sys_conf = require('vanilla.v.config')
-    if config ~= nil then
-        for k,v in pairs(config) do sys_conf[k] = v end
+    local ok, sys_conf_or_error = pcall(function() return require('vanilla.sys.config') end)
+    if ok then
+        if config ~= nil then
+            for k,v in pairs(config) do sys_conf_or_error[k] = v end
+        end
+    else
+        pp(sys_conf_or_error)
+        sys_conf_or_error = config
     end
-    return sys_conf
+    return sys_conf_or_error
 end
 
 local Application = {}
