@@ -1,4 +1,4 @@
-local helpers = require 'gin.helpers.common'
+local tservice = require 'application.models.service.user'
 local TController = {}
 
 function TController:c()
@@ -6,8 +6,10 @@ function TController:c()
 	local req = self:getRequest()
 	local p = {}
 	p['message'] = 'K'
-	view:assign(p)
-	return view:display()
+	p['kk'] = tservice:get()
+	-- view:assign(p)
+	return view:render('t/aa.html', p)
+	-- return view:display()
 end
 
 function TController:index()

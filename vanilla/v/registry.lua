@@ -57,7 +57,7 @@ end
 
 function Registry:__index(index)
     local out = rawget(rawget(self, '__cache'), index)
-    if out then return out end
+    if out then return out else return false end
 end
 
 return Registry
