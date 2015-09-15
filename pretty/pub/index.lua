@@ -3,7 +3,7 @@ function pps( ... )
     return helpers.pps(...)
 end
 
-function pp( ... )
+function ppz( ... )
     local helpers = require 'vanilla.v.libs.utils'
     -- helpers.pp(...)
     -- helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')

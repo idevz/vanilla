@@ -5,7 +5,6 @@ local ansicolors = require 'ansicolors'
 local va_conf = require 'vanilla.sys.config'
 local helpers = require 'vanilla.v.libs.utils'
 
-
 local gitignore = [[
 # vanilla
 client_body_temp

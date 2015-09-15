@@ -1,13 +1,27 @@
--- gin
+function pps( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    return helpers.pps(...)
+end
+
+function pp( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    -- helpers.pp(...)
+    -- helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
+    local s = helpers.pps(...)
+    -- local s = pps(...)
+    print(s)
+end
+
+-- vanilla
 local helpers = require 'vanilla.v.libs.utils'
 
 -- perf
 local pairs = pairs
 
 
-local SVaEnv = {}
+local SysVaEnv = {}
 
-SVaEnv.defaults = {
+SysVaEnv.defaults = {
     development = {
         code_cache = false,
         port = 7200,
@@ -33,10 +47,10 @@ SVaEnv.defaults = {
     }
 }
 
-function SVaEnv.for_environment(env)
+function SysVaEnv.for_environment(env)
     -- load defaults
-    local settings = SVaEnv.defaults[env]
-    if settings == nil then settings = SVaEnv.defaults.other end
+    local settings = SysVaEnv.defaults[env]
+    if settings == nil then settings = SysVaEnv.defaults.other end
 
     -- override defaults from app settings
     local app_settings = helpers.try_require('config.settings', {})
@@ -53,4 +67,4 @@ function SVaEnv.for_environment(env)
     return settings
 end
 
-return SVaEnv
+return SysVaEnv
