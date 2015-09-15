@@ -5,6 +5,7 @@ logs
 proxy_temp
 tmp
 uwsgi_temp
+good
 
 # vim
 .*.sw[a-z]
