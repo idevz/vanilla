@@ -7,7 +7,7 @@ local sgmatch = string.gmatch
 
 -- vanilla
 local va_conf = require 'vanilla.sys.config'
-local ngx_handle = require 'vanilla.sys.nginx'
+local ngx_handle = require 'vanilla.sys.nginx.handle'
 local helpers = require 'vanilla.v.libs.utils'
 
 -- settings
