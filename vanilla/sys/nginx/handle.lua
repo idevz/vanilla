@@ -2,7 +2,7 @@
 local lfs = require 'lfs'
 
 -- gin
-local Gin = require 'gin.core.gin'
+local va_conf = require 'vanilla.sys.config'
 
 
 local function create_dirs(necessary_dirs)
@@ -49,9 +49,7 @@ local NginxHandle = {}
 NginxHandle.__index = NginxHandle
 
 function NginxHandle.new(nginx_conf_content, nginx_conf_file_path)
-    -- pp(nginx_conf_content)
-    os.exit()
-    local necessary_dirs = Gin.app_dirs
+    local necessary_dirs = va_conf.app_dirs
 
     local instance = {
         nginx_conf_content = nginx_conf_content,
@@ -75,6 +73,4 @@ function NginxHandle:stop(env)
 
     return result
 end
-
-
 return NginxHandle

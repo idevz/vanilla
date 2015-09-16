@@ -44,7 +44,7 @@ function Dispatcher:dispatch()
 	local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
     local response
     if ok and controller_name_or_error then
-    	response = self:call_controller(controller_name_or_error, action)
+    	response = self:callController(controller_name_or_error, action)
         response:response()
     else
         self:errResponse(controller_name_or_error)
@@ -66,7 +66,7 @@ function Dispatcher:errResponse(err)
     ngx.eof()
 end
 
-function Dispatcher:call_controller(controller_name, action)
+function Dispatcher:callController(controller_name, action)
     local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
     local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
 

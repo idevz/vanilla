@@ -1,5 +1,16 @@
--- vanilla
-local settings = require 'vanilla.sys.env'
+function pps( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    return helpers.pps(...)
+end
+
+function pp( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    -- helpers.pp(...)
+    -- helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
+    local s = helpers.pps(...)
+    -- local s = pps(...)
+    print(s)
+end
 
 -- perf
 local ogetenv = os.getenv
@@ -18,7 +29,4 @@ Sysconf.app_dirs = {
     tmp = 'tmp',
     logs = 'logs'
 }
-
-Sysconf.settings = settings.for_environment(Sysconf.env)
-
 return Sysconf
