@@ -271,6 +271,36 @@ ngx_conf.env.production = {
 return ngx_conf
 ]]
 
+local nginx_init_by_lua_tpl = [[
+return function ( ... )
+    ngx.say(...)
+end
+]]
+
+local vanilla_index = [[
+function pps( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    return helpers.pps(...)
+end
+
+function ppz( ... )
+    local helpers = require 'vanilla.v.libs.utils'
+    -- helpers.pp(...)
+    -- helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
+    local s = helpers.pps(...)
+    -- local s = pps(...)
+    ngx.say(s)
+end
+
+function err_log(msg)
+    ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
+end
+
+local config = require('config.application')
+local app = require('vanilla.v.application'):new(config)
+app:bootstrap():run()
+]]
+
 
 local env_settings = [[
 --------------------------------------------------------------------------------
@@ -344,6 +374,8 @@ VaApplication.files = {
     ['config/errors.lua'] = errors_conf,
     ['config/nginx.conf'] = nginx_config_tpl,
     ['config/nginx.lua'] = nginx_conf,
+    ['nginx/init.lua'] = nginx_init_by_lua_tpl,
+    ['pub/index.lua'] = vanilla_index,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
     ['spec/spec_helper.lua'] = spec_helper

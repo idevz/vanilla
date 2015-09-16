@@ -31,14 +31,17 @@ va_ngx_conf.env.production = {
 }
 
 local function getNgxConf(conf_arr)
-	local common_conf = conf_arr['common']
-	local env_conf = conf_arr['env'][app_run_evn]
-	if common_conf ~= nil then
+	if conf_arr['common'] ~= nil then
+		local common_conf = conf_arr['common']
+		local env_conf = conf_arr['env'][app_run_evn]
 		for directive, info in pairs(common_conf) do
 			env_conf[directive] = info
 		end
+		return env_conf
+	elseif conf_arr['env'] ~= nil then
+		return conf_arr['env'][app_run_evn]
 	end
-	return env_conf
+	return {}
 end
 
 local function buildConf()
@@ -57,8 +60,10 @@ local ngx_directive_handle = require('vanilla.sys.nginx.directive'):new(app_run_
 local ngx_directives = ngx_directive_handle:directiveSets()
 
 local VaNgxConf = {}
+
 local ngx_run_conf = buildConf()
 -- pp(ngx_run_conf)
+-- os.exit()
 for directive, func in pairs(ngx_directives) do
 	if type(func) == 'function' then
 		-- if ngx_run_conf[directive] == true then  pp(ngx_run_conf[directive]) pp(directive) end
