@@ -3,7 +3,7 @@ package.path="/Users/zhoujing/.luarocks/share/lua/5.1/?.lua;/Users/zhoujing/.lua
 package.cpath="/Users/zhoujing/.luarocks/lib/lua/5.1/?.so;/usr/local/luarocks-2.2.2/lib/lua/5.1/?.so;"..package.cpath
 local V = require 'vanilla.sys.config'
 
-local help_description = [[Vanilla v]] .. V.version .. [[, A Opentresty Web Framework For PHPER.
+local help_description = [[Vanilla v]] .. V.version .. [[, An Opentresty Web Framework For PHPER.
 
 Usage: vanilla COMMAND [ARGS] [OPTIONS]
 
@@ -11,7 +11,6 @@ The available vanilla commands are:
  new [name]             Create a new Vanilla application
  start                  Starts the Vanilla server
  stop                   Stops the Vanilla server
- console                Start a Vanilla console
 
 Options:
  --trace                Shows additional logs
@@ -31,6 +30,5 @@ end
 if arg[1] == 'new' and arg[2] then application.new(arg[2])
 elseif arg[1] == 'start' then launcher.start()
 elseif arg[1] == 'stop' then launcher.stop()
-elseif arg[1] == 'console' or arg[1] == 'c' then console.start()
 else print(help_description)
 end

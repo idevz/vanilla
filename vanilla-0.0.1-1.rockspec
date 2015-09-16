@@ -19,7 +19,6 @@ dependencies ={
     "lua-cjson=2.1.0-1",
     "luasocket=scm-0",
     "luafilesystem=1.6.2-2",
-    "luaposix=32-1",
     "penlight=1.3.1-1",
     "lua-resty-template=1.5-1"
 }
