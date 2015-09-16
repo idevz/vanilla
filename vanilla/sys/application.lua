@@ -200,7 +200,7 @@ return Errors
 ]]
 
 
-local nginx_config = [[
+local nginx_config_tpl = [[
 pid ]] .. va_conf.app_dirs.tmp .. [[/{{VA_ENV}}-nvanillax.pid;
 
 # This number should be at maxium the number of CPU on the server
@@ -216,11 +216,19 @@ http {
     sendfile on;
 
     # Va initialization
-    {{GIN_INIT}}
+    {{LUA_PACKAGE_PATH}}
+    {{LUA_PACKAGE_CPATH}}
+    {{LUA_CODE_CACHE}}
+    {{LUA_SHARED_DICT}}
+    {{INIT_BY_LUA}}
+    {{INIT_BY_LUA_FILE}}
+    {{ACCESS_BY_LUA}}
+    {{ACCESS_BY_LUA_FILE}}
 
     server {
         # List port
-        listen {{GIN_PORT}};
+        listen {{PORT}};
+        set $template_root '';
 
         # Access log with buffer, or disable it completetely if unneeded
         access_log ]] .. va_conf.app_dirs.logs .. [[/{{VA_ENV}}-access.log combined buffer=16k;
@@ -230,9 +238,37 @@ http {
         error_log ]] .. va_conf.app_dirs.logs .. [[/{{VA_ENV}}-error.log;
 
         # Va runtime
-        {{GIN_RUNTIME}}
+        {{CONTENT_BY_LUA_FILE}}
     }
 }
+]]
+
+
+local nginx_conf = [[
+local ngx_conf = {}
+
+ngx_conf.common = {
+    INIT_BY_LUA = 'nginx.init',
+    CONTENT_BY_LUA_FILE = './pub/index.lua'
+}
+
+ngx_conf.env = {}
+ngx_conf.env.development = {
+    LUA_CODE_CACHE = false,
+    PORT = 7200
+}
+
+ngx_conf.env.test = {
+    LUA_CODE_CACHE = true,
+    PORT = 7201
+}
+
+ngx_conf.env.production = {
+    LUA_CODE_CACHE = true,
+    PORT = 80
+}
+
+return ngx_conf
 ]]
 
 
@@ -306,8 +342,8 @@ VaApplication.files = {
     ['application/views/error/error.html'] = error_tpl,
     ['application/bootstrap.lua'] = bootstrap,
     ['config/errors.lua'] = errors_conf,
-    ['config/nginx.conf'] = nginx_config,
-    ['config/env.lua'] = env_settings,
+    ['config/nginx.conf'] = nginx_config_tpl,
+    ['config/nginx.lua'] = nginx_conf,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
     ['spec/spec_helper.lua'] = spec_helper
