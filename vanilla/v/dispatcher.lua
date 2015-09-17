@@ -19,6 +19,7 @@ function Dispatcher:new(application)
     local instance = {
         application = application,
         dispatch = self.dispatch,
+        controller_prefix = 'application.controllers.',
         error_controller = 'error',
         error_action = 'error'
     }
@@ -67,14 +68,12 @@ function Dispatcher:errResponse(err)
 end
 
 function Dispatcher:callController(controller_name, action)
-    local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
     local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
-
     ngx.var.template_root=view_path
     self.view = self:initView()
     self.view:init(controller_name, action)
 
-    local matched_controller = self:lpcall(function() return require(controller_path .. controller_name) end)
+    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. controller_name) end)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
@@ -89,15 +88,13 @@ function Dispatcher:callController(controller_name, action)
 end
 
 function Dispatcher:raise_error(err)
-    local controller_path = self.application.config.controller.path or self.application.config.app.root .. 'application/controllers/'
-
     if self.view == nil then
         local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
         ngx.var.template_root=view_path
         self.view = self:initView()
     end
 
-    local error_controller = require(controller_path .. self.error_controller)
+    local error_controller = require(self.controller_prefix .. self.error_controller)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(error_controller, { __index = controller_instance })
     self.view:init(self.error_controller, self.error_action)

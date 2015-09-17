@@ -5,3 +5,5 @@
 *Just like a vanilla*
 
 > content_by_lua 'require(\"pub.index\")';
+
+yum install lua-devel
