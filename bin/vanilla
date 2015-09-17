@@ -1,6 +1,4 @@
 #!/usr/bin/env lua
-package.path="/Users/zhoujing/.luarocks/share/lua/5.1/?.lua;/Users/zhoujing/.luarocks/share/lua/5.1/?/init.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?/init.lua;"..package.path
-package.cpath="/Users/zhoujing/.luarocks/lib/lua/5.1/?.so;/usr/local/luarocks-2.2.2/lib/lua/5.1/?.so;"..package.cpath
 local V = require 'vanilla.sys.config'
 
 local help_description = [[Vanilla v]] .. V.version .. [[, An Opentresty Web Framework For PHPER.
