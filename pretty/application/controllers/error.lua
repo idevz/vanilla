@@ -3,7 +3,6 @@ local ErrorController = {}
 
 function ErrorController:error()
 	local view = self:getView()
-	ppz(self.err)
 	-- local p = {}
 	-- p['message'] = '====cc======'
 	-- p['status'] = '=====kk====='

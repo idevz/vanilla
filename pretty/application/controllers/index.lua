@@ -2,12 +2,10 @@ local IndexController = {}
 
 function IndexController:index()
 	local view = self:getView()
-	local req = self:getRequest()
 	local p = {}
-	p['message'] = 'K'
-	p['kk'] = tservice:get()
+	p['vanilla'] = 'Welcome To Vanilla...'
+	p['zhoujing'] = 'Power by Openresty'
 	view:assign(p)
-	view:assign('zhou', 'jing')
 	return view:display()
 end
 

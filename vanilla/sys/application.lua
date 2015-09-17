@@ -38,14 +38,11 @@ local IndexController = {}
 
 function IndexController:index()
     local view = self:getView()
-    local req = self:getRequest()
     local p = {}
-    p['message'] = 'K'
-    p['kk'] = tservice:get()
+    p['vanilla'] = 'Welcome To Vanilla...'
+    p['zhoujing'] = 'Power by Openresty'
     view:assign(p)
-    view:assign('zhou', 'jing')
     return view:display()
-    -- return view:render('t/aa.html', p)
 end
 
 return IndexController
@@ -56,9 +53,8 @@ local index_tpl = [[
 <!DOCTYPE html>
 <html>
 <body>
-  <h1>{{message}}</h1>
-  <h1>{{kk}}</h1>
-  <h5>{{zhou}}</h5>
+  <img src="http://m1.sinaimg.cn/maxwidth.300/m1.sinaimg.cn/ca65fa784406a36ba4fc41d14e21661e_1364_1494.png">
+  <h1><a href = 'https://github.com/idevz/vanilla'>{{vanilla}}</a></h1><h5>{{zhoujing}}</h5>
 </body>
 </html>
 ]]
