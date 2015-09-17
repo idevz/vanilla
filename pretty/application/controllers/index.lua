@@ -2,6 +2,17 @@ local IndexController = {}
 
 function IndexController:index()
 	local view = self:getView()
+	local req = self:getRequest()
+	local p = {}
+	p['message'] = 'K'
+	p['kk'] = tservice:get()
+	view:assign(p)
+	view:assign('zhou', 'jing')
+	return view:display()
+end
+
+function IndexController:index2()
+	local view = self:getView()
 	-- view:render('index/index.html', {message = '============'})
 	-- pp(view:caching(true))
 	local resp = self:getResponse()

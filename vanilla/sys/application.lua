@@ -136,7 +136,7 @@ local bootstrap = [[
 local Bootstrap = require('vanilla.v.bootstrap'):new(dispatcher)
 
 function Bootstrap:initErrorHandle()
-    self.dispatcher:setErrorHandler({controller = 'error', action = 'index'})
+    self.dispatcher:setErrorHandler({controller = 'error', action = 'error'})
 end
 
 function Bootstrap:initRoute()
