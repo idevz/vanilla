@@ -6,7 +6,7 @@ source ={
 }
 
 description ={
-    summary       ="A Opentresty Web Framework For PHPER",
+    summary       ="A Openresty Web Framework For PHPER",
     homepage      ="http://idevz.github.io/vanilla",
     maintainer    ="zhoujing<zhoujing00k@gmail.com>",
     license       ="MIT"
