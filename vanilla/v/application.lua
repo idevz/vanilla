@@ -13,9 +13,10 @@ local function buildconf(config)
             for k,v in pairs(config) do sys_conf_or_error[k] = v end
         end
     else
-        pp(sys_conf_or_error)
         sys_conf_or_error = config
     end
+    ngx.app_name = sys_conf_or_error.name
+    ngx.app_root = sys_conf_or_error.app.root
     return sys_conf_or_error
 end
 

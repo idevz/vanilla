@@ -162,7 +162,7 @@ Appconf.name = '{{APP_NAME}}'
 Appconf.route='vanilla.v.routes.simple'
 Appconf.bootstrap='application.bootstrap'
 Appconf.app={}
-Appconf.app.root='../' .. Appconf.name .. '/'
+Appconf.app.root='./'
 
 Appconf.controller={}
 Appconf.controller.path=Appconf.app.root .. 'application/controllers/'

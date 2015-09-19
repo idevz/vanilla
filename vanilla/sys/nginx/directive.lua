@@ -61,16 +61,18 @@ function Directive:contentByLuaFile(lua_file)
 end
 
 function Directive:luaPackagePath(lua_path)
-	local path = package.path
+	local path = './application/?.lua;' .. './application/library/?.lua;'
 	if lua_path ~= nil then path = path .. lua_path end
-    local res = [[lua_package_path "./?.lua;./lib/?.lua;]] .. path .. [[;/?.lua;/lib/?.lua;;";]]
+    path = path .. './?.lua;'
+    local res = [[lua_package_path "]] .. path .. package.path .. [[;/?.lua;/lib/?.lua;;";]]
     return res
 end
 
 function Directive:luaPackageCpath(lua_cpath)
-	local path = package.cpath
+	local path = './application/library/?.so;'
 	if lua_cpath ~= nil then path = path .. lua_cpath end
-    local res = [[lua_package_cpath "./?.so;./lib/?.so;]] .. path .. [[;/?.so;/lib/?.so;;";]]
+    path = path .. './?.so;'
+    local res = [[lua_package_cpath "]] .. path .. package.cpath .. [[;/?.so;/lib/?.so;;";]]
     return res
 end
 
