@@ -19,7 +19,7 @@ function Dispatcher:new(application)
     local instance = {
         application = application,
         dispatch = self.dispatch,
-        controller_prefix = 'application.controllers.',
+        controller_prefix = 'controllers.',
         error_controller = 'error',
         error_action = 'error'
     }
