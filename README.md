@@ -1,6 +1,6 @@
 #vanilla
 ### One bouquet of vanilla
-*Vanilla is An Openresty Web Framework For PHPER.*
+*Vanilla is An Openresty Web Framework.*
 <p><a href="http://idevz.github.io/vanilla/"><img border="0" src="https://avatars1.githubusercontent.com/u/2113827?v=3&s=460" alt="LuaRocks" width="150px"></a></p>
 
 ##install

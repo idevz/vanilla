@@ -197,7 +197,7 @@ return Errors
 
 
 local nginx_config_tpl = [[
-pid ]] .. va_conf.app_dirs.tmp .. [[/{{VA_ENV}}-nvanillax.pid;
+pid ]] .. va_conf.app_dirs.tmp .. [[/{{VA_ENV}}-nginx.pid;
 
 # This number should be at maxium the number of CPU on the server
 worker_processes 4;
