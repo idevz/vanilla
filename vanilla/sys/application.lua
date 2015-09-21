@@ -269,7 +269,7 @@ return ngx_conf
 
 local nginx_init_by_lua_tpl = [[
 return function ( ... )
-    ngx.say(...)
+    ngx.zhou = 'jing'
 end
 ]]
 
@@ -367,10 +367,10 @@ VaApplication.files = {
     ['application/views/index/index.html'] = index_tpl,
     ['application/views/error/error.html'] = error_tpl,
     ['application/bootstrap.lua'] = bootstrap,
+    ['application/nginx/init.lua'] = nginx_init_by_lua_tpl,
     ['config/errors.lua'] = errors_conf,
     ['config/nginx.conf'] = nginx_config_tpl,
     ['config/nginx.lua'] = nginx_conf,
-    ['nginx/init.lua'] = nginx_init_by_lua_tpl,
     ['pub/index.lua'] = vanilla_index,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
