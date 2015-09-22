@@ -11,6 +11,7 @@ local View = {}
 View.__index = View
 
 function View:new(view_config)
+    ngx.var.template_root = view_config.path or ngx.app_root .. 'application/views/'
     local instance = {
         view_config = view_config
     }

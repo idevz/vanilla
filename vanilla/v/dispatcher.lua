@@ -15,22 +15,32 @@ local setmetatable = setmetatable
 local Dispatcher = {}
 
 function Dispatcher:new(application)
-    self:init(application)
+    self:_init(application)
     local instance = {
         application = application,
-        dispatch = self.dispatch,
+        -- setErrorHandler = self.setErrorHandler,
+        -- getRequest = self.getRequest,
+        -- dispatch = self.dispatch,
+        -- errResponse = self.errResponse,
+        -- raise_error = self.raise_error,
+        -- initView = self.initView,
+        -- request = self.request,
+        -- callController = self.callController,
+        -- lpcall = self.lpcall,
+        -- response = self.response,
+        plugins = {},
         controller_prefix = 'controllers.',
         error_controller = 'error',
         error_action = 'error'
     }
     setmetatable(instance, {__index = self})
+    -- setmetatable(instance, Dispatcher)
     return instance
 end
 
-function Dispatcher:init(application)
+function Dispatcher:_init(application)
 	self.request = Request:new()
 	self.response = Response:new()
-    self.router = require('vanilla.v.routes.simple'):new(self.request)
 end
 
 function Dispatcher:getRequest()
@@ -41,15 +51,58 @@ function Dispatcher:setRequest(request)
 	self.request = request
 end
 
-function Dispatcher:dispatch()
-	local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
-    local response
+function Dispatcher:getResponse()
+    return self.response
+end
+
+function Dispatcher:registerPlugin(plugin)
+    table.insert(self.plugins, plugin)
+end
+
+function Dispatcher:_runPlugins(hook)
+    for _, plugin in pairs(self.plugins) do
+        if plugin[hook] ~= nil then
+            plugin[hook](self.request, self.response)
+        end
+    end
+end
+
+function Dispatcher:_router()
+    self.router = require('vanilla.v.routes.simple'):new(self.request)
+    local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
     if ok and controller_name_or_error then
-    	response = self:callController(controller_name_or_error, action)
-        response:response()
+        return controller_name_or_error, action
     else
         self:errResponse(controller_name_or_error)
     end
+end
+
+function Dispatcher:dispatch()
+    self:_runPlugins('routerStartup')
+	local controller_name, action= self:_router()
+    self:_runPlugins('routerShutdown')
+    self.view = self:initView()
+    self.view:init(controller_name, action)
+
+    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. controller_name) end)
+    local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
+    setmetatable(matched_controller, { __index = controller_instance })
+
+    local response = self.response
+    response.body = self:lpcall(function()
+            if matched_controller[action] == nil then
+                error({ code = 102, msg = {NoAction = action}})
+            end
+            return matched_controller[action](matched_controller)
+        end)
+    response:response()
+end
+
+function Dispatcher:initView(controller_name, action)
+    if self.view ~= nil then
+        return self.view
+    end
+    return self.application:lpcall(function() return View:new(self.application.config.view) end)
 end
 
 function Dispatcher:lpcall( ... )
@@ -67,30 +120,8 @@ function Dispatcher:errResponse(err)
     ngx.eof()
 end
 
-function Dispatcher:callController(controller_name, action)
-    local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
-    ngx.var.template_root=view_path
-    self.view = self:initView()
-    self.view:init(controller_name, action)
-
-    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. controller_name) end)
-    local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
-    setmetatable(matched_controller, { __index = controller_instance })
-
-    local response = self.response
-    response.body = self:lpcall(function()
-            if matched_controller[action] == nil then
-                error({ code = 102, msg = {NoAction = action}})
-            end
-            return matched_controller[action](matched_controller)
-        end)
-    return response
-end
-
 function Dispatcher:raise_error(err)
     if self.view == nil then
-        local view_path = self.application.config.view.path or self.application.config.app.root .. 'application/views/'
-        ngx.var.template_root=view_path
         self.view = self:initView()
     end
 
@@ -116,16 +147,6 @@ end
 
 function Dispatcher:setView(view)
 	self.view = view
-end
-
-function Dispatcher:initView(controller_name, action)
-	if self.view ~= nil then
-		return self.view
-	end
-    return self.application:lpcall(function() return View:new(self.application.config.view) end)
-end
-
-function Dispatcher:registerPlugin()
 end
 
 function Dispatcher:returnResponse()

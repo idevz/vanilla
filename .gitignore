@@ -24,3 +24,6 @@ tmtags
 .Trashes
 *.swp
 pretty/zj
+
+# luarocks
+*.rock
