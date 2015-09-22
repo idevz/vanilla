@@ -56,13 +56,13 @@ function Dispatcher:getResponse()
 end
 
 function Dispatcher:registerPlugin(plugin)
-    table.insert(self.plugins, plugin)
+    if plugin ~= nil then table.insert(self.plugins, plugin) end
 end
 
 function Dispatcher:_runPlugins(hook)
-    for _, plugin in pairs(self.plugins) do
+    for _, plugin in ipairs(self.plugins) do
         if plugin[hook] ~= nil then
-            plugin[hook](plugin[hook], self.request, self.response)
+            plugin[hook](plugin, self.request, self.response)
         end
     end
 end
@@ -81,10 +81,12 @@ function Dispatcher:dispatch()
     self:_runPlugins('routerStartup')
 	local controller_name, action= self:_router()
     self:_runPlugins('routerShutdown')
+    self:_runPlugins('dispatchLoopStartup')
+    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. controller_name) end)
+
+    self:_runPlugins('preDispatch')
     self.view = self:initView()
     self.view:init(controller_name, action)
-
-    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. controller_name) end)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(matched_controller, { __index = controller_instance })
 
@@ -95,6 +97,8 @@ function Dispatcher:dispatch()
             end
             return matched_controller[action](matched_controller)
         end)
+    self:_runPlugins('postDispatch')
+    self:_runPlugins('dispatchLoopShutdown')
     response:response()
 end
 
