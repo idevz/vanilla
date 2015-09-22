@@ -62,7 +62,7 @@ end
 function Dispatcher:_runPlugins(hook)
     for _, plugin in pairs(self.plugins) do
         if plugin[hook] ~= nil then
-            plugin[hook](self.request, self.response)
+            plugin[hook](plugin[hook], self.request, self.response)
         end
     end
 end
