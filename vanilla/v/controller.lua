@@ -5,7 +5,7 @@ local setmetatable = setmetatable
 
 local Controller = {}
 
-function Controller:new(request, response, app_config, view_handle)
+function Controller:new(request, response, app_config)
     self:init(app_config)
 
     local instance = {
@@ -13,7 +13,7 @@ function Controller:new(request, response, app_config, view_handle)
         params = request.params,
         request = request,
         response = response,
-        view = view_handle
+        view = {}
     }
     setmetatable(instance, {__index = self})
     return instance
@@ -44,7 +44,9 @@ end
 function Controller:getViewpath()
 end
 
-function Controller:initView()
+function Controller:initView(view_handle)
+    if view_handle ~= nil then self.view = view_handle end
+    self.view:init(self.request.controller_name, self.request.action_name)
 end
 
 function Controller:redirect()

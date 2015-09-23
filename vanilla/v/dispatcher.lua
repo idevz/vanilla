@@ -41,6 +41,8 @@ end
 function Dispatcher:_init(application)
 	self.request = Request:new()
 	self.response = Response:new()
+    self.controller = Controller:new(self.request, self.response, application.config)
+    self.view = application:lpcall(function() return View:new(application.config.view) end)
 end
 
 function Dispatcher:getRequest()
@@ -71,7 +73,9 @@ function Dispatcher:_router()
     self.router = require('vanilla.v.routes.simple'):new(self.request)
     local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
     if ok and controller_name_or_error then
-        return controller_name_or_error, action
+        self.request.controller_name = controller_name_or_error
+        self.request.action_name = action
+        return true
     else
         self:errResponse(controller_name_or_error)
     end
@@ -79,34 +83,31 @@ end
 
 function Dispatcher:dispatch()
     self:_runPlugins('routerStartup')
-	local controller_name, action= self:_router()
+	self:_router()
     self:_runPlugins('routerShutdown')
     self:_runPlugins('dispatchLoopStartup')
-    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. controller_name) end)
+    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. self.request.controller_name) end)
 
     self:_runPlugins('preDispatch')
-    self.view = self:initView()
-    self.view:init(controller_name, action)
-    local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
-    setmetatable(matched_controller, { __index = controller_instance })
+    self:initView()
+    setmetatable(matched_controller, { __index = self.controller })
 
-    local response = self.response
-    response.body = self:lpcall(function()
-            if matched_controller[action] == nil then
-                error({ code = 102, msg = {NoAction = action}})
+    self.response.body = self:lpcall(function()
+            if matched_controller[self.request.action_name] == nil then
+                error({ code = 102, msg = {NoAction = self.request.action_name}})
             end
-            return matched_controller[action](matched_controller)
+            return matched_controller[self.request.action_name](matched_controller)
         end)
     self:_runPlugins('postDispatch')
     self:_runPlugins('dispatchLoopShutdown')
-    response:response()
+    self.response:response()
 end
 
-function Dispatcher:initView(controller_name, action)
-    if self.view ~= nil then
-        return self.view
+function Dispatcher:initView(view)
+    if view ~= nil then
+        self.view = view
     end
-    return self.application:lpcall(function() return View:new(self.application.config.view) end)
+    self.controller:initView(self.view)
 end
 
 function Dispatcher:lpcall( ... )
@@ -128,7 +129,7 @@ function Dispatcher:raise_error(err)
     if self.view == nil then
         self.view = self:initView()
     end
-
+pp(err)
     local error_controller = require(self.controller_prefix .. self.error_controller)
     local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
     setmetatable(error_controller, { __index = controller_instance })
