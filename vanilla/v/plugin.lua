@@ -23,6 +23,7 @@ end
 
 function Plugin:new()
     local instance = {
+    a = ''
     }
     setmetatable(instance, {__index = self})
     return instance

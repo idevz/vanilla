@@ -11,6 +11,7 @@ local pairs = pairs
 local pcall = pcall
 local require = require
 local setmetatable = setmetatable
+local function tappend(t, v) t[#t+1] = v end
 
 local Dispatcher = {}
 
@@ -48,7 +49,7 @@ function Dispatcher:getResponse()
 end
 
 function Dispatcher:registerPlugin(plugin)
-    if plugin ~= nil then table.insert(self.plugins, plugin) end
+    if plugin ~= nil then tappend(self.plugins, plugin) end
 end
 
 function Dispatcher:_runPlugins(hook)

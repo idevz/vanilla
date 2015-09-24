@@ -9,14 +9,12 @@ local setmetatable = setmetatable
 local Request = {}
 
 function Request:new()
-    -- read body
     ngx.req.read_body()
     local params = ngx.req.get_uri_args()
     for k,v in pairs(ngx.req.get_post_args()) do
         params[k] = v
     end
 
-    -- init instance
     local instance = {
         uri = ngx.var.uri,
         params = params,
