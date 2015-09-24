@@ -7,11 +7,14 @@ local Simple = {}
 
 function Simple:new(request)
     local instance = {
-        route_name = 'Simple',
+        route_name = 'vanilla.v.routes.simple',
     	request = request
     }
 
-    setmetatable(instance, {__index = self})
+    setmetatable(instance, {
+        __index = self,
+        __tostring = function(self) return self.route_name end
+        })
     return instance
 end
 

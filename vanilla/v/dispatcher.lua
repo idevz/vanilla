@@ -103,11 +103,11 @@ function Dispatcher:dispatch()
     self.response:response()
 end
 
-function Dispatcher:initView(view)
+function Dispatcher:initView(view, controller_name, action_name)
     if view ~= nil then
         self.view = view
     end
-    self.controller:initView(self.view)
+    self.controller:initView(self.view, controller_name, action_name)
 end
 
 function Dispatcher:lpcall( ... )
@@ -126,14 +126,9 @@ function Dispatcher:errResponse(err)
 end
 
 function Dispatcher:raise_error(err)
-    if self.view == nil then
-        self.view = self:initView()
-    end
-pp(err)
     local error_controller = require(self.controller_prefix .. self.error_controller)
-    local controller_instance = Controller:new(self.request, self.response, self.application.config, self.view)
-    setmetatable(error_controller, { __index = controller_instance })
-    self.view:init(self.error_controller, self.error_action)
+    setmetatable(error_controller, { __index = self.controller })
+    self:initView(self.view, self.error_controller, self.error_action)
     local error_instance = Error:new(err.code, err.msg)
     if error_instance ~= false then
         error_controller.err = error_instance
@@ -148,6 +143,7 @@ function Dispatcher:getApplication()
 end
 
 function Dispatcher:getRouter()
+    return tostring(self.router)
 end
 
 function Dispatcher:setView(view)

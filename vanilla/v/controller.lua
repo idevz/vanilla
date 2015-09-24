@@ -44,9 +44,13 @@ end
 function Controller:getViewpath()
 end
 
-function Controller:initView(view_handle)
+function Controller:initView(view_handle, controller_name, action_name)
+    local init_controller = ''
+    local init_action = ''
     if view_handle ~= nil then self.view = view_handle end
-    self.view:init(self.request.controller_name, self.request.action_name)
+    if controller_name ~= nil then init_controller = controller_name else init_controller = self.request.controller_name end
+    if action_name ~= nil then init_action = action_name else init_action = self.request.action_name  end
+    self.view:init(init_controller, init_action)
 end
 
 function Controller:redirect()

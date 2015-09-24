@@ -43,6 +43,7 @@ function Application:new(config)
 end
 
 function Application:bootstrap()
+    ngx.dispatcher = self.dispatcher
     local lbootstrap = 'application.bootstrap'
     if self.config['bootstrap'] ~= nil then
         lbootstrap = self.config['bootstrap']
