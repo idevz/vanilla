@@ -8,7 +8,6 @@ local setmetatable = setmetatable
 
 
 local View = {}
-View.__index = View
 
 function View:new(view_config)
     ngx.var.template_root = view_config.path or ngx.app_root .. 'application/views/'
@@ -16,7 +15,7 @@ function View:new(view_config)
         view_config = view_config,
         init = self.init
     }
-    setmetatable(instance, View)
+    setmetatable(instance, {__index = self})
     return instance
 end
 
@@ -46,7 +45,7 @@ function View:display()
 end
 
 function View:getScriptPath()
-    -- return
+    return ngx.var.template_root
 end
 
 function View:render(view_tpl, params)
@@ -59,7 +58,8 @@ function View:render(view_tpl, params)
     end
 end
 
-function View:setScriptPath()
+function View:setScriptPath(scriptpath)
+    if scriptpath ~= nil then ngx.var.template_root = scriptpath end
 end
 
 return View

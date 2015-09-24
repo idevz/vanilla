@@ -6,8 +6,6 @@ local setmetatable = setmetatable
 local Controller = {}
 
 function Controller:new(request, response, app_config)
-    self:init(app_config)
-
     local instance = {
         app_config = app_config,
         params = request.params,
@@ -19,14 +17,8 @@ function Controller:new(request, response, app_config)
     return instance
 end
 
-function Controller:init(app_config)
-end
-
 function Controller:display(view_tpl, values)
     self.view:render(view_tpl, values)
-end
-
-function Controller:forward()
 end
 
 function Controller:getRequest()
@@ -41,9 +33,6 @@ function Controller:getView()
     return self.view
 end
 
-function Controller:getViewpath()
-end
-
 function Controller:initView(view_handle, controller_name, action_name)
     local init_controller = ''
     local init_action = ''
@@ -53,13 +42,12 @@ function Controller:initView(view_handle, controller_name, action_name)
     self.view:init(init_controller, init_action)
 end
 
-function Controller:redirect()
-end
-
-function Controller:render()
-end
-
-function Controller:setViewpath ()
+function Controller:redirect(url)
+    local togo = url
+    if not ngx.re.match(togo, "http") then
+        togo = "http://" .. togo
+    end
+    ngx.redirect(togo)
 end
 
 function Controller:raise_error(code, custom_attrs)

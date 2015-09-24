@@ -18,16 +18,6 @@ function Dispatcher:new(application)
     self:_init(application)
     local instance = {
         application = application,
-        -- setErrorHandler = self.setErrorHandler,
-        -- getRequest = self.getRequest,
-        -- dispatch = self.dispatch,
-        -- errResponse = self.errResponse,
-        -- raise_error = self.raise_error,
-        -- initView = self.initView,
-        -- request = self.request,
-        -- callController = self.callController,
-        -- lpcall = self.lpcall,
-        -- response = self.response,
         plugins = {},
         enable_view = true,
         controller_prefix = 'controllers.',
@@ -35,7 +25,6 @@ function Dispatcher:new(application)
         error_action = 'error'
     }
     setmetatable(instance, {__index = self})
-    -- setmetatable(instance, Dispatcher)
     return instance
 end
 
@@ -87,9 +76,8 @@ function Dispatcher:dispatch()
 	self:_router()
     self:_runPlugins('routerShutdown')
     self:_runPlugins('dispatchLoopStartup')
-    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. self.request.controller_name) end)
-
     self:_runPlugins('preDispatch')
+    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. self.request.controller_name) end)
     setmetatable(matched_controller, { __index = self.controller })
     self.response.body = self:lpcall(function()
             if matched_controller[self.request.action_name] == nil then
@@ -152,13 +140,12 @@ function Dispatcher:returnResponse()
     return self.response
 end
 
-function Dispatcher:setDefaultAction()
+function Dispatcher:setDefaultAction(default_action)
+    if default_action ~= nil then self.request.action_name = default_action end
 end
 
-function Dispatcher:setDefaultController()
-end
-
-function Dispatcher:setDefaultModule()
+function Dispatcher:setDefaultController(default_controller)
+    if default_controller ~= nil then self.request.controller_name = default_controller end
 end
 
 function Dispatcher:setErrorHandler(err_handler)
@@ -168,12 +155,6 @@ function Dispatcher:setErrorHandler(err_handler)
         return true
     end
     return false
-end
-
-function Dispatcher:autoRender()
-end
-
-function Dispatcher:disableView()
 end
 
 function Dispatcher:enableView(enable_view)

@@ -10,16 +10,18 @@ function Response:new()
     local instance = {
         status = 200,
         headers = {},
-        body = {},
+        body = '',
     }
     setmetatable(instance, Response)
     return instance
 end
 
-function Response:appendBody()
+function Response:appendBody(append_body)
+    if append_body ~= nil then self.append_body = append_body end
 end
 
 function Response:clearBody()
+    self.body = nil
 end
 
 function Response:clearHeaders()
@@ -29,30 +31,31 @@ function Response:clearHeaders()
 end
 
 function Response:getBody()
+    return self.body
 end
 
 function Response:getHeader()
+    return self.headers
 end
 
-function Response:prependBody()
+function Response:prependBody(prepend_body)
+    if prepend_body ~= nil then self.prepend_body = prepend_body end
 end
 
 function Response:response()
-	-- self.ngx.send_headers()
-    ngx.say(self.body)
+    local body = ''
+    if self.append_body ~= nil then body = self.append_body end
+    if self.body ~= nil then body = body .. self.body end
+    if self.prepend_body ~= nil then body = body .. self.prepend_body end
+    ngx.print(body)
 end
 
-function Response:setAllHeaders()
-end
-
-function Response:setBody()
+function Response:setBody(body)
+    if body ~= nil then self.body = body end
 end
 
 function Response:setHeader(key, value)
 	ngx.header[key] = value
-end
-
-function Response:setRedirect()
 end
 
 return Response

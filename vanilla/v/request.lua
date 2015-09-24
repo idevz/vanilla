@@ -3,16 +3,10 @@ local json = require 'cjson'
 
 -- perf
 local error = error
-local jdecode = json.decode
 local pairs = pairs
-local pcall = pcall
-local rawget = rawget
 local setmetatable = setmetatable
-local function tappend(t, v) t[#t+1] = v end
-
 
 local Request = {}
-Request.__index = Request
 
 function Request:new()
     -- read body
@@ -30,8 +24,36 @@ function Request:new()
         headers = ngx.req.get_headers(),
         body_raw = ngx.req.get_body_data()
     }
-    setmetatable(instance, Request)
+    setmetatable(instance, {__index = self})
     return instance
+end
+
+function Request:getControllerName()
+    return self.request.controller_name
+end
+
+function Request:getActionName()
+    return self.request.action_name
+end
+
+function Request:getParams()
+    return self.params
+end
+
+function Request:getParam(key)
+    return self.params[key]
+end
+
+function Request:setParam(key, value)
+    self.params[key] = value
+end
+
+function Request:getMethod()
+    return self.method
+end
+
+function Request:isGet()
+    if self.method == 'GET' then return true else return false end
 end
 
 return Request
