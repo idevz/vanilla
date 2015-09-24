@@ -29,6 +29,7 @@ function Dispatcher:new(application)
         -- lpcall = self.lpcall,
         -- response = self.response,
         plugins = {},
+        enable_view = true,
         controller_prefix = 'controllers.',
         error_controller = 'error',
         error_action = 'error'
@@ -89,24 +90,21 @@ function Dispatcher:dispatch()
     local matched_controller = self:lpcall(function() return require(self.controller_prefix .. self.request.controller_name) end)
 
     self:_runPlugins('preDispatch')
-    self:initView()
     setmetatable(matched_controller, { __index = self.controller })
-
     self.response.body = self:lpcall(function()
             if matched_controller[self.request.action_name] == nil then
                 error({ code = 102, msg = {NoAction = self.request.action_name}})
             end
+            if self.enable_view == true then self:initView() end
             return matched_controller[self.request.action_name](matched_controller)
         end)
     self:_runPlugins('postDispatch')
-    self:_runPlugins('dispatchLoopShutdown')
     self.response:response()
+    self:_runPlugins('dispatchLoopShutdown')
 end
 
 function Dispatcher:initView(view, controller_name, action_name)
-    if view ~= nil then
-        self.view = view
-    end
+    if view ~= nil then self.view = view end
     self.controller:initView(self.view, controller_name, action_name)
 end
 
@@ -178,7 +176,8 @@ end
 function Dispatcher:disableView()
 end
 
-function Dispatcher:enableView()
+function Dispatcher:enableView(enable_view)
+    if enable_view ~= nil then self.enable_view = enable_view end
 end
 
 return Dispatcher
