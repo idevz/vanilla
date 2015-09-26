@@ -1,4 +1,5 @@
---dep
+-- dep
+-- https://github.com/pintsized/lua-resty-http
 local http_handle = require('resty.http').new()
 
 -- perf

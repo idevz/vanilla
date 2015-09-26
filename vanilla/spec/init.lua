@@ -1,7 +1,6 @@
 -- vanilla
 local helpers = require 'vanilla.v.libs.utils'
 
-
 -- ensure test environment is specified
 local posix = require "posix"
 posix.setenv("VA_ENV", 'test')

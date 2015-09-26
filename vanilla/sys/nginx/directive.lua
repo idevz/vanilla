@@ -86,6 +86,7 @@ function Directive:directiveSets()
         ['INIT_BY_LUA_FILE'] = Directive.initByLuaFile,
         ['ACCESS_BY_LUA'] = Directive.accByLua,
         ['ACCESS_BY_LUA_FILE'] = Directive.accByLuaFile,
+        ['VANILLA_WAF'] = Directive.accByLua,
         ['CONTENT_BY_LUA'] = Directive.contentByLua,
         ['CONTENT_BY_LUA_FILE'] = Directive.contentByLuaFile,
         ['PORT'] = 80,

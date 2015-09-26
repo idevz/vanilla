@@ -15,8 +15,23 @@ local ssub = string.sub
 local type = type
 local function tappend(t, v) t[#t+1] = v end
 
-
 local Utils = {}
+
+function Utils.lpcall( ... )
+    local ok, rs_or_error = pcall( ... )
+    if ok then
+        return rs_or_error
+    else
+        Utils.raise_syserror(rs_or_error)
+    end
+end
+
+function Utils.raise_syserror(err)
+    ngx.say('<pre />')
+    Utils.pp(err)
+    -- ngx.say(pps(err))
+    ngx.eof()
+end
 
 -- try to require
 function Utils.try_require(module_name, default)

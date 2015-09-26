@@ -1,4 +1,5 @@
 -- dep
+-- https://github.com/bungle/lua-resty-template
 local template = require "resty.template"
 
 -- perf

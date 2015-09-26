@@ -195,6 +195,22 @@ local Errors = {}
 return Errors
 ]]
 
+local waf_conf = [[
+local waf_conf = {}
+waf_conf.ipBlocklist={"1.0.0.1"}
+waf_conf.html=\[\[
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Fu*k U...</h1>
+      <h4>=======</h4>
+      <h5>--K--</h5>
+</body>
+</html>
+\]\]
+return waf_conf
+]]
+
 
 local nginx_config_tpl = [[
 pid ]] .. va_conf.app_dirs.tmp .. [[/{{VA_ENV}}-nginx.pid;
@@ -371,6 +387,7 @@ VaApplication.files = {
     ['config/errors.lua'] = errors_conf,
     ['config/nginx.conf'] = nginx_config_tpl,
     ['config/nginx.lua'] = nginx_conf,
+    ['config/waf.lua'] = waf_conf,
     ['pub/index.lua'] = vanilla_index,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",

@@ -12,6 +12,7 @@ va_ngx_conf.common = {
 	INIT_BY_LUA = 'nginx.init',
 	LUA_PACKAGE_PATH = '',
 	LUA_PACKAGE_CPATH = '',
+	VANILLA_WAF = 'vanilla.sys.waf.acc'
 }
 
 va_ngx_conf.env = {}
