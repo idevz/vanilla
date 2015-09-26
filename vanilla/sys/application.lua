@@ -198,17 +198,95 @@ return Errors
 local waf_conf = [[
 local waf_conf = {}
 waf_conf.ipBlocklist={"1.0.0.1"}
-waf_conf.html=\[\[
-<!DOCTYPE html>
-<html>
-<body>
-  <h1>Fu*k U...</h1>
-      <h4>=======</h4>
-      <h5>--K--</h5>
-</body>
-</html>
-\]\]
+-- waf_conf.html="<!DOCTYPE html><html><body><h1>Fu*k U...</h1><h4>=======</h4><h5>--K--</h5></body></html>"
 return waf_conf
+]]
+
+local waf_conf_regs_args = [[
+\.\./
+\:\$
+\$\{
+select.+(from|limit)
+(?:(union(.*?)select))
+having|rongjitest
+sleep\((\s*)(\d*)(\s*)\)
+benchmark\((.*)\,(.*)\)
+base64_decode\(
+(?:from\W+information_schema\W)
+(?:(?:current_)user|database|schema|connection_id)\s*\(
+(?:etc\/\W*passwd)
+into(\s+)+(?:dump|out)file\s*
+group\s+by.+\(
+xwork.MethodAccessor
+(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\(
+xwork\.MethodAccessor
+(gopher|doc|php|glob|file|phar|zlib|ftp|ldap|dict|ogg|data)\:\/
+java\.lang
+\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
+\<(iframe|script|body|img|layer|div|meta|style|base|object|input)
+(onmouseover|onerror|onload)\=
+]]
+
+local waf_conf_regs_cookie = [[
+\.\./
+\:\$
+\$\{
+select.+(from|limit)
+(?:(union(.*?)select))
+having|rongjitest
+sleep\((\s*)(\d*)(\s*)\)
+benchmark\((.*)\,(.*)\)
+base64_decode\(
+(?:from\W+information_schema\W)
+(?:(?:current_)user|database|schema|connection_id)\s*\(
+(?:etc\/\W*passwd)
+into(\s+)+(?:dump|out)file\s*
+group\s+by.+\(
+xwork.MethodAccessor
+(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\(
+xwork\.MethodAccessor
+(gopher|doc|php|glob|file|phar|zlib|ftp|ldap|dict|ogg|data)\:\/
+java\.lang
+\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
+]]
+
+local waf_conf_regs_post = [[
+select.+(from|limit)
+(?:(union(.*?)select))
+having|rongjitest
+sleep\((\s*)(\d*)(\s*)\)
+benchmark\((.*)\,(.*)\)
+base64_decode\(
+(?:from\W+information_schema\W)
+(?:(?:current_)user|database|schema|connection_id)\s*\(
+(?:etc\/\W*passwd)
+into(\s+)+(?:dump|out)file\s*
+group\s+by.+\(
+xwork.MethodAccessor
+(?:define|eval|file_get_contents|include|require|require_once|shell_exec|phpinfo|system|passthru|preg_\w+|execute|echo|print|print_r|var_dump|(fp)open|alert|showmodaldialog)\(
+xwork\.MethodAccessor
+(gopher|doc|php|glob|file|phar|zlib|ftp|ldap|dict|ogg|data)\:\/
+java\.lang
+\$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
+\<(iframe|script|body|img|layer|div|meta|style|base|object|input)
+(onmouseover|onerror|onload)\=
+]]
+
+local waf_conf_regs_url = [[
+\.(svn|htaccess|bash_history)
+\.(bak|inc|old|mdb|sql|backup|java|class)$
+(vhost|bbs|host|wwwroot|www|site|root|hytop|flashfxp).*\.rar
+(phpmyadmin|jmx-console|jmxinvokerservlet)
+java\.lang
+/(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/(\\w+).(php|jsp)
+]]
+
+local waf_conf_regs_ua = [[
+(HTTrack|harvest|audit|dirbuster|pangolin|nmap|sqln|-scan|hydra|Parser|libwww|BBBike|sqlmap|w3af|owasp|Nikto|fimap|havij|PycURL|zmeu|BabyKrokodil|netsparker|httperf|bench| SF/)
+]]
+
+local waf_conf_regs_whiteurl = [[
+^/123/$
 ]]
 
 
@@ -234,6 +312,7 @@ http {
     {{LUA_SHARED_DICT}}
     {{INIT_BY_LUA}}
     {{INIT_BY_LUA_FILE}}
+    {{VANILLA_WAF}}
     {{ACCESS_BY_LUA}}
     {{ACCESS_BY_LUA_FILE}}
 
@@ -388,6 +467,13 @@ VaApplication.files = {
     ['config/nginx.conf'] = nginx_config_tpl,
     ['config/nginx.lua'] = nginx_conf,
     ['config/waf.lua'] = waf_conf,
+    ['config/waf-regs/args'] = waf_conf_regs_args,
+    ['config/waf-regs/cookie'] = waf_conf_regs_cookie,
+    ['config/waf-regs/post'] = waf_conf_regs_post,
+    ['config/waf-regs/url'] = waf_conf_regs_url,
+    ['config/waf-regs/user-agent'] = waf_conf_regs_ua,
+    ['config/waf-regs/whiteurl'] = waf_conf_regs_whiteurl,
+    ['logs/hack/.gitkeep'] = "",
     ['pub/index.lua'] = vanilla_index,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
