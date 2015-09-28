@@ -66,7 +66,6 @@ local function log(method,url,data,ruletag)
     end
 end
 
-------------------------------------规则读取函数-------------------------------------------------------------------
 local function read_rule(var)
     file = io.open(rulepath..'/'..var,"r")
     if file==nil then
@@ -106,7 +105,7 @@ local function fileExtCheck(ext)
     if ext then
         for rule in pairs(items) do
             if ngx.re.match(ext,rule,"isjo") then
-	        log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
+            log('POST',ngx.var.request_uri,"-","file attack with ext "..ext)
             say_html()
             end
         end
@@ -123,6 +122,7 @@ end
 local function say_html()
     if Redirect then
         ngx.header.content_type = "text/html"
+        ngx.header.Power_by = "Vanilla-idevz/vanilla"
         ngx.status = ngx.HTTP_FORBIDDEN
         ngx.say(waf_conf.html)
         ngx.eof()

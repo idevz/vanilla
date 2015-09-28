@@ -56,6 +56,7 @@ function base_launcher()
 end
 
 function Vanilla.start(env)
+    if env == nil then env = va_conf.env end
     -- init base_launcher
     local ok, base_launcher = pcall(function() return base_launcher() end)
 
@@ -76,6 +77,7 @@ function Vanilla.start(env)
 end
 
 function Vanilla.stop(env)
+    if env == nil then env = va_conf.env end
     -- init base_launcher
     local base_launcher = base_launcher()
 

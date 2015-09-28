@@ -7,6 +7,7 @@ Response.__index = Response
 
 function Response:new()
     ngx.header['Content_type'] = 'text/html; charset=UTF-8'
+    ngx.header['Power_By'] = 'Vanilla-' .. ngx.app_version
     local instance = {
         status = 200,
         headers = {},

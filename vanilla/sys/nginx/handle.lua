@@ -26,7 +26,7 @@ local function nginx_command(env, nginx_conf_file_path, nginx_signal)
     if V_TRACE == false then devnull_logs = " 2>/dev/null" end
 
     local env_cmd = ""
-    if env ~= nil then env_cmd = "-g \"env GIN_ENV=" .. env .. ";\"" end
+    if env ~= nil then env_cmd = "-g \"env VA_ENV=" .. env .. ";\"" end
     local cmd = "nginx " .. nginx_signal .. " " .. env_cmd .. " -p `pwd`/ -c " .. nginx_conf_file_path .. devnull_logs
 
     if V_TRACE == true then

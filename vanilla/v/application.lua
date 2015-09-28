@@ -17,6 +17,7 @@ local function buildconf(config)
     end
     ngx.app_name = sys_conf_or_error.name
     ngx.app_root = sys_conf_or_error.app.root
+    ngx.app_version = sys_conf_or_error.version
     return sys_conf_or_error
 end
 

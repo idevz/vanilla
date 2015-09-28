@@ -1,17 +1,3 @@
-function pps( ... )
-    local helpers = require 'vanilla.v.libs.utils'
-    return helpers.pps(...)
-end
-
-function ppz( ... )
-    local helpers = require 'vanilla.v.libs.utils'
-    -- helpers.pp(...)
-    -- helpers.pp_to_file(..., '/Users/zj-git/vanilla/pretty/zj')
-    local s = helpers.pps(...)
-    -- local s = pps(...)
-    print(s)
-end
-
 -- perf
 local ogetenv = os.getenv
 
@@ -29,4 +15,28 @@ Sysconf.app_dirs = {
     tmp = 'tmp',
     logs = 'logs'
 }
+
+-- ngx.say(Sysconf.env)
+
+if Sysconf.env == 'development' then
+    function pps( ... )
+        local helpers = require 'vanilla.v.libs.utils'
+        return helpers.pps(...)
+    end
+
+    function ppl( ... )
+        local rs = pps(...)
+        print(rs)
+    end
+
+    function pp( ... )
+        local rs = pps(...)
+        ngx.say(rs)
+    end
+
+    function err_log(msg)
+        ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
+    end
+end
+
 return Sysconf
