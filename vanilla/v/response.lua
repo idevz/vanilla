@@ -11,7 +11,9 @@ function Response:new()
     local instance = {
         status = 200,
         headers = {},
+        append_body = '',
         body = '',
+        prepend_body = ''
     }
     setmetatable(instance, Response)
     return instance
@@ -44,10 +46,7 @@ function Response:prependBody(prepend_body)
 end
 
 function Response:response()
-    local body = ''
-    if self.append_body ~= nil then body = self.append_body end
-    if self.body ~= nil then body = body .. self.body end
-    if self.prepend_body ~= nil then body = body .. self.prepend_body end
+    local body = {self.append_body, self.body, self.prepend_body}
     ngx.print(body)
 end
 
