@@ -21,6 +21,7 @@ local application = require 'vanilla.sys.application'
 V_TRACE = false
 if arg[#arg] == '--trace' then
   table.remove(arg, #arg)
+  
   V_TRACE = true
 end
 
