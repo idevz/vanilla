@@ -1,5 +1,5 @@
 package ="vanilla"
-version ="0.0.1-1"
+version ="0.1.0-rc1"
 
 source ={
     url ="git://github.com/idevz/vanilla.git"
