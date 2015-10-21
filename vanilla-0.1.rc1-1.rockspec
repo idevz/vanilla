@@ -1,5 +1,6 @@
 package ="vanilla"
-version ="0.1.0-1"
+
+version = "0.1.rc1-1"
 
 source ={
     url ="git://github.com/idevz/vanilla.git"
@@ -9,7 +10,13 @@ description ={
     summary       ="A Lightweight Openresty Web Framework",
     homepage      ="http://idevz.github.io/vanilla",
     maintainer    ="zhoujing<zhoujing00k@gmail.com>",
-    license       ="MIT"
+    license       ="MIT",
+    detailed = [[
+##install
+```
+yum install lua-devel luarocks
+luarocks install vanilla
+```]]
 }
 
 dependencies ={
