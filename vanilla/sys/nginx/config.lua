@@ -9,10 +9,8 @@ local app_run_evn = ogetenv("VA_ENV") or 'development'
 local va_ngx_conf = {}
 va_ngx_conf.common = {
 	VA_ENV = app_run_evn,
-	INIT_BY_LUA = 'nginx.init',
 	LUA_PACKAGE_PATH = '',
 	LUA_PACKAGE_CPATH = '',
-	VANILLA_WAF = 'vanilla.sys.waf.acc'
 }
 
 va_ngx_conf.env = {}
@@ -67,11 +65,13 @@ local ngx_run_conf = buildConf()
 -- os.exit()
 for directive, func in pairs(ngx_directives) do
 	if type(func) == 'function' then
-		-- if ngx_run_conf[directive] == true then  pp(ngx_run_conf[directive]) pp(directive) end
-		VaNgxConf[directive] = func(ngx_directive_handle, ngx_run_conf[directive])
+		local func_rs = func(ngx_directive_handle, ngx_run_conf[directive])
+		if func_rs ~= false then
+			VaNgxConf[directive] = func_rs
+		end
 	else
 		VaNgxConf[directive] = ngx_run_conf[directive]
 	end
 end
--- pp(VaNgxConf)
+
 return VaNgxConf

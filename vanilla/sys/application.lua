@@ -6,7 +6,7 @@ local va_conf = require 'vanilla.sys.config'
 local helpers = require 'vanilla.v.libs.utils'
 
 local gitignore = [[
-# vanilla
+# Vanilla
 client_body_temp
 fastcgi_temp
 logs
@@ -14,22 +14,46 @@ proxy_temp
 tmp
 uwsgi_temp
 
-# vim
-.*.sw[a-z]
-*.un~
-Session.vim
+# Compiled Lua sources
+luac.out
 
-# textmate
-*.tmproj
-*.tmproject
-tmtags
+# luarocks build files
+*.src.rock
+*.zip
+*.tar.gz
 
-# OSX
-.DS_Store
-._*
-.Spotlight-V100
-.Trashes
-*.swp
+# Object files
+*.o
+*.os
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+*.def
+*.exp
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
 ]]
 
 
@@ -310,16 +334,21 @@ http {
     {{LUA_PACKAGE_CPATH}}
     {{LUA_CODE_CACHE}}
     {{LUA_SHARED_DICT}}
+
+
     {{INIT_BY_LUA}}
     {{INIT_BY_LUA_FILE}}
-    {{VANILLA_WAF}}
-    {{ACCESS_BY_LUA}}
-    {{ACCESS_BY_LUA_FILE}}
+    {{INIT_WORKER_BY_LUA}}
+    {{INIT_WORKER_BY_LUA_FILE}}
 
     server {
         # List port
         listen {{PORT}};
         set $template_root '';
+
+        location /static {
+            alias pub/static;
+        }
 
         # Access log with buffer, or disable it completetely if unneeded
         access_log ]] .. va_conf.app_dirs.logs .. [[/{{VA_ENV}}-access.log combined buffer=16k;
@@ -340,6 +369,7 @@ local ngx_conf = {}
 
 ngx_conf.common = {
     INIT_BY_LUA = 'nginx.init',
+    LUA_SHARED_DICT = 'nginx.sh_dict',
     CONTENT_BY_LUA_FILE = './pub/index.lua'
 }
 
@@ -363,9 +393,26 @@ return ngx_conf
 ]]
 
 local nginx_init_by_lua_tpl = [[
-return function ( ... )
-    ngx.zhou = 'jing'
+local init_by_lua = {}
+function init_by_lua:run()
+    local conf = require 'nginx.init.config'
+    ngx.zhou = conf
 end
+
+return init_by_lua
+]]
+
+local nginx_init_config_tpl = [[
+local config = require('config.application')
+return config
+]]
+
+local nginx_share_dict_tpl = [[
+local sh_dict_conf = {
+    zhou = '10m',
+    jing = '2m'
+}
+return sh_dict_conf
 ]]
 
 local vanilla_index = [[
@@ -444,7 +491,9 @@ VaApplication.files = {
     ['application/views/index/index.html'] = index_tpl,
     ['application/views/error/error.html'] = error_tpl,
     ['application/bootstrap.lua'] = bootstrap,
-    ['application/nginx/init.lua'] = nginx_init_by_lua_tpl,
+    ['application/nginx/init/init.lua'] = nginx_init_by_lua_tpl,
+    ['application/nginx/init/config.lua'] = nginx_init_config_tpl,
+    ['application/nginx/sh_dict.lua'] = nginx_share_dict_tpl,
     ['config/errors.lua'] = errors_conf,
     ['config/nginx.conf'] = nginx_config_tpl,
     ['config/nginx.lua'] = nginx_conf,

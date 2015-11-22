@@ -43,7 +43,7 @@ function Vanilla.nginx_conf_content()
             nginx_conf_template = string.gsub(nginx_conf_template, '{{' .. directive .. '}}', '#' .. directive)
         end
     end
-    -- pp(nginx_conf_template)
+    -- ppl(nginx_conf_template)
     -- os.exit()
     return nginx_conf_template
 end
