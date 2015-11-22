@@ -129,8 +129,9 @@ return IndexController
 * 整合、封装了一系列Web开发常用的工具集、类库（cookie、应用防火墙等）
 * 功能使用方便易于扩展
 
-##群组织
-![Vanilla-OpenResty开发公众号](vanilla_openresty.png)
+##社区组织
+#####*QQ群&&微信公众号*
 ![Vanilla-OpenResty开发QQ群](vanilla_QQ.png)
+![Vanilla-OpenResty开发公众号](vanilla_openresty.png)
 
 [![QQ](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=673157ee0f0207ce2fb305d15999225c5aa967e88913dfd651a8cf59e18fd459)
