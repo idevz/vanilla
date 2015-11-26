@@ -1,6 +1,3 @@
--- dep
-local json = require 'cjson'
-
 -- perf
 local error = error
 local pairs = pairs
