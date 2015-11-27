@@ -20,7 +20,6 @@ function Dispatcher:new(application)
     local instance = {
         application = application,
         plugins = {},
-        enable_view = true,
         controller_prefix = 'controllers.',
         error_controller = 'error',
         error_action = 'error'
@@ -60,8 +59,15 @@ function Dispatcher:_runPlugins(hook)
     end
 end
 
+function Dispatcher:getRouter()
+    return tostring(self.router)
+end
+
+function Dispatcher:setRouter(router)
+    self.router = router
+end
+
 function Dispatcher:_router()
-    self.router = require('vanilla.v.routes.simple'):new(self.request)
     local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
     if ok and controller_name_or_error then
         self.request.controller_name = controller_name_or_error
@@ -84,7 +90,7 @@ function Dispatcher:dispatch()
             if matched_controller[self.request.action_name] == nil then
                 error({ code = 102, msg = {NoAction = self.request.action_name}})
             end
-            if self.enable_view == true then self:initView() end
+            self:initView()
             return matched_controller[self.request.action_name](matched_controller)
         end)
     self:_runPlugins('postDispatch')
@@ -129,10 +135,6 @@ function Dispatcher:getApplication()
 	return self.application
 end
 
-function Dispatcher:getRouter()
-    return tostring(self.router)
-end
-
 function Dispatcher:setView(view)
 	self.view = view
 end
@@ -156,10 +158,6 @@ function Dispatcher:setErrorHandler(err_handler)
         return true
     end
     return false
-end
-
-function Dispatcher:enableView(enable_view)
-    if enable_view ~= nil then self.enable_view = enable_view end
 end
 
 return Dispatcher
