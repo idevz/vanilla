@@ -1,6 +1,7 @@
 -- vanilla
 local Controller = require 'vanilla.v.controller'
 local Request = require 'vanilla.v.request'
+local Router = require 'vanilla.v.router'
 local Response = require 'vanilla.v.response'
 local View = require 'vanilla.v.views.rtpl'
 local Error = require 'vanilla.v.error'
@@ -30,6 +31,7 @@ end
 
 function Dispatcher:_init(application)
 	self.request = Request:new()
+    self.router = Router:new(self.request)
 	self.response = Response:new()
     self.controller = Controller:new(self.request, self.response, application.config)
     self.view = application:lpcall(function() return View:new(application.config.view) end)
@@ -60,15 +62,11 @@ function Dispatcher:_runPlugins(hook)
 end
 
 function Dispatcher:getRouter()
-    return tostring(self.router)
+    return self.router
 end
 
-function Dispatcher:setRouter(router)
-    self.router = router
-end
-
-function Dispatcher:_router()
-    local ok, controller_name_or_error, action= pcall(function() return self.router:match() end)
+function Dispatcher:_route()
+    local ok, controller_name_or_error, action= pcall(function() return self.router:route() end)
     if ok and controller_name_or_error then
         self.request.controller_name = controller_name_or_error
         self.request.action_name = action
@@ -80,7 +78,7 @@ end
 
 function Dispatcher:dispatch()
     self:_runPlugins('routerStartup')
-	self:_router()
+	self:_route()
     self:_runPlugins('routerShutdown')
     self:_runPlugins('dispatchLoopStartup')
     self:_runPlugins('preDispatch')
