@@ -151,27 +151,69 @@ end
 return UserService
 ]]
 
+local admin_plugin_tpl = [[
+local AdminPlugin = require('vanilla.v.plugin'):new()
+
+function AdminPlugin:routerStartup(request, response)
+    pp('<pre>')
+    if request.method == 'GET' then
+        pp('-----------' .. pps(request.headers) .. '----------')
+    else
+        pp(request.headers)
+    end
+end
+
+function AdminPlugin:routerShutdown(request, response)
+end
+
+function AdminPlugin:dispatchLoopStartup(request, response)
+end
+
+function AdminPlugin:preDispatch(request, response)
+end
+
+function AdminPlugin:postDispatch(request, response)
+end
+
+function AdminPlugin:dispatchLoopShutdown(request, response)
+end
+
+return AdminPlugin
+]]
+
 
 local bootstrap = [[
 local Bootstrap = require('vanilla.v.bootstrap'):new(dispatcher)
+
+function Bootstrap:initWaf()
+    require 'vanilla.sys.waf.acc'
+end
 
 function Bootstrap:initErrorHandle()
     self.dispatcher:setErrorHandler({controller = 'error', action = 'error'})
 end
 
 function Bootstrap:initRoute()
-    local router = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
-    self.dispatcher.router = router
+    local router = self.dispatcher:getRouter()
+    local simple_route = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
+    router:addRoute(simple_route, true)
 end
 
 function Bootstrap:initView()
 end
 
+function Bootstrap:initPlugin()
+    local admin_plugin = require('plugins.admin'):new()
+    self.dispatcher:registerPlugin(admin_plugin);
+end
+
 function Bootstrap:boot_list()
     return {
+        Bootstrap.initWaf,
         Bootstrap.initErrorHandle,
         Bootstrap.initRoute,
-        Bootstrap.initView
+        Bootstrap.initView,
+        Bootstrap.initPlugin,
     }
 end
 
@@ -487,7 +529,7 @@ VaApplication.files = {
     ['application/library/.gitkeep'] = "",
     ['application/models/dao/table.lua'] = dao,
     ['application/models/service/user.lua'] = service,
-    ['application/plugins/.gitkeep'] = "",
+    ['application/plugins/admin.lua'] = admin_plugin_tpl,
     ['application/views/index/index.html'] = index_tpl,
     ['application/views/error/error.html'] = error_tpl,
     ['application/bootstrap.lua'] = bootstrap,
