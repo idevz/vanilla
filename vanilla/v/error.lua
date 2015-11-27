@@ -18,6 +18,8 @@ local function init_errors()
     errors[101] = { status = 500, message = "DisPatcher Err: Request init Error." }
     errors[102] = { status = 404, message = "DisPatcher Err: Action didn't defined." }
     errors[103] = { status = 500, message = "Controller Err." }
+    errors[201] = { status = 500, message = "Routing Err: Empty Routes set." }
+    errors[202] = { status = 404, message = "Routing Err: No Routes Match." }
 
     return errors
 end
