@@ -14,6 +14,8 @@ function Request:new()
 
     local instance = {
         uri = ngx.var.uri,
+        req_uri = ngx.var.request_uri,
+        req_args = ngx.var.args,
         params = params,
         method = ngx.req.get_method(),
         headers = ngx.req.get_headers(),

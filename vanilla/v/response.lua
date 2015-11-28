@@ -48,10 +48,23 @@ end
 function Response:response()
     local body = {self.append_body, self.body, self.prepend_body}
     ngx.print(body)
+    return true
 end
 
 function Response:setBody(body)
     if body ~= nil then self.body = body end
+end
+
+function Response:setStatus(status)
+    if status ~= nil then self.status = status end
+end
+
+function Response:setHeaders(headers)
+    if headers ~=nil then
+        for header,value in pairs(headers) do
+            ngx.header[header] = value
+        end
+    end
 end
 
 function Response:setHeader(key, value)

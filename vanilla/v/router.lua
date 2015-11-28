@@ -22,6 +22,12 @@ function Router:addRoute(route, only_one)
     end
 end
 
+function Router:removeRoute(route_name)
+    for i,route in ipairs(self.routes) do
+        if (tostring(route) == route_name) then self.routes[i] = nil end
+    end
+end
+
 function Router:getRoutes()
     return self.routes
 end
