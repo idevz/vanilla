@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 local V = require 'vanilla.sys.config'
 
-local help_description = [[Vanilla v]] .. V.version .. [[, An Openresty Web Framework For PHPER.
+local help_description = [[Vanilla v]] .. V.version .. [[, A MVC web framework for Lua powered by OpenResty.
 
 Usage: vanilla COMMAND [ARGS] [OPTIONS]
 
