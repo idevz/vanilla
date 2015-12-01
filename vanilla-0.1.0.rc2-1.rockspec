@@ -71,6 +71,9 @@ build = {
       ["vanilla.v.views.rtpl"] = "vanilla/v/views/rtpl.lua"
    },
    install ={
-      bin ={ "bin/vanilla" }
+      bin ={
+      "bin/vanilla",
+      "bin/vanilla-console"
+      }
    },
 }

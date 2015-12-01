@@ -1,0 +1,3 @@
+#!/usr/bin/env lua
+local console = require('vanilla.sys.console')
+console.start()
