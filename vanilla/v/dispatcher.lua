@@ -89,7 +89,11 @@ function Dispatcher:dispatch()
                 error({ code = 102, msg = {NoAction = self.request.action_name}})
             end
             self:initView()
-            return matched_controller[self.request.action_name](matched_controller)
+            local body = matched_controller[self.request.action_name](matched_controller)
+            if body ~= nil then return body
+            else
+                error({ code = 104, msg = {Exec_Err = self.request.controller_name .. '/' .. self.request.action_name}})
+            end
         end)
     self:_runPlugins('postDispatch')
     self.response:response()

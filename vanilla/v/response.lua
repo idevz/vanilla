@@ -46,8 +46,8 @@ function Response:prependBody(prepend_body)
 end
 
 function Response:response()
-    local body = {self.append_body, self.body, self.prepend_body}
-    ngx.print(body)
+    local body = {[1]=self.append_body, [2]=self.body, [3]=self.prepend_body}
+    ngx.print(table.concat( body, ""))
     return true
 end
 
