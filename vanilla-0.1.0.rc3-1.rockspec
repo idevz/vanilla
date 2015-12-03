@@ -1,5 +1,5 @@
 package = "vanilla"
-version = "0.1.0.rc2-1"
+version = "0.1.0.rc3-1"
 
 source ={
     url ="git://github.com/idevz/vanilla.git"
@@ -44,6 +44,7 @@ build = {
       ["vanilla.spec.runners.response"] = "vanilla/spec/runners/response.lua",
       ["vanilla.sys.application"] = "vanilla/sys/application.lua",
       ["vanilla.sys.config"] = "vanilla/sys/config.lua",
+      ["vanilla.sys.console"] = "vanilla/sys/console.lua",
       ["vanilla.sys.nginx.config"] = "vanilla/sys/nginx/config.lua",
       ["vanilla.sys.nginx.directive"] = "vanilla/sys/nginx/directive.lua",
       ["vanilla.sys.nginx.handle"] = "vanilla/sys/nginx/handle.lua",
