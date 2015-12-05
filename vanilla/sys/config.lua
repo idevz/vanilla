@@ -19,18 +19,18 @@ Sysconf.app_dirs = {
 -- ngx.say(Sysconf.env)
 
 if Sysconf.env == 'development' then
-    function pps( ... )
+    function sprint_r( ... )
         local helpers = require 'vanilla.v.libs.utils'
-        return helpers.pps(...)
+        return helpers.sprint_r(...)
     end
 
-    function ppl( ... )
-        local rs = pps(...)
+    function lprint_r( ... )
+        local rs = sprint_r(...)
         print(rs)
     end
 
-    function pp( ... )
-        local rs = pps(...)
+    function print_r( ... )
+        local rs = sprint_r(...)
         ngx.say(rs)
     end
 

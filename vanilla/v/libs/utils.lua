@@ -1,6 +1,6 @@
 -- dep
 local lfs = require 'lfs'
-local prettyprint = require 'pl.pretty'
+local prettyprint = require 'vanilla.v.libs.vendor.pl.pretty'
 
 -- perf
 local assert = assert
@@ -122,19 +122,8 @@ function Utils.reverse_table(t)
     return reversed
 end
 
--- pretty print to file
-function Utils.pp_to_file(o, file_path)
-    prettyprint.dump(o, file_path)
-end
-
---https://github.com/stevedonovan/Penlight/blob/master/lua/pl/pretty.lua
-function Utils.pps(o)
+function Utils.sprint_r(o)
     return prettyprint.write(o)
-end
-
--- pretty print
-function Utils.pp(o)
-    prettyprint.dump(o)
 end
 
 -- check if folder exists
