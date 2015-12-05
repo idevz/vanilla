@@ -22,14 +22,12 @@ dependencies ={
     "lua=5.1",
     "ansicolors=1.0.2-3",
     "busted=1.11.1",
-    "lua-cjson=2.1.0-1",
     "luafilesystem=1.6.2-2",
     "luaposix = 33.3.1-1",
     "penlight=1.3.1-1",
     "lua-resty-template=1.5-1",
     "lua-resty-cookie=0.1.0-1",
     "lua-resty-session=2.2-1",
-    "lua-cmsgpack=0.4.0-0",
     "lua-resty-http=0.06-0"
 }
 

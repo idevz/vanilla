@@ -131,7 +131,8 @@ return IndexController
 
 ##社区组织
 #####*QQ群&&微信公众号*
-![Vanilla-OpenResty开发QQ群](vanilla_QQ.png)
-![Vanilla-OpenResty开发公众号](vanilla_openresty.png)
+Openresty/Vanilla开发QQ群：205773855（专题讨论Vanilla相关话题）
+Openresty 技术交流QQ群：34782325（讨论OpenResty和各种高级技术）
+Vanilla开发微信公众号(Vanilla-OpenResty)
 
 [![QQ](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=673157ee0f0207ce2fb305d15999225c5aa967e88913dfd651a8cf59e18fd459)
