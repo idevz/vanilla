@@ -20,10 +20,7 @@ luarocks install vanilla
 
 dependencies ={
     "lua=5.1",
-    "busted=1.11.1",
     "luafilesystem=1.6.2-2",
-    "luaposix = 33.3.1-1",
-    "penlight=1.3.1-1",
     "lua-resty-template=1.5-1",
     "lua-resty-cookie=0.1.0-1",
     "lua-resty-session=2.2-1",
