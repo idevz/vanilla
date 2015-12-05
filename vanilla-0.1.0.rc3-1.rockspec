@@ -20,7 +20,6 @@ luarocks install vanilla
 
 dependencies ={
     "lua=5.1",
-    "ansicolors=1.0.2-3",
     "busted=1.11.1",
     "luafilesystem=1.6.2-2",
     "luaposix = 33.3.1-1",

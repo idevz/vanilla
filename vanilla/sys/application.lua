@@ -1,5 +1,5 @@
 -- dep
-local ansicolors = require 'ansicolors'
+local ansicolors = require 'vanilla.v.libs.ansicolors'
 
 -- vanilla
 local va_conf = require 'vanilla.sys.config'
@@ -554,7 +554,7 @@ VaApplication.files = {
 }
 
 function VaApplication.new(name)
-    print(ansicolors("Creating app %{green}" .. name .. "%{reset}..."))
+    print(ansicolors("Creating app %{blue}" .. name .. "%{reset}..."))
 
     VaApplication.files['config/application.lua'] = string.gsub(application_conf, "{{APP_NAME}}", name)
     VaApplication.create_files(name)
@@ -570,7 +570,7 @@ function VaApplication.create_files(parent)
         local fw = io.open(full_file_path, "w")
         fw:write(file_content)
         fw:close()
-        print(ansicolors("  %{green}created file%{reset} " .. full_file_path))
+        print(ansicolors("  %{blue}created file%{reset} " .. full_file_path))
     end
 end
 

@@ -1,5 +1,5 @@
 -- dep
-local ansicolors = require 'ansicolors'
+local ansicolors = require 'vanilla.v.libs.ansicolors'
 
 -- perf
 local error = error
@@ -69,7 +69,7 @@ function Vanilla.start(env)
 
     if result == 0 then
         if va_conf.env ~= 'test' then
-            print(ansicolors("Vanilla app in %{cyan}" .. va_conf.env .. "%{reset} was succesfully started on port " .. ngx_config.PORT .. "."))
+            print(ansicolors("Vanilla app in %{green}" .. va_conf.env .. "%{reset} was succesfully started on port " .. ngx_config.PORT .. "."))
         end
     else
         print(ansicolors("%{red}ERROR:%{reset} Could not start Vanilla app on port " .. ngx_config.PORT .. " (is it running already?)."))
@@ -85,7 +85,7 @@ function Vanilla.stop(env)
 
     if va_conf.env ~= 'test' then
         if result == 0 then
-            print(ansicolors("Vanilla app in %{cyan}" .. va_conf.env .. "%{reset} was succesfully stopped."))
+            print(ansicolors("Vanilla app in %{green}" .. va_conf.env .. "%{reset} was succesfully stopped."))
         else
             print(ansicolors("%{red}ERROR:%{reset} Could not stop Vanilla app (are you sure it is running?)."))
         end
