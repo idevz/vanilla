@@ -1,7 +1,3 @@
--- dep
-local lfs = require 'lfs'
-local prettyprint = require 'vanilla.v.libs.vendor.pl.pretty'
-
 -- perf
 local assert = assert
 local iopen = io.open
@@ -13,6 +9,8 @@ local sgsub = string.gsub
 local smatch = string.match
 local ssub = string.sub
 local type = type
+local append = table.insert
+local concat = table.concat
 local function tappend(t, v) t[#t+1] = v end
 
 local Utils = {}
@@ -54,11 +52,6 @@ function Utils.read_file(file_path)
     return content
 end
 
--- check if folder exists
-function Utils.folder_exists(folder_path)
-    return lfs.attributes(sgsub(folder_path, "\\$",""), "mode") == "directory"
-end
-
 -- split function
 function Utils.split(str, pat)
     local t = {}
@@ -87,23 +80,6 @@ function Utils.split_path(str)
    return Utils.split(str, '[\\/]+')
 end
 
--- recursively make directories
-function Utils.mkdirs(file_path)
-    -- get dir path and parts
-    local dir_path = smatch(file_path, "(.*)/.*")
-    local parts = Utils.split_path(dir_path)
-    -- loop
-    local current_dir = nil
-    for i = 1, #parts do
-        if current_dir == nil then
-            current_dir = parts[i]
-        else
-            current_dir = current_dir .. '/' .. parts[i]
-        end
-        lfs.mkdir(current_dir)
-    end
-end
-
 -- value in table?
 function Utils.included_in_table(t, value)
     for i = 1, #t do
@@ -122,13 +98,197 @@ function Utils.reverse_table(t)
     return reversed
 end
 
-function Utils.sprint_r(o)
-    return prettyprint.write(o)
+--- get the Lua keywords as a set-like table.
+-- So `res["and"]` etc would be `true`.
+-- @return a table
+function Utils.get_keywords ()
+    if not lua_keyword then
+        lua_keyword = {
+            ["and"] = true, ["break"] = true,  ["do"] = true,
+            ["else"] = true, ["elseif"] = true, ["end"] = true,
+            ["false"] = true, ["for"] = true, ["function"] = true,
+            ["if"] = true, ["in"] = true,  ["local"] = true, ["nil"] = true,
+            ["not"] = true, ["or"] = true, ["repeat"] = true,
+            ["return"] = true, ["then"] = true, ["true"] = true,
+            ["until"] = true,  ["while"] = true
+        }
+    end
+    return lua_keyword
 end
 
--- check if folder exists
-function folder_exists(folder_path)
-    return lfs.attributes(sgsub(folder_path, "\\$",""), "mode") == "directory"
+--- Utility function that finds any patterns that match a long string's an open or close.
+-- Note that having this function use the least number of equal signs that is possible is a harder algorithm to come up with.
+-- Right now, it simply returns the greatest number of them found.
+-- @param s The string
+-- @return 'nil' if not found. If found, the maximum number of equal signs found within all matches.
+local function has_lquote(s)
+    local lstring_pat = '([%[%]])(=*)%1'
+    local start, finish, bracket, equals, next_equals = nil, 0, nil, nil, nil
+    -- print("checking lquote for", s)
+    repeat
+        start, finish, bracket, next_equals =  s:find(lstring_pat, finish + 1)
+        if start then
+            -- print("found start", start, finish, bracket, next_equals)
+            --length of captured =. Ex: [==[ is 2, ]] is 0.
+            next_equals = #next_equals 
+            equals = next_equals >= (equals or 0) and next_equals or equals
+        end
+    until not start
+    --next_equals will be nil if there was no match.
+    return   equals 
+end
+
+--- Quote the given string and preserve any control or escape characters, such that reloading the string in Lua returns the same result.
+-- @param s The string to be quoted.
+-- @return The quoted string.
+function Utils.quote_string(s)
+    --find out if there are any embedded long-quote
+    --sequences that may cause issues.
+    --This is important when strings are embedded within strings, like when serializing.
+    local equal_signs = has_lquote(s) 
+    if  s:find("\n") or equal_signs then 
+        -- print("going with long string:", s)
+        equal_signs =  ("="):rep((equal_signs or -1) + 1)
+        --long strings strip out leading \n. We want to retain that, when quoting.
+        if s:find("^\n") then s = "\n" .. s end
+        --if there is an embedded sequence that matches a long quote, then
+        --find the one with the maximum number of = signs and add one to that number
+        local lbracket, rbracket =  
+            "[" .. equal_signs .. "[",  
+            "]" .. equal_signs .. "]"
+        s = lbracket .. s .. rbracket
+    else
+        --Escape funny stuff.
+        s = ("%q"):format(s)
+    end
+    return s
+end
+
+local function quote (s)
+    if type(s) == 'table' then
+        return Utils.write(s,'')
+    else
+        --AAS
+        return Utils.quote_string(s)-- ('%q'):format(tostring(s))
+    end
+end
+
+local function is_identifier (s)
+    return type(s) == 'string' and s:find('^[%a_][%w_]*$') and not keywords[s]
+end
+
+--- Create a string representation of a Lua table.
+--  This function never fails, but may complain by returning an
+--  extra value. Normally puts out one item per line, using
+--  the provided indent; set the second parameter to '' if
+--  you want output on one line.
+--  @tab tbl Table to serialize to a string.
+--  @string space (optional) The indent to use.
+--  Defaults to two spaces; make it the empty string for no indentation
+--  @bool not_clever (optional) Use for plain output, e.g {['key']=1}.
+--  Defaults to false.
+--  @return a string
+--  @return a possible error message
+function Utils.write (tbl,space,not_clever)
+    if type(tbl) ~= 'table' then
+        local res = tostring(tbl)
+        if type(tbl) == 'string' then return quote(tbl) end
+        return res, 'not a table'
+    end
+    if not keywords then
+        keywords = Utils.get_keywords()
+    end
+    local set = ' = '
+    if space == '' then set = '=' end
+    space = space or '  '
+    local lines = {}
+    local line = ''
+    local tables = {}
+
+
+    local function put(s)
+        if #s > 0 then
+            line = line..s
+        end
+    end
+
+    local function putln (s)
+        if #line > 0 then
+            line = line..s
+            append(lines,line)
+            line = ''
+        else
+            append(lines,s)
+        end
+    end
+
+    local function eat_last_comma ()
+        local n,lastch = #lines
+        local lastch = lines[n]:sub(-1,-1)
+        if lastch == ',' then
+            lines[n] = lines[n]:sub(1,-2)
+        end
+    end
+
+    local writeit
+    writeit = function (t,oldindent,indent)
+        local tp = type(t)
+        if tp ~= 'string' and  tp ~= 'table' then
+            putln(quote_if_necessary(tostring(t))..',')
+        elseif tp == 'string' then
+            -- if t:find('\n') then
+            --     putln('[[\n'..t..']],')
+            -- else
+            --     putln(quote(t)..',')
+            -- end
+            --AAS
+            putln(Utils.quote_string(t) ..",")
+        elseif tp == 'table' then
+            if tables[t] then
+                putln('<cycle>,')
+                return
+            end
+            tables[t] = true
+            local newindent = indent..space
+            putln('{')
+            local used = {}
+            if not not_clever then
+                for i,val in ipairs(t) do
+                    put(indent)
+                    writeit(val,indent,newindent)
+                    used[i] = true
+                end
+            end
+            for key,val in pairs(t) do
+                local numkey = type(key) == 'number'
+                if not_clever then
+                    key = tostring(key)
+                    put(indent..index(numkey,key)..set)
+                    writeit(val,indent,newindent)
+                else
+                    if not numkey or not used[key] then -- non-array indices
+                        if numkey or not is_identifier(key) then
+                            key = index(numkey,key)
+                        end
+                        put(indent..key..set)
+                        writeit(val,indent,newindent)
+                    end
+                end
+            end
+            tables[t] = nil
+            eat_last_comma()
+            putln(oldindent..'},')
+        else
+            putln(tostring(t)..',')
+        end
+    end
+    writeit(tbl,'',space)
+    eat_last_comma()
+    return concat(lines,#space > 0 and '\n' or '')
+end
+
+function Utils.sprint_r(o)
+    return Utils.write(o)
 end
 
 -- get the lua module name
@@ -151,27 +311,13 @@ function Utils.shallowcopy(orig)
     return copy
 end
 
-function Utils.module_names_in_path(path)
-    local modules = {}
-
-    if Utils.folder_exists(path) then
-        for file_name in lfs.dir(path) do
-            if file_name ~= "." and file_name ~= ".." then
-                local file_path = path .. '/' .. file_name
-                local attr = lfs.attributes(file_path)
-                assert(type(attr) == "table")
-                if attr.mode ~= "directory" then
-                    local module_name = Utils.get_lua_module_name(file_path)
-                    if module_name ~= nil then
-                        -- add to modules' list
-                        tappend(modules, module_name)
-                    end
-                end
-            end
-        end
+function Utils.dirname(str)
+    if str:match(".-/.-") then
+        local name = string.gsub(str, "(.*/)(.*)", "%1")
+        return name
+    else
+        return ''
     end
-
-    return modules
 end
 
 return Utils

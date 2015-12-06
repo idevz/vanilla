@@ -3,7 +3,7 @@ local ansicolors = require 'vanilla.v.libs.ansicolors'
 
 -- vanilla
 local va_conf = require 'vanilla.sys.config'
-local helpers = require 'vanilla.v.libs.utils'
+local utils = require 'vanilla.v.libs.utils'
 
 local gitignore = [[
 # Vanilla
@@ -555,18 +555,18 @@ VaApplication.files = {
 
 function VaApplication.new(name)
     print(ansicolors("Creating app %{blue}" .. name .. "%{reset}..."))
-
+    
     VaApplication.files['config/application.lua'] = string.gsub(application_conf, "{{APP_NAME}}", name)
     VaApplication.create_files(name)
 end
 
 function VaApplication.create_files(parent)
     for file_path, file_content in pairs(VaApplication.files) do
-        -- ensure containing directory exists
-        local full_file_path = parent .. "/" .. file_path
-        helpers.mkdirs(full_file_path)
 
-        -- create file
+        local full_file_path = parent .. "/" .. file_path
+        local full_file_dirname = utils.dirname(full_file_path)
+        os.execute("mkdir -p " .. full_file_dirname .. " > /dev/null")
+
         local fw = io.open(full_file_path, "w")
         fw:write(file_content)
         fw:close()

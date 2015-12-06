@@ -19,23 +19,12 @@ luarocks install vanilla
 }
 
 dependencies ={
-    "lua=5.1",
-    "luafilesystem=1.6.2-2",
-    "lua-resty-template=1.5-1",
-    "lua-resty-cookie=0.1.0-1",
-    "lua-resty-session=2.2-1",
-    "lua-resty-http=0.06-0"
+    "lua=5.1"
 }
 
 build = {
    type = "builtin",
    modules = {
-      ["spec.helper"] = "spec/helper.lua",
-      ["spec.v.dispatcher_spec"] = "spec/v/dispatcher_spec.lua",
-      ["vanilla.spec"] = "vanilla/spec/init.lua",
-      ["vanilla.spec.runner"] = "vanilla/spec/runner.lua",
-      ["vanilla.spec.runners.integration"] = "vanilla/spec/runners/integration.lua",
-      ["vanilla.spec.runners.response"] = "vanilla/spec/runners/response.lua",
       ["vanilla.sys.application"] = "vanilla/sys/application.lua",
       ["vanilla.sys.config"] = "vanilla/sys/config.lua",
       ["vanilla.sys.console"] = "vanilla/sys/console.lua",
@@ -50,6 +39,7 @@ build = {
       ["vanilla.v.controller"] = "vanilla/v/controller.lua",
       ["vanilla.v.dispatcher"] = "vanilla/v/dispatcher.lua",
       ["vanilla.v.error"] = "vanilla/v/error.lua",
+      ["vanilla.v.libs.ansicolors"] = "vanilla/v/libs/ansicolors.lua",
       ["vanilla.v.libs.cookie"] = "vanilla/v/libs/cookie.lua",
       ["vanilla.v.libs.http"] = "vanilla/v/libs/http.lua",
       ["vanilla.v.libs.logs"] = "vanilla/v/libs/logs.lua",
