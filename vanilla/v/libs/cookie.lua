@@ -1,6 +1,6 @@
 -- dep
 -- https://github.com/cloudflare/lua-resty-cookie
-local http_handle = require('resty.cookie').new()
+local http_handle = require('vanilla.v.libs.resty.cookie').new()
 
 -- perf
 local setmetatable = setmetatable

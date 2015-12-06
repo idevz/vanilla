@@ -1,6 +1,6 @@
 -- dep
 -- https://github.com/pintsized/lua-resty-http
-local http_handle = require('resty.http').new()
+local http_handle = require('vanilla.v.libs.resty.http').new()
 
 -- perf
 local setmetatable = setmetatable

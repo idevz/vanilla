@@ -1,6 +1,6 @@
 -- dep
 -- https://github.com/cloudflare/lua-resty-logger-socket
-local http_handle = require('resty.logger-socket').new()
+local http_handle = require('vanilla.v.libs.resty.logger-socket').new()
 
 -- perf
 local setmetatable = setmetatable
