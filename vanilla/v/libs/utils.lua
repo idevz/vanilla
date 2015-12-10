@@ -173,6 +173,24 @@ local function quote (s)
     end
 end
 
+local function quote_if_necessary (v)
+    if not v then return ''
+    else
+        --AAS
+        if v:find ' ' then v = Utils.quote_string(v) end
+    end
+    return v
+end
+
+local function index (numkey,key)
+    --AAS
+    if not numkey then 
+        key = quote(key) 
+         key = key:find("^%[") and (" " .. key .. " ") or key
+    end
+    return '['..key..']'
+end
+
 local function is_identifier (s)
     return type(s) == 'string' and s:find('^[%a_][%w_]*$') and not keywords[s]
 end
