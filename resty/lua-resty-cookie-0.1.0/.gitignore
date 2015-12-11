@@ -1,0 +1,10 @@
+*.swp
+*.swo
+*~
+go
+t/servroot/
+reindex
+*.t_
+tags
+luacov.report.out
+luacov.stats.out

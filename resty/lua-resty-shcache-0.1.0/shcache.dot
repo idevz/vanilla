@@ -1,0 +1,70 @@
+digraph G {
+    compound=true;
+
+    cache_load              [ label = "cache load\n\nshdict:get(key)" ];
+    cache_load_stale        [ label = "cache load stale\n\ndata, flags = shdict:get_stale(key)" ];
+
+    cache_load_locked       [ label = "cache load 2\n\nshdict:get(key)" ];
+
+    cache_save_positive     [ label = "cache save positive\n\nshdict:set(key, data,\npositive_ttl, positive_flag)" ];
+    cache_save_negative     [ label = "cache save negative\n\nshdict:set(key, _EMPTY_,\nnegative_ttl, negative_flag)" ];
+
+    cache_save_actualize    [ label = "cache save actualize\n(only positive gets actualized)\n\nshdict:set(key, stale_data,\nactualize_ttl, stale_flag)" ];
+
+    lock_key                [ label = "lock(key)" ];
+
+    process_hit             [ label = "process cache hit" ];
+
+    { node [ style = filled ];
+        start;
+        ret_data_from_cache     [ label = "return data, from_cache = true" ];
+        ret_nil_from_cache      [ label = "return nil, from_cache = true" ];
+        ret_data_not_cache      [ label = "return data, from_cache = false" ];
+        ret_nil_not_cache      [ label = "return nil, from_cache = false" ];
+    }
+
+    { node [ shape = box, style = filled, color = lightblue ]
+        lookup                  [ label = "external lookup\n(kt / dns / ...)" ];
+        encode_data             [ label = "serialize data" ];
+        decode_data             [ label = "de-serialize data" ];
+    }
+
+    start -> cache_load;
+
+    cache_load  -> lock_key                 [ label = "miss" ];
+    cache_load  -> process_hit              [ label = "hit", style = bold, color = green ];
+
+    # fail at locking
+    lock_key            -> error                    [ label = "fail", style=bold, color=red ];
+    error               -> lookup                   [ label = "still lookup, unlock will fail"];
+
+    # locked (immediate)
+    lock_key            -> lookup                   [ label = "immediate (elapsed == 0)" ];
+
+    lookup              -> cache_load_stale         [ label = "fail", style = bold, color = red ];
+    lookup              -> encode_data -> cache_save_positive      [ label = "succ" ];
+
+    cache_load_stale    -> cache_save_negative      [ label = "miss", style = bold, color = red ];
+    cache_load_stale    -> stale_process            [ label = "hit_stale", style = bold, color = orange ];
+
+    stale_process       -> cache_save_actualize     [ label = "flags == positive_flag", style = bold, color = orange ]
+    stale_process       -> cache_save_negative      [ label = "flags != positive_flag", style = bold, color = red ];
+
+    cache_save_actualize -> unlock -> process_hit   [ label = "hit_stale", style = bold, color = orange ];
+
+    cache_save_negative -> unlock   -> ret_nil_not_cache                [ label = "no_data", style = bold, color = red ];
+
+    cache_save_positive -> unlock -> ret_data_not_cache                [ label = "valid data", style = bold, color = blue];
+
+    # locked (waited)
+    lock_key          -> cache_load_locked          [ label = "locked (elapsed > 0)", style = bold, color = blue ];
+
+    cache_load_locked ->  lookup                    [ label = "miss (weird state)" ];
+    cache_load_locked ->  unlock                    [ label = "hit2", style = bold, color = green ];
+    unlock -> process_hit                           [ label = "hit2", style = bold, color = green ];
+
+    process_hit -> ret_nil_from_cache                    [ label = "data == _EMPTY_ AND\nflags == negative_flag" ];
+
+    process_hit -> decode_data -> ret_data_from_cache                [ label = "valid data" ];
+
+}
