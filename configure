@@ -1,0 +1,301 @@
+#!/usr/bin/env perl
+
+use 5.006;
+use strict;
+use warnings;
+
+use File::Spec;
+use Data::Dumper;
+
+sub shell ($@);
+sub env ($$);
+sub cd ($);
+sub auto_complete ($);
+sub usage ($);
+sub trim ($);
+
+my (@make_cmds, @make_install_cmds);
+
+my $root_dir = `pwd`;
+chomp $root_dir;
+
+my $OS = $^O;
+
+if (-f 'Makefile') {
+    unlink 'Makefile' or die "ERROR: failed to remove existing Makefile: $!\n";
+}
+
+for my $opt (@ARGV) {
+    if ($opt =~ /^--platform=(.*)/) {
+        $OS = $1;
+        undef $opt;
+    }
+}
+
+my ($platform, $on_solaris);
+
+if ($OS =~ /solaris|sunos/i) {
+    $platform = 'solaris';
+    $on_solaris = $platform;
+
+} elsif ($OS eq 'linux') {
+    $platform = $OS;
+
+} elsif ($OS eq 'MSWin32') {
+    die "MS Windows not supported. Abort.\n";
+
+} elsif ($OS =~ /^(?:MacOS|darwin|rhapsody)$/) {
+    $platform = 'macosx';
+
+} elsif ($OS eq 'freebsd') {
+    $platform = $OS;
+
+} elsif ($OS =~ /^(?:openbsd|netbsd|dragonfly)$/) {
+    $platform = 'bsd';
+
+} else {
+    $platform = 'posix';
+}
+
+my $prefix = '/usr/local/zhoujing/vanilla';
+my $openresty_prefix = '/usr/local/openresty';
+my %resty_opts;
+my $cc;
+
+for my $opt (@ARGV) {
+    next unless defined $opt;
+
+    if ($opt =~ /^--prefix=(.*)/) {
+        $prefix = $1;
+
+    } elsif ($opt =~ /^--openresty-path=(.*)/) {
+        $openresty_prefix = $1;
+
+    } elsif ($opt eq '--with-lua_filesystem') {
+        $resty_opts{lua_filesystem} = 1;
+
+    } elsif ($opt =~ /^--with-openresty-luajit-inc-path=(.*)/) {
+        $resty_opts{or_jit_inc_path} = $1;
+
+    } elsif ($opt eq '--without-lua_resty_shcache') {
+        $resty_opts{no_lua_resty_shcache} = 1;
+
+    } elsif ($opt eq '--help') {
+        usage 0;
+
+    } else {
+        die "Invalid option $opt\n";
+    }
+}
+
+my $ngx_prefix = "$openresty_prefix/nginx";
+
+build_resty_opts(\%resty_opts);
+
+my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
+    ." INSTALL=$root_dir/build/install";
+
+push @make_install_cmds, "cd $root_dir/build/vanilla && " .
+    "\$(MAKE) install$vanilla_extra_opts";
+
+# gen_vanilla_bins('vanilla');
+
+cd '..'; # to the root
+#die "pwd: " .. `pwd`;
+# env LIBPQ_LIB => $pg_lib;
+
+gen_makefile();
+
+sub env ($$) {
+    my ($name, $val) = @_;
+    print "export $name='$val'\n";
+    $ENV{$name} = $val;
+}
+
+sub shell ($@) {
+    my ($cmd, $dry_run) = @_;
+
+    print "$cmd\n";
+
+    unless ($dry_run) {
+        system($cmd) == 0 or
+            die "ERROR: failed to run command: ", trim($cmd), "\n";
+    }
+}
+
+sub trim ($) {
+    my $cmd = shift;
+    $cmd =~ s/\n.*/.../s;
+    $cmd;
+}
+
+sub auto_complete ($) {
+    my $name = shift;
+    my @dirs = glob "$name-[0-9]*" or
+        die "No source directory found for $name\n";
+
+    if (@dirs > 1) {
+        die "More than one hits for $name: @dirs\n";
+    }
+
+    return $dirs[0];
+}
+
+sub cd ($) {
+    my $dir = shift;
+    print("cd $dir\n");
+    chdir $dir or die "failed to cd $dir: $!\n";
+}
+
+sub build_resty_opts {
+    my $opts = shift;
+
+    my $make;
+
+    if (-d 'build') {
+        system("rm -rf build") == 0 or
+            die "failed to remove directory build/.\n";
+    }
+
+    if (-e 'build') {
+        die "file or directory \"build\" already exists. please remove it first.\n";
+    }
+    shell "mkdir -p build/vanilla";
+    shell "cp -rp vanilla/ build/vanilla";
+    shell "cp -rp resty/ build";
+    shell "cp -rp lualib/ build";
+
+    cd 'build';
+
+    my $lualib_prefix = "$prefix/lualib";
+
+    if ($opts->{lua_filesystem}) {
+        if (!$opts->{or_jit_inc_path}) {
+            die "luafilesystem need add --with-OpenResty-LuaJit-Inc-Path option.";
+        }
+        my $dir = auto_complete 'luafilesystem';
+        if (!defined $dir) {
+            die "No luafilesystem found";
+        }
+
+        my $lua_inc = $opts->{or_jit_inc_path};
+
+        my $lib_option;
+        if ($platform eq 'macosx') {
+            $lib_option = "-bundle -undefined dynamic_lookup";
+        } else {
+            $lib_option = "-shared";
+        }
+
+        my $extra_opts = " DESTDIR=\$(DESTDIR) LUA_INC=$lua_inc LUA_LIBDIR=$lualib_prefix " .
+            "LUA_CMODULE_DIR=$lualib_prefix LUA_MODULE_DIR=$lualib_prefix" . 
+            " LIB_OPTION='$lib_option'";
+
+        if (defined $cc) {
+            $extra_opts .= " CC='$cc'";
+        } else {
+            $extra_opts .= " CC=cc";
+        }
+
+        push @make_cmds, "cd $root_dir/build/$dir && ".
+            "\$(MAKE)$extra_opts";
+
+        push @make_install_cmds, "cd $root_dir/build/$dir && " .
+            "\$(MAKE) install$extra_opts";
+    }
+
+    for my $key (qw(cookie http logger-socket session shcache template))
+    {
+        unless ($opts->{"no_lua_resty_$key"}) {
+            (my $key2 = $key) =~ s/_/-/g;
+            my $name = "lua-resty-$key2";
+            my $dir = auto_complete $name;
+            if (!defined $dir) {
+                die "No $name found";
+            }
+
+            my $extra_opts = " DESTDIR=\$(DESTDIR) LUA_LIB_DIR=$prefix"
+                ." INSTALL=$root_dir/build/install";
+
+            push @make_install_cmds, "cd $root_dir/build/$dir && " .
+                "\$(MAKE) install$extra_opts";
+        }
+    }
+}
+
+sub usage ($) {
+    my $retval = shift;
+    my $msg = <<'_EOC_';
+  --help                             this message
+
+  --prefix=PATH                      set the installation prefix (default to /usr/local/vanilla).
+  --platform=(darwin, linux...)      set platform
+
+  --openresty-path=PATH              set openresty install pathname
+
+  --without-lua_resty_shcache
+
+  --with-no-pool-patch               enable the no-pool patch for debugging memory issues.
+
+  -jN                                pass -jN option to make while building the bundled
+                                     Lua 5.1 interpreter or LuaJIT 2.1.
+
+_EOC_
+
+    warn $msg;
+    exit $retval;
+}
+
+sub gen_vanilla_bins {
+    # my $bin_name = shift
+    my $bin_name = 'vanilla';
+    open my $out, ">$bin_name" or
+        die "Cannot open $bin_name for writing: $!\n";
+
+    my $cmd_str = <<'_EOC_';
+#!/bin/sh
+
+exec '/usr/local/lua-5.1.5/bin/lua' -e 'package.path="/Users/zhoujing/.luarocks/share/lua/5.1/?.lua;/Users/zhoujing/.luarocks/share/lua/5.1/?/init.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?/init.lua;"..package.path; package.cpath="/Users/zhoujing/.luarocks/lib/lua/5.1/?.so;/usr/local/luarocks-2.2.2/lib/lua/5.1/?.so;"..package.cpath' -e 'local k,l,_=pcall(require,"luarocks.loader") _=k and l.add_context("vanilla","0.1.rc1-1")' '/Users/zj-git/vanilla/bin/vanilla-console' "$@"
+_EOC_
+
+    print $out $cmd_str;
+    close $out;
+
+}
+
+sub gen_makefile {
+    open my $out, ">Makefile" or
+        die "Cannot open Makefile for writing: $!\n";
+
+    print $out ".PHONY: all install clean\n\n";
+
+    print $out "all:\n\t" . join("\n\t", @make_cmds) . "\n\n";
+
+    print $out "install: all\n\t" . join("\n\t", @make_install_cmds) . "\n\n";
+
+    print $out "clean:\n\trm -rf build\n";
+
+    close $out;
+}
+
+# check if we can run some command
+sub can_run {
+    my ($cmd) = @_;
+
+    #warn "can run: @_\n";
+    my $_cmd = $cmd;
+    return $_cmd if -x $_cmd;
+
+    return undef if $_cmd =~ m{[\\/]};
+
+    # FIXME: this is a hack; MSWin32 is not supported anyway
+    my $path_sep = ':';
+
+    for my $dir ((split /$path_sep/, $ENV{PATH}), '.') {
+        next if $dir eq '';
+        my $abs = File::Spec->catfile($dir, $_[0]);
+        return $abs if -x $abs;
+    }
+
+    return undef;
+}
