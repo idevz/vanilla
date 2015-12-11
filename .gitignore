@@ -5,7 +5,8 @@ logs
 proxy_temp
 tmp
 uwsgi_temp
-good
+build
+Makefile
 
 # vim
 .*.sw[a-z]

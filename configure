@@ -77,6 +77,9 @@ for my $opt (@ARGV) {
     } elsif ($opt =~ /^--with-openresty-luajit-inc-path=(.*)/) {
         $resty_opts{or_jit_inc_path} = $1;
 
+    } elsif ($opt =~ /^--with-openresty-luajit-bin=(.*)/) {
+        $resty_opts{or_jit_bin} = $1;
+
     } elsif ($opt eq '--without-lua_resty_shcache') {
         $resty_opts{no_lua_resty_shcache} = 1;
 
@@ -88,7 +91,12 @@ for my $opt (@ARGV) {
     }
 }
 
-my $ngx_prefix = "$openresty_prefix/nginx";
+my $lua_jit_bin = "$openresty_prefix/luajit/bin/luajit-2.1.0-beta1";
+my $or_lib_path = "$openresty_prefix/lualib";
+
+if ($resty_opts{or_jit_bin}) {
+    $lua_jit_bin = $resty_opts{or_jit_bin};
+}
 
 build_resty_opts(\%resty_opts);
 
@@ -98,7 +106,7 @@ my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
 push @make_install_cmds, "cd $root_dir/build/vanilla && " .
     "\$(MAKE) install$vanilla_extra_opts";
 
-# gen_vanilla_bins('vanilla');
+gen_vanilla_bins();
 
 cd '..'; # to the root
 #die "pwd: " .. `pwd`;
@@ -247,20 +255,20 @@ _EOC_
 }
 
 sub gen_vanilla_bins {
-    # my $bin_name = shift
-    my $bin_name = 'vanilla';
-    open my $out, ">$bin_name" or
-        die "Cannot open $bin_name for writing: $!\n";
+    foreach my $bin_name (qw(vanilla vanilla-console)) {
 
-    my $cmd_str = <<'_EOC_';
+        open my $out, ">vanilla/$bin_name" or
+            die "Cannot open $bin_name for writing: $!\n";
+
+        my $cmd_str = <<"_EOC_";
 #!/bin/sh
-
-exec '/usr/local/lua-5.1.5/bin/lua' -e 'package.path="/Users/zhoujing/.luarocks/share/lua/5.1/?.lua;/Users/zhoujing/.luarocks/share/lua/5.1/?/init.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?.lua;/usr/local/luarocks-2.2.2/share/lua/5.1/?/init.lua;"..package.path; package.cpath="/Users/zhoujing/.luarocks/lib/lua/5.1/?.so;/usr/local/luarocks-2.2.2/lib/lua/5.1/?.so;"..package.cpath' -e 'local k,l,_=pcall(require,"luarocks.loader") _=k and l.add_context("vanilla","0.1.rc1-1")' '/Users/zj-git/vanilla/bin/vanilla-console' "$@"
+exec '$lua_jit_bin' -e 'package.path="$or_lib_path/?.lua;$or_lib_path/?/init.lua;$prefix/?.lua;$prefix/?/init.lua;"..package.path; package.cpath="$or_lib_path/?.so;$prefix/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
 _EOC_
 
-    print $out $cmd_str;
-    close $out;
-
+        print $out $cmd_str;
+        close $out;
+        chmod 0755, "vanilla/$bin_name";
+    }
 }
 
 sub gen_makefile {

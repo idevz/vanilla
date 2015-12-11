@@ -11,8 +11,10 @@ all: ;
 install: all
 	$(INSTALL) -d $(DESTDIR)/$(VANILLA_LIB_DIR)/resty/
 	$(INSTALL) ./bin $(DESTDIR)/$(VANILLA_LIB_DIR)/bin
-	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/v
-	$(INSTALL) ./sys $(DESTDIR)/$(VANILLA_LIB_DIR)/sys
+	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla/v
+	$(INSTALL) ./sys $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla/sys
+	$(INSTALL) ./vanilla /usr/local/bin/vanilla
+	$(INSTALL) ./vanilla-console /usr/local/bin/vanilla-console
 
 test: all
 	PATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t
