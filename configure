@@ -262,7 +262,7 @@ sub gen_vanilla_bins {
 
         my $cmd_str = <<"_EOC_";
 #!/bin/sh
-exec '$lua_jit_bin' -e 'package.path="$or_lib_path/?.lua;$or_lib_path/?/init.lua;$prefix/?.lua;$prefix/?/init.lua;"..package.path; package.cpath="$or_lib_path/?.so;$prefix/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
+exec '$lua_jit_bin' -e 'package.path="$prefix/?.lua;$prefix/?/init.lua;$or_lib_path/?.lua;$or_lib_path/?/init.lua;"..package.path; package.cpath="$prefix/?.so;$or_lib_path/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
 _EOC_
 
         print $out $cmd_str;

@@ -40,7 +40,7 @@ end
 
 function Directive:luaSharedDict( lua_lib )
     local path = './application/?.lua;./application/library/?.lua;./application/?/init.lua;'
-    package.path = path .. package.path .. [[;/?.lua;/lib/?.lua;;";]]
+    package.path = path .. package.path
     local ok, sh_dict_conf_or_error = pcall(function() return require(lua_lib) end)
     if ok == false then
         return false
