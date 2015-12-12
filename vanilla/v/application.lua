@@ -64,7 +64,7 @@ function Application:raise_syserror(err)
         err = Error:new(err.code, err.msg)
     end
     ngx.say('<pre />')
-    ngx.say(pps(err))
+    ngx.say(sprint_r(err))
     ngx.eof()
 end
 

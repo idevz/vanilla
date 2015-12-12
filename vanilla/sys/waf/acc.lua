@@ -1,10 +1,5 @@
 local utils = require'vanilla.v.libs.utils'
 
--- function pp( ... )
---     ngx.say(utils.pps(...))
---     -- ngx.eof()
--- end
-
 local app_waf_conf = utils.lpcall(function() return require('config.waf') end)
 local waf_conf = utils.lpcall(function() return require('vanilla.sys.waf.config') end)
 if app_waf_conf ~= nil then

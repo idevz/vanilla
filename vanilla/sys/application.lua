@@ -155,11 +155,11 @@ local admin_plugin_tpl = [[
 local AdminPlugin = require('vanilla.v.plugin'):new()
 
 function AdminPlugin:routerStartup(request, response)
-    pp('<pre>')
+    print_r('<pre>')
     if request.method == 'GET' then
-        pp('-----------' .. pps(request.headers) .. '----------')
+        print_r('-----------' .. sprint_r(request.headers) .. '----------')
     else
-        pp(request.headers)
+        print_r(request.headers)
     end
 end
 

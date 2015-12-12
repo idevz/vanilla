@@ -26,7 +26,7 @@ end
 
 function Utils.raise_syserror(err)
     ngx.say('<pre />')
-    local s = Utils.pps(err)
+    local s = Utils.sprint_r(err)
     ngx.say(s)
     ngx.eof()
 end

@@ -61,8 +61,7 @@ local ngx_directives = ngx_directive_handle:directiveSets()
 local VaNgxConf = {}
 
 local ngx_run_conf = buildConf()
--- pp(ngx_run_conf)
--- os.exit()
+
 for directive, func in pairs(ngx_directives) do
 	if type(func) == 'function' then
 		local func_rs = func(ngx_directive_handle, ngx_run_conf[directive])
