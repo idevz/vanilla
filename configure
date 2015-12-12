@@ -57,8 +57,9 @@ if ($OS =~ /solaris|sunos/i) {
     $platform = 'posix';
 }
 
-my $prefix = '/usr/local/zhoujing/vanilla';
+my $prefix = '/usr/local/vanilla';
 my $openresty_prefix = '/usr/local/openresty';
+my $vanilla_bin_path = '/usr/local/bin';
 my %resty_opts;
 my $cc;
 
@@ -68,19 +69,37 @@ for my $opt (@ARGV) {
     if ($opt =~ /^--prefix=(.*)/) {
         $prefix = $1;
 
+    } elsif ($opt =~ /^--vanilla-bin-path=(.*)/) {
+        $vanilla_bin_path = $1;
+
     } elsif ($opt =~ /^--openresty-path=(.*)/) {
         $openresty_prefix = $1;
 
-    } elsif ($opt eq '--with-lua_filesystem') {
+    } elsif ($opt eq '--with-lua-filesystem') {
         $resty_opts{lua_filesystem} = 1;
 
-    } elsif ($opt =~ /^--with-openresty-luajit-inc-path=(.*)/) {
+    } elsif ($opt =~ /^--with-openresty-luajit-include-path=(.*)/) {
         $resty_opts{or_jit_inc_path} = $1;
 
     } elsif ($opt =~ /^--with-openresty-luajit-bin=(.*)/) {
         $resty_opts{or_jit_bin} = $1;
 
-    } elsif ($opt eq '--without-lua_resty_shcache') {
+    } elsif ($opt eq '--without-lua-resty-cookie') {
+        $resty_opts{no_lua_resty_cookie} = 1;
+
+    } elsif ($opt eq '--without-lua-resty-template') {
+        $resty_opts{no_lua_resty_template} = 1;
+
+    } elsif ($opt eq '--without-lua-resty-http') {
+        $resty_opts{no_lua_resty_http} = 1;
+
+    } elsif ($opt eq '--without-lua-resty-logger-socket') {
+        $resty_opts{no_lua_resty_logger_socket} = 1;
+
+    } elsif ($opt eq '--without-lua-resty-session') {
+        $resty_opts{no_lua_resty_session} = 1;
+
+    } elsif ($opt eq '--without-lua-resty-shcache') {
         $resty_opts{no_lua_resty_shcache} = 1;
 
     } elsif ($opt eq '--help') {
@@ -93,6 +112,7 @@ for my $opt (@ARGV) {
 
 my $lua_jit_bin = "$openresty_prefix/luajit/bin/luajit-2.1.0-beta1";
 my $or_lib_path = "$openresty_prefix/lualib";
+my $ngx_bin = "$openresty_prefix/nginx/sbin/nginx";
 
 if ($resty_opts{or_jit_bin}) {
     $lua_jit_bin = $resty_opts{or_jit_bin};
@@ -101,7 +121,8 @@ if ($resty_opts{or_jit_bin}) {
 build_resty_opts(\%resty_opts);
 
 my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
-    ." INSTALL=$root_dir/build/install";
+    ." INSTALL=$root_dir/build/install"
+    ." VANILLA_BIN_PATH=$vanilla_bin_path";
 
 push @make_install_cmds, "cd $root_dir/build/vanilla && " .
     "\$(MAKE) install$vanilla_extra_opts";
@@ -179,7 +200,7 @@ sub build_resty_opts {
 
     if ($opts->{lua_filesystem}) {
         if (!$opts->{or_jit_inc_path}) {
-            die "luafilesystem need add --with-OpenResty-LuaJit-Inc-Path option.";
+            die "luafilesystem need add --with-openresty-luajit-include-path option.";
         }
         my $dir = auto_complete 'luafilesystem';
         if (!defined $dir) {
@@ -212,7 +233,7 @@ sub build_resty_opts {
             "\$(MAKE) install$extra_opts";
     }
 
-    for my $key (qw(cookie http logger-socket session shcache template))
+    for my $key (qw(cookie http logger_socket session shcache template))
     {
         unless ($opts->{"no_lua_resty_$key"}) {
             (my $key2 = $key) =~ s/_/-/g;
@@ -234,19 +255,26 @@ sub build_resty_opts {
 sub usage ($) {
     my $retval = shift;
     my $msg = <<'_EOC_';
-  --help                             this message
+  --help                                this message
 
-  --prefix=PATH                      set the installation prefix (default to /usr/local/vanilla).
-  --platform=(darwin, linux...)      set platform
+  --prefix=PATH                         set the installation prefix (default to /usr/local/vanilla)
+  --vanilla-bin-path=PATH               set vanilla bin path (default to /usr/local/bin)
+  --platform=                           set platform(darwin, linux...)
 
-  --openresty-path=PATH              set openresty install pathname
+  --openresty-path=PATH                 set openresty install path (default to /usr/local/openresty)
+  --with-openresty-luajit-include-path=PATH
+                                        set openresty luajit include path for install C moudle
+                                        (like: /usr/local/openresty/luajit/include/luajit-2.1)
 
-  --without-lua_resty_shcache
+  --without-lua-resty-cookie            disable the lua-resty-cookie library
+  --without-lua-resty-template          disable the lua-resty-template library
+  --without-lua-resty-http              disable the lua-resty-http library
+  --without-lua-resty-logger-socket     disable the lua-resty-logger-socket library
+  --without-lua-resty-session           disable the lua-resty-session library
+  --without-lua-resty-shcache           disable the lua-resty-shcache library
 
-  --with-no-pool-patch               enable the no-pool patch for debugging memory issues.
-
-  -jN                                pass -jN option to make while building the bundled
-                                     Lua 5.1 interpreter or LuaJIT 2.1.
+  --with-lua-filesystem                 enable and build lua-filesystem
+                                        (must need option --with-openresty-luajit-include-path)
 
 _EOC_
 
@@ -255,14 +283,14 @@ _EOC_
 }
 
 sub gen_vanilla_bins {
-    foreach my $bin_name (qw(vanilla vanilla-console)) {
+    for my $bin_name (qw(vanilla vanilla-console)) {
 
         open my $out, ">vanilla/$bin_name" or
             die "Cannot open $bin_name for writing: $!\n";
 
         my $cmd_str = <<"_EOC_";
 #!/bin/sh
-exec '$lua_jit_bin' -e 'package.path="$prefix/?.lua;$prefix/?/init.lua;$or_lib_path/?.lua;$or_lib_path/?/init.lua;"..package.path; package.cpath="$prefix/?.so;$or_lib_path/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
+exec '$lua_jit_bin' -e 'VANILLA_NGX_BIN="$ngx_bin"; VANILLA_JIT_BIN="$lua_jit_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua;$or_lib_path/?.lua;$or_lib_path/?/init.lua;"..package.path; package.cpath="$prefix/?.so;$or_lib_path/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
 _EOC_
 
         print $out $cmd_str;

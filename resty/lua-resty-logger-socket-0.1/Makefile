@@ -10,7 +10,6 @@ INSTALL ?= install
 all: ;
 
 install: all
-	$(INSTALL) -d $(DESTDIR)$(LUA_LIB_DIR)/resty/websocket
 	$(INSTALL) lib/resty/logger/*.lua $(DESTDIR)$(LUA_LIB_DIR)/resty/logger/
 
 test: all
