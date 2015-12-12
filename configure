@@ -191,8 +191,8 @@ sub build_resty_opts {
     }
     shell "mkdir -p build/vanilla";
     shell "cp -rp vanilla/ build/vanilla";
-    shell "cp -rp resty/ build";
-    shell "cp -rp lualib/ build";
+    shell "cp -rp resty/* build";
+    shell "cp -rp lualib/* build";
 
     cd 'build';
 
