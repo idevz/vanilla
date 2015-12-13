@@ -82,6 +82,9 @@ for my $opt (@ARGV) {
         $resty_opts{or_jit_inc_path} = $1;
 
     } elsif ($opt =~ /^--with-openresty-luajit-bin=(.*)/) {
+        $resty_opts{lua_jit_bin} = $1;
+
+    } elsif ($opt =~ /^--with-openresty-luajit-bin=(.*)/) {
         $resty_opts{or_jit_bin} = $1;
 
     } elsif ($opt eq '--without-lua-resty-cookie') {
@@ -116,6 +119,10 @@ my $ngx_bin = "$openresty_prefix/nginx/sbin/nginx";
 
 if ($resty_opts{or_jit_bin}) {
     $lua_jit_bin = $resty_opts{or_jit_bin};
+}
+
+if ($resty_opts{lua_jit_bin}) {
+    $lua_jit_bin = $resty_opts{lua_jit_bin};
 }
 
 build_resty_opts(\%resty_opts);
@@ -265,6 +272,8 @@ sub usage ($) {
   --with-openresty-luajit-include-path=PATH
                                         set openresty luajit include path for install C moudle
                                         (like: /usr/local/openresty/luajit/include/luajit-2.1)
+  --with-openresty-luajit-bin           set openresty luajit bin for run vanilla vanilla-console
+                                        (default to $openresty_prefix/luajit/bin/luajit-2.1.0-beta1)
 
   --without-lua-resty-cookie            disable the lua-resty-cookie library
   --without-lua-resty-template          disable the lua-resty-template library
