@@ -1,13 +1,8 @@
--- dep
-local lfs = require 'lfs'
-
--- gin
 local va_conf = require 'vanilla.sys.config'
-
 
 local function create_dirs(necessary_dirs)
     for _, dir in pairs(necessary_dirs) do
-        lfs.mkdir(dir)
+        os.execute("mkdir -p " .. dir .. " > /dev/null")
     end
 end
 
