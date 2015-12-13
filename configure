@@ -272,7 +272,7 @@ sub usage ($) {
   --with-openresty-luajit-include-path=PATH
                                         set openresty luajit include path for install C moudle
                                         (like: /usr/local/openresty/luajit/include/luajit-2.1)
-  --with-openresty-luajit-bin           set openresty luajit bin for run vanilla vanilla-console
+  --with-openresty-luajit-bin=BIN       set openresty luajit bin for run vanilla vanilla-console
                                         (default to $openresty_prefix/luajit/bin/luajit-2.1.0-beta1)
 
   --without-lua-resty-cookie            disable the lua-resty-cookie library
