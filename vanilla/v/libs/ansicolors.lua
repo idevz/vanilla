@@ -1,7 +1,6 @@
 -- perf
 local setmetatable = setmetatable
 local error = error
-local sgmatch = string.gmatch
 local schar = string.char
 local sgsub = string.gsub
 local sformat = string.format

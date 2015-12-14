@@ -1,6 +1,6 @@
 -- perf
 local error = error
-local sgmatch = string.gmatch
+local ngxmatch=ngx.re.match
 
 -- init Simple and set routes
 local Simple = {}
@@ -25,7 +25,7 @@ function Simple:match()
     if uri == '/' then
         return 'index', 'index'
     end
-    for v in sgmatch(uri , '/([A-Za-z0-9_]+)') do
+    for v in ngxmatch(uri , '/([A-Za-z0-9_]+)') do
         match[tmp] = v
         tmp = tmp +1
     end

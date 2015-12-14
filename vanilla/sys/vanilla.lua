@@ -3,7 +3,7 @@ local ansicolors = require 'vanilla.v.libs.ansicolors'
 
 -- perf
 local error = error
-local sgmatch = string.gmatch
+local sgmatch = string.gmatch --cli didn't have ngx.re API
 
 -- vanilla
 local va_conf = require 'vanilla.sys.config'
