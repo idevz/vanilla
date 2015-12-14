@@ -1,8 +1,9 @@
 -- vanilla
 local Error = require 'vanilla.v.error'
 local sys_conf = require 'vanilla.sys.config'
+local Dispatcher = require 'vanilla.v.dispatcher'
 local Registry = require('vanilla.v.registry'):new('sys')
-local utils = require 'vanilla.v.libs.utils'
+local Utils = require 'vanilla.v.libs.utils'
 
 -- perf
 local pairs = pairs
@@ -14,17 +15,33 @@ local function buildconf(config)
         for k,v in pairs(config) do sys_conf[k] = v end
     end
     if sys_conf.name == nil or sys_conf.app.root == nil then
-        utils.raise_syserror([[
+        Utils.raise_syserror([[
             Sys Err: Please set app name and app root in config/application.lua like:
             
                 Appconf.name = 'idevz.org'
                 Appconf.app.root='./'
             ]])
     end
-    Registry:set('app_name', sys_conf.name)
-    Registry:set('app_root', sys_conf.app.root)
-    Registry:set('app_version', sys_conf.version)
+    Registry['app_name'] = sys_conf.name
+    Registry['app_root'] = sys_conf.app.root
+    Registry['app_version'] = sys_conf.version
     return sys_conf
+end
+
+local function new_dispatcher(self)
+    return Dispatcher:new(self)
+end
+
+local function new_bootstrap(lbootstrap, dispatcher)
+    return require(lbootstrap):new(dispatcher)
+end
+
+local function run_bootstrap(bootstrap_instance)
+    bootstrap_instance:bootstrap()
+end
+
+local function run_dispatcher(dispatcher_instance)
+    dispatcher_instance:dispatch()
 end
 
 local Application = {}
@@ -43,26 +60,24 @@ function Application:new(config)
     local instance = {
         run = self.run,
         bootstrap = self.bootstrap,
-        dispatcher = self:lpcall(function() return require('vanilla.v.dispatcher'):new(self) end)
+        dispatcher = self:lpcall(new_dispatcher, self)
     }
     setmetatable(instance, {__index = self})
     return instance
 end
 
 function Application:bootstrap()
-    -- ngx.dispatcher = self.dispatcher
     local lbootstrap = 'application.bootstrap'
     if self.config['bootstrap'] ~= nil then
         lbootstrap = self.config['bootstrap']
     end
-    bootstrap = self:lpcall(function() return require(lbootstrap):new(self.dispatcher) end)
-    self:lpcall(function() bootstrap:bootstrap() end)
-    
+    bootstrap = self:lpcall(new_bootstrap, lbootstrap, self.dispatcher)
+    self:lpcall(run_bootstrap, bootstrap)
     return self
 end
 
 function Application:run()
-    self:lpcall(function() return self.dispatcher:dispatch() end)
+    self:lpcall(run_dispatcher, self.dispatcher)
 end
 
 function Application:raise_syserror(err)
@@ -70,7 +85,7 @@ function Application:raise_syserror(err)
         err = Error:new(err.code, err.msg)
     end
     ngx.say('<pre />')
-    ngx.say(sprint_r(err))
+    ngx.say(Utils.sprint_r(err))
     ngx.eof()
 end
 
