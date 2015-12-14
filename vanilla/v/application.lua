@@ -1,5 +1,7 @@
 -- vanilla
 local Error = require 'vanilla.v.error'
+local sys_conf = require 'vanilla.sys.config'
+local Registry = require('vanilla.v.registry'):new('sys')
 
 -- perf
 local pairs = pairs
@@ -7,18 +9,13 @@ local pcall = pcall
 local require = require
 local setmetatable = setmetatable
 local function buildconf(config)
-    local ok, sys_conf_or_error = pcall(function() return require('vanilla.sys.config') end)
-    if ok then
-        if config ~= nil then
-            for k,v in pairs(config) do sys_conf_or_error[k] = v end
-        end
-    else
-        sys_conf_or_error = config
+    if config ~= nil then
+        for k,v in pairs(config) do sys_conf[k] = v end
     end
-    ngx.app_name = sys_conf_or_error.name
-    ngx.app_root = sys_conf_or_error.app.root
-    ngx.app_version = sys_conf_or_error.version
-    return sys_conf_or_error
+    Registry:set('app_name', sys_conf.name)
+    Registry:set('app_root', sys_conf.app.root)
+    Registry:set('app_version', sys_conf.version)
+    return sys_conf
 end
 
 local Application = {}
