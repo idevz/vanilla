@@ -7,7 +7,7 @@ local Registry = require('vanilla.v.registry'):new('sys')
 local error = error
 local pairs = pairs
 local setmetatable = setmetatable
-local app_root = Registry:get('app_root')
+local app_root = Registry['app_root']
 
 local View = {}
 

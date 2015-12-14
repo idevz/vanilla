@@ -49,15 +49,20 @@ function Registry:new(namespace)
         get = self.get,
         has = self.has,
         dump = self.dump,
-        set = self.set,
-        __cache = {}
+        set = self.set
     }
     setmetatable(instance, Registry)
     return instance
 end
 
+function Registry:__newindex(index, value)
+    if index ~=nil and value ~= nil then
+        vanilla_userdata[self.namespace][index]=value
+    end
+end
+
 function Registry:__index(index)
-    local out = rawget(rawget(self, '__cache'), index)
+    local out = rawget(vanilla_userdata[self.namespace], index)
     if out then return out else return false end
 end
 
