@@ -1,13 +1,14 @@
 -- perf
 local setmetatable = setmetatable
-
+local Registry = require('vanilla.v.registry'):new('sys')
+local app_version = Registry:get('app_version')
 
 local Response = {}
 Response.__index = Response
 
 function Response:new()
     ngx.header['Content_type'] = 'text/html; charset=UTF-8'
-    ngx.header['Power_By'] = 'Vanilla-' .. ngx.app_version
+    ngx.header['Power_By'] = 'Vanilla-' .. app_version
     local instance = {
         status = 200,
         headers = {},

@@ -1,17 +1,18 @@
 -- dep
 -- https://github.com/bungle/lua-resty-template
 local template = require "resty.template"
+local Registry = require('vanilla.v.registry'):new('sys')
 
 -- perf
 local error = error
 local pairs = pairs
 local setmetatable = setmetatable
-
+local app_root = Registry:get('app_root')
 
 local View = {}
 
 function View:new(view_config)
-    ngx.var.template_root = view_config.path or ngx.app_root .. 'application/views/'
+    ngx.var.template_root = view_config.path or app_root .. 'application/views/'
     local instance = {
         view_config = view_config,
         init = self.init
