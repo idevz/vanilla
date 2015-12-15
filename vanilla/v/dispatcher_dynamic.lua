@@ -14,14 +14,6 @@ local require = require
 local setmetatable = setmetatable
 local function tappend(t, v) t[#t+1] = v end
 
-local function new_view(view_conf)
-    return View:new(view_conf)
-end
-
-local function run_route(router_instance)
-    return router_instance:route()
-end
-
 local Dispatcher = {}
 
 function Dispatcher:new(application)
@@ -42,7 +34,7 @@ function Dispatcher:_init(application)
     self.router = Router:new(self.request)
 	self.response = Response:new()
     self.controller = Controller:new(self.request, self.response, application.config)
-    self.view = application:lpcall(new_view, application.config.view)
+    self.view = application:lpcall(function() return View:new(application.config.view) end)
 end
 
 function Dispatcher:getRequest()
@@ -74,7 +66,7 @@ function Dispatcher:getRouter()
 end
 
 function Dispatcher:_route()
-    local ok, controller_name_or_error, action= pcall(run_route, self.router)
+    local ok, controller_name_or_error, action= pcall(function() return self.router:route() end)
     if ok and controller_name_or_error then
         self.request.controller_name = controller_name_or_error
         self.request.action_name = action
@@ -84,42 +76,25 @@ function Dispatcher:_route()
     end
 end
 
-local function require_controller(controller_prefix, controller_name)
-    return require(controller_prefix .. controller_name)
-end
-
-local function call_controller(Dispatcher, matched_controller, controller_name, action_name)
-    if matched_controller[action_name] == nil then
-        error({ code = 102, msg = {NoAction = action_name}})
-    end
-    Dispatcher:initView()
-    local body = matched_controller[action_name](matched_controller)
-    if body ~= nil then return body
-    else
-        error({ code = 104, msg = {Exec_Err = controller_name .. '/' .. action_name}})
-    end
-end
-
 function Dispatcher:dispatch()
     self:_runPlugins('routerStartup')
 	self:_route()
     self:_runPlugins('routerShutdown')
     self:_runPlugins('dispatchLoopStartup')
     self:_runPlugins('preDispatch')
-    local matched_controller = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
+    local matched_controller = self:lpcall(function() return require(self.controller_prefix .. self.request.controller_name) end)
     setmetatable(matched_controller, { __index = self.controller })
-    self.response.body = self:lpcall(call_controller, self, matched_controller, self.request.controller_name, self.request.action_name)
-    -- self.response.body = self:lpcall(function()
-    --         if matched_controller[self.request.action_name] == nil then
-    --             error({ code = 102, msg = {NoAction = self.request.action_name}})
-    --         end
-    --         self:initView()
-    --         local body = matched_controller[self.request.action_name](matched_controller)
-    --         if body ~= nil then return body
-    --         else
-    --             error({ code = 104, msg = {Exec_Err = self.request.controller_name .. '/' .. self.request.action_name}})
-    --         end
-    --     end)
+    self.response.body = self:lpcall(function()
+            if matched_controller[self.request.action_name] == nil then
+                error({ code = 102, msg = {NoAction = self.request.action_name}})
+            end
+            self:initView()
+            local body = matched_controller[self.request.action_name](matched_controller)
+            if body ~= nil then return body
+            else
+                error({ code = 104, msg = {Exec_Err = self.request.controller_name .. '/' .. self.request.action_name}})
+            end
+        end)
     self:_runPlugins('postDispatch')
     self.response:response()
     self:_runPlugins('dispatchLoopShutdown')
