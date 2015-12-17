@@ -1,5 +1,5 @@
-##香草/Vanilla
-*香草/Vanilla是一个基于Openresty实现的高性能Web应用开发框架.*
+##Vanilla/(香草[中文文档](README-zh.md))
+*Vanilla is An OpenResty Lua MVC Web Framework.*
 
 ![Vanilla](http://m1.sinaimg.cn/maxwidth.300/m1.sinaimg.cn/120d7329960e19cf073f264751e8d959_2043_2241.png)
 
