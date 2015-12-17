@@ -84,9 +84,6 @@ for my $opt (@ARGV) {
     } elsif ($opt =~ /^--with-luajit-or-lua-bin=(.*)/) {
         $resty_opts{luajit_or_lua_bin} = $1;
 
-    } elsif ($opt =~ /^--with-luajit-or-lua-bin=(.*)/) {
-        $resty_opts{or_jit_bin} = $1;
-
     } elsif ($opt eq '--without-lua-resty-cookie') {
         $resty_opts{no_lua_resty_cookie} = 1;
 
