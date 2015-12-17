@@ -40,10 +40,14 @@ function Router:getCurrentRouteName()
     return tostring(self.current_route)
 end
 
+local function route_match(route)
+    return route:match()
+end
+
 function Router:route()
     if #self.routes >= 1 then
         for _,route in ipairs(self.routes) do
-            local ok, controller_name_or_error, action = pcall(function() return route:match() end)
+            local ok, controller_name_or_error, action = pcall(route_match, route)
             if ok and controller_name_or_error then
                 self.current_route = route
                 return controller_name_or_error, action
