@@ -50,9 +50,13 @@ function View:getScriptPath()
     return ngx.var.template_root
 end
 
+local function view_handle_params(view_handle, params)
+    return view_handle(params)
+end
+
 function View:render(view_tpl, params)
     local view_handle = template.compile(view_tpl)
-    local ok, body_or_error = pcall(function() return view_handle(params) end)
+    local ok, body_or_error = pcall(view_handle_params, view_handle, params)
     if ok then
         return body_or_error
     else

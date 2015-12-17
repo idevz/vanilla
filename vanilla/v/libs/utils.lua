@@ -31,9 +31,13 @@ function Utils.raise_syserror(err)
     ngx.eof()
 end
 
+local function require_module(module_name)
+    return require(module_name)
+end
+
 -- try to require
 function Utils.try_require(module_name, default)
-    local ok, module_or_err = pcall(function() return require(module_name) end)
+    local ok, module_or_err = pcall(require_module, module_name)
 
     if ok == true then return module_or_err end
 
