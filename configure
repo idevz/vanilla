@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use 5.006;
-use strict;
+#use strict;
 use warnings;
 
 use File::Spec;
@@ -81,10 +81,10 @@ for my $opt (@ARGV) {
     } elsif ($opt =~ /^--with-openresty-luajit-include-path=(.*)/) {
         $resty_opts{or_jit_inc_path} = $1;
 
-    } elsif ($opt =~ /^--with-luajit-or-lua-bin=(.*)/) {
-        $resty_opts{luajit_or_lua_bin} = $1;
+    } elsif ($opt =~ /^--with-openresty-luajit-bin=(.*)/) {
+        $resty_opts{lua_jit_bin} = $1;
 
-    } elsif ($opt =~ /^--with-luajit-or-lua-bin=(.*)/) {
+    } elsif ($opt =~ /^--with-openresty-luajit-bin=(.*)/) {
         $resty_opts{or_jit_bin} = $1;
 
     } elsif ($opt eq '--without-lua-resty-cookie') {
@@ -112,13 +112,20 @@ for my $opt (@ARGV) {
         die "Invalid option $opt\n";
     }
 }
+my $lua_jit_bin = glob "$openresty_prefix/luajit/bin/luajit*";
+if (!$lua_jit_bin) {
+	$lua_jit_bin = `which luajit`;
+}
 
-my $luajit_or_lua_bin = glob "$openresty_prefix/luajit/bin/luajit*";
 my $or_lib_path = "$openresty_prefix/lualib";
 my $ngx_bin = "$openresty_prefix/nginx/sbin/nginx";
 
-if ($resty_opts{luajit_or_lua_bin}) {
-    $luajit_or_lua_bin = $resty_opts{luajit_or_lua_bin};
+if ($resty_opts{or_jit_bin}) {
+    $lua_jit_bin = $resty_opts{or_jit_bin};
+}
+
+if ($resty_opts{lua_jit_bin}) {
+    $lua_jit_bin = $resty_opts{lua_jit_bin};
 }
 
 build_resty_opts(\%resty_opts);
@@ -268,8 +275,8 @@ sub usage ($) {
   --with-openresty-luajit-include-path=PATH
                                         set openresty luajit include path for install C moudle
                                         (like: /usr/local/openresty/luajit/include/luajit-2.1)
-  --with-luajit-or-lua-bin=BIN          set openresty luajit or standard lua bin for run vanilla vanilla-console
-                                        (default to $openresty_path/luajit/bin/luajit*)
+  --with-openresty-luajit-bin=BIN       set openresty luajit bin for run vanilla vanilla-console
+                                        (default to $openresty_path/luajit/bin/luajit-2.1.0-beta1)
 
   --without-lua-resty-cookie            disable the lua-resty-cookie library
   --without-lua-resty-template          disable the lua-resty-template library
@@ -295,7 +302,7 @@ sub gen_vanilla_bins {
 
         my $cmd_str = <<"_EOC_";
 #!/bin/sh
-exec '$luajit_or_lua_bin' -e 'VANILLA_NGX_BIN="$ngx_bin"; VANILLA_JIT_BIN="$luajit_or_lua_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua;$or_lib_path/?.lua;$or_lib_path/?/init.lua;"..package.path; package.cpath="$prefix/?.so;$or_lib_path/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
+exec '$lua_jit_bin' -e 'VANILLA_NGX_BIN="$ngx_bin"; VANILLA_JIT_BIN="$lua_jit_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua;$or_lib_path/?.lua;$or_lib_path/?/init.lua;"..package.path; package.cpath="$prefix/?.so;$or_lib_path/?.so;"..package.cpath' '$prefix/bin/$bin_name' "\$@"
 _EOC_
 
         print $out $cmd_str;
