@@ -90,13 +90,13 @@ end
 
 local function call_controller(Dispatcher, matched_controller, controller_name, action_name)
     if matched_controller[action_name] == nil then
-        error({ code = 102, msg = {NoAction = action_name}})
+        Dispatcher:errResponse({ code = 102, msg = {NoAction = action_name}})
     end
     Dispatcher:initView()
     local body = matched_controller[action_name](matched_controller)
     if body ~= nil then return body
     else
-        error({ code = 104, msg = {Exec_Err = controller_name .. '/' .. action_name}})
+        Dispatcher:errResponse({ code = 104, msg = {Exec_Err = controller_name .. '/' .. action_name}})
     end
 end
 
@@ -108,18 +108,11 @@ function Dispatcher:dispatch()
     self:_runPlugins('preDispatch')
     local matched_controller = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
     setmetatable(matched_controller, { __index = self.controller })
-    self.response.body = self:lpcall(call_controller, self, matched_controller, self.request.controller_name, self.request.action_name)
-    -- self.response.body = self:lpcall(function()
-    --         if matched_controller[self.request.action_name] == nil then
-    --             error({ code = 102, msg = {NoAction = self.request.action_name}})
-    --         end
-    --         self:initView()
-    --         local body = matched_controller[self.request.action_name](matched_controller)
-    --         if body ~= nil then return body
-    --         else
-    --             error({ code = 104, msg = {Exec_Err = self.request.controller_name .. '/' .. self.request.action_name}})
-    --         end
-    --     end)
+    local c_rs = self:lpcall(call_controller, self, matched_controller, self.request.controller_name, self.request.action_name)
+    if type(c_rs) ~= 'string' then
+        self:errResponse({ code = 103, msg = {Rs_Error = self.request.controller_name .. '/' .. self.request.action_name .. ' must return a String.'}})
+    end
+    self.response.body = c_rs
     self:_runPlugins('postDispatch')
     self.response:response()
     self:_runPlugins('dispatchLoopShutdown')
