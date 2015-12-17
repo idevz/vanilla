@@ -13,6 +13,10 @@ va_ngx_conf.common = {
 	LUA_PACKAGE_CPATH = '',
 }
 
+if VANILLA_NGX_PATH ~= nil then
+	va_ngx_conf.common.NGX_PATH = VANILLA_NGX_PATH
+end
+
 va_ngx_conf.env = {}
 va_ngx_conf.env.development = {
     LUA_CODE_CACHE = false,

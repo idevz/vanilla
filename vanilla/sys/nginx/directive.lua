@@ -169,23 +169,9 @@ end
 
 function Directive:directiveSets()
     return {
-        -- ['VA_ENV'] = self.run_env,
-        -- ['PORT'] = 80,
-        -- ['LUA_PACKAGE_PATH'] = Directive.luaPackagePath,
-        -- ['LUA_PACKAGE_CPATH'] = Directive.luaPackageCpath,
-        -- ['LUA_CODE_CACHE'] = Directive.codeCache,
-        -- -- lua_shared_dict falcon_share 100m;
-        -- -- ['LUA_SHARED_DICT'] = Directive.luaSharedDict,
-        -- ['INIT_BY_LUA'] = Directive.initByLua,
-        -- ['INIT_BY_LUA_FILE'] = Directive.initByLuaFile,
-        -- ['ACCESS_BY_LUA'] = Directive.accByLua,
-        -- ['ACCESS_BY_LUA_FILE'] = Directive.accByLuaFile,
-        -- ['VANILLA_WAF'] = Directive.accByLua,
-        -- ['CONTENT_BY_LUA'] = Directive.contentByLua,
-        -- ['CONTENT_BY_LUA_FILE'] = Directive.contentByLuaFile,
-
         ['VA_ENV'] = self.run_env,
         ['PORT'] = 80,
+        ['NGX_PATH'] = '',
         ['LUA_PACKAGE_PATH'] = Directive.luaPackagePath,
         ['LUA_PACKAGE_CPATH'] = Directive.luaPackageCpath,
         ['LUA_CODE_CACHE'] = Directive.codeCache,

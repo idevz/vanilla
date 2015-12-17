@@ -209,11 +209,11 @@ end
 
 function Bootstrap:boot_list()
     return {
-        Bootstrap.initWaf,
-        Bootstrap.initErrorHandle,
-        Bootstrap.initRoute,
-        Bootstrap.initView,
-        Bootstrap.initPlugin,
+        -- Bootstrap.initWaf,
+        -- Bootstrap.initErrorHandle,
+        -- Bootstrap.initRoute,
+        -- Bootstrap.initView,
+        -- Bootstrap.initPlugin,
     }
 end
 
@@ -370,6 +370,7 @@ events {
 http {
     # use sendfile
     sendfile on;
+    include {{NGX_PATH}}/conf/mime.types;
 
     # Va initialization
     {{LUA_PACKAGE_PATH}}
