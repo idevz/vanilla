@@ -3,8 +3,10 @@
 
 ### *MailList*
 vanilla-en <vanilla-en@googlegroups.com>
+
 vanilla-devel <vanilla-devel@googlegroups.com>
-vanilla <vanilla@googlegroups.com>
+
+vanilla中文邮件列表 <vanilla@googlegroups.com>
 
 ### *Install*
 ~~~
