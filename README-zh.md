@@ -1,37 +1,73 @@
-##香草/Vanilla
+## 香草/Vanilla
 *香草/Vanilla是一个基于Openresty实现的高性能Web应用开发框架.*
 
 ![Vanilla](http://m1.sinaimg.cn/maxwidth.300/m1.sinaimg.cn/120d7329960e19cf073f264751e8d959_2043_2241.png)
 
-###安装说明
-1. Vanilla使用Luarocks管理包依赖
-2. 安装Luarocks（with lua5.1）
-3. 使用Openresty最新稳定版
+### *邮件列表*
+vanilla-en <vanilla-en@googlegroups.com>
 
-#####*安装示例 / Linux平台*
-```
-yum install lua-devel luarocks  -- 需要安装Lua开发版
-luarocks install vanilla
-```
-#####*安装示例 / MacOSX平台*
-```
-wget lua5.1(lua5.1 源码地址)
-源码安装lua5.1
-wget luarocks（luarocks源码地址）
-源码安装luarocks
-luarocks install vanilla
-```
-#####*为何建议Lua5.1版本*
-1. *Openresty执行Lua需要基于Luajit加速，Luajit使用Lua5.1的ABI*
-2. *Luarocks会根据Lua版本识别相应的包*
-3. *Vanilla运行Openresty前需要基于Lua5.1做服务相关自动化配置*
+vanilla-devel <vanilla-devel@googlegroups.com>
 
-#####*为何建议源码安装*
-1. *源码安装更方便版本控制*
-2. *尤其MacOSX10.9后brew默认安装的Lua是5.2版本，而Openresty必须源码安装5.1*
+vanilla中文邮件列表 <vanilla@googlegroups.com>
 
-##使用
-#####*应用代码骨架生成及服务启动*
+### *安装*
+~~~
+./configure --prefix=/usr/local/vanilla --openresty-path=/usr/local/openresty
+
+make install （如果没有C模块【目前支持lua-filesystem】，则不需要make，直接make install）
+~~~
+
+##### *configure*
+Vanilla 支持的选项都提供了默认值，如果你的环境与默认值不一样，请configure时指定成你自己的。特别注意选项--openresty-path，默认为/usr/local/openresty，请确保设置正确。
+
+直接运行 ```make install```安装Vanilla。
+```
+./configure --help
+  --help                                this message
+
+  --prefix=PATH                         set the installation prefix (default to /usr/local/vanilla)
+  --vanilla-bin-path=PATH               set vanilla bin path (default to /usr/local/bin)
+  --platform=                           set platform(darwin, linux...)
+
+  --openresty-path=PATH                 set openresty install path (default to /usr/local/openresty)
+  --with-openresty-luajit-include-path=PATH
+                                        set openresty luajit include path for install C moudle
+                                        (like: /usr/local/openresty/luajit/include/luajit-2.1)
+  --with-luajit-or-lua-bin=BIN          set openresty luajit or standard lua bin for run vanilla vanilla-console
+                                        (default to $openresty_path/luajit/bin/luajit*)
+
+  --without-lua-resty-cookie            disable the lua-resty-cookie library
+  --without-lua-resty-template          disable the lua-resty-template library
+  --without-lua-resty-http              disable the lua-resty-http library
+  --without-lua-resty-logger-socket     disable the lua-resty-logger-socket library
+  --without-lua-resty-session           disable the lua-resty-session library
+  --without-lua-resty-shcache           disable the lua-resty-shcache library
+
+  --with-lua-filesystem                 enable and build lua-filesystem
+                                        (must need option --with-openresty-luajit-include-path)
+```
+##### *命令*
+Vanilla 目前提供了两个命令 ```vanilla```，和 ```vanilla-console```； ```vanilla```用来初始化应用骨架，停启服务（添加--trace参数可以看到执行的命令）， ```vanilla-console``` 是一个交互式命令行，主要提供一种方便学习Lua入门的工具，可以使用一些vanilla开发环境下的包，比如table输出的lprint_r方法。
+
+##### *vanilla命令选项*
+命令行执行 ```vanilla```就能清晰看到 ```vanilla```命令提供的选项。
+~~~
+vanilla
+Vanilla v0.1.0-rc3, A MVC web framework for Lua powered by OpenResty.
+
+Usage: vanilla COMMAND [ARGS] [OPTIONS]
+
+The available vanilla commands are:
+ new [name]             Create a new Vanilla application
+ start                  Starts the Vanilla server
+ stop                   Stops the Vanilla server
+
+Options:
+ --trace                Shows additional logs
+~~~
+
+## Vanilla 使用
+##### *创建应用*
 ```
 vanilla new app_name
 cd app_name
