@@ -1,6 +1,8 @@
 ## Vanilla / (香草[中文文档](README-zh.md))
 *Vanilla is An OpenResty Lua MVC Web Framework.*
 
+![Vanilla](vanilla-en.png)
+
 ### *MailList*
 vanilla-en <vanilla-en@googlegroups.com>
 
