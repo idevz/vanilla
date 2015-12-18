@@ -1,44 +1,76 @@
-##Vanilla/（香草[中文文档](README-zh.md)）
+## Vanilla / (香草[中文文档](README-zh.md))
 *Vanilla is An OpenResty Lua MVC Web Framework.*
 
-![Vanilla](http://m1.sinaimg.cn/maxwidth.300/m1.sinaimg.cn/120d7329960e19cf073f264751e8d959_2043_2241.png)
+### *MailList*
+vanilla-en <vanilla-en@googlegroups.com>
+vanilla-devel <vanilla-devel@googlegroups.com>
+vanilla <vanilla@googlegroups.com>
 
-###安装说明
-1. Vanilla使用Luarocks管理包依赖
-2. 安装Luarocks（with lua5.1）
-3. 使用Openresty最新稳定版
+### *Install*
+~~~
+./configure --prefix=/usr/local/vanilla --openresty-path=/usr/local/openresty
 
-#####*安装示例 / Linux平台*
-```
-yum install lua-devel luarocks  -- 需要安装Lua开发版
-luarocks install vanilla
-```
-#####*安装示例 / MacOSX平台*
-```
-wget lua5.1(lua5.1 源码地址)
-源码安装lua5.1
-wget luarocks（luarocks源码地址）
-源码安装luarocks
-luarocks install vanilla
-```
-#####*为何建议Lua5.1版本*
-1. *Openresty执行Lua需要基于Luajit加速，Luajit使用Lua5.1的ABI*
-2. *Luarocks会根据Lua版本识别相应的包*
-3. *Vanilla运行Openresty前需要基于Lua5.1做服务相关自动化配置*
+make install
+~~~
 
-#####*为何建议源码安装*
-1. *源码安装更方便版本控制*
-2. *尤其MacOSX10.9后brew默认安装的Lua是5.2版本，而Openresty必须源码安装5.1*
+##### *configure*
+Vanilla have default value for the options, but if your environment is different from the default value, please change it with yours.
 
-##使用
-#####*应用代码骨架生成及服务启动*
+And you can run ```make install``` after your configuration to install vanill.
+```
+./configure --help
+  --help                                this message
+
+  --prefix=PATH                         set the installation prefix (default to /usr/local/vanilla)
+  --vanilla-bin-path=PATH               set vanilla bin path (default to /usr/local/bin)
+  --platform=                           set platform(darwin, linux...)
+
+  --openresty-path=PATH                 set openresty install path (default to /usr/local/openresty)
+  --with-openresty-luajit-include-path=PATH
+                                        set openresty luajit include path for install C moudle
+                                        (like: /usr/local/openresty/luajit/include/luajit-2.1)
+  --with-luajit-or-lua-bin=BIN          set openresty luajit or standard lua bin for run vanilla vanilla-console
+                                        (default to $openresty_path/luajit/bin/luajit*)
+
+  --without-lua-resty-cookie            disable the lua-resty-cookie library
+  --without-lua-resty-template          disable the lua-resty-template library
+  --without-lua-resty-http              disable the lua-resty-http library
+  --without-lua-resty-logger-socket     disable the lua-resty-logger-socket library
+  --without-lua-resty-session           disable the lua-resty-session library
+  --without-lua-resty-shcache           disable the lua-resty-shcache library
+
+  --with-lua-filesystem                 enable and build lua-filesystem
+                                        (must need option --with-openresty-luajit-include-path)
+```
+##### *CMDS*
+Vanilla provide two commands like ```vanilla```, and ```vanilla-console```, ```vanilla``` is for application building, service start, stop and so on, ```vanilla-console``` is an interactive command line， you can use it for debugging.
+
+##### *How to use*
+Run ```vanilla``` in command line, you can find command ```vanilla``` provide three options.
+~~~
+vanilla
+Vanilla v0.1.0-rc3, A MVC web framework for Lua powered by OpenResty.
+
+Usage: vanilla COMMAND [ARGS] [OPTIONS]
+
+The available vanilla commands are:
+ new [name]             Create a new Vanilla application
+ start                  Starts the Vanilla server
+ stop                   Stops the Vanilla server
+
+Options:
+ --trace                Shows additional logs
+~~~
+
+## Vanilla usage
+##### *Building up an application skeleton*
 ```
 vanilla new app_name
 cd app_name
-vanilla start [--trace]     -- 默认运行在development环境
-VA_ENV=production vanilla start [--trace]  -- 运行在生产环境
+vanilla start [--trace]     -- default running in development environment.
+VA_ENV=production vanilla start [--trace]  -- add VA_ENV to set the running environment.
 ```
-#####*代码目录结构说明*
+##### *The code directory structure*
 ```
  /Users/zj-git/app_name/ tree ./
 ./
@@ -84,7 +116,7 @@ VA_ENV=production vanilla start [--trace]  -- 运行在生产环境
     ├── models
     └── spec_helper.lua
 ```
-#####*业务代码示例 IndexController*
+##### *demo IndexController*
 ```
 local IndexController = {}
 
@@ -99,7 +131,7 @@ end
 
 return IndexController
 ```
-#####*模板示例 views/index/index.html*
+##### *Template demo views/index/index.html*
 ```
 <!DOCTYPE html>
 <html>
@@ -110,7 +142,7 @@ return IndexController
 </html>
 ```
 
-##为什么需要Vanilla
+## Why You need Vanilla
 回答这个问题，我们只需要看清楚Openresty和Vanilla各自做了什么即可。
 #####*Openresty*
 * 提供了处理HTTP请求的全套整体解决方案
