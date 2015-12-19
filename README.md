@@ -74,7 +74,6 @@ setenv VA_ENV production ; vanilla start [--trace]  -- add VA_ENV to set the run
 ```
 #### *Directory Structure*
 ```
-start
  /Users/zj-git/app_name/ tree ./
 ./
 ├── application
@@ -113,7 +112,6 @@ start
 │   └── hack          --attack logs, keep path can be write
 ├── pub               --app content_by_lua_file path
     └── index.lua     --entrance file
-
 ```
 #### *IndexController Demo*
 ```
