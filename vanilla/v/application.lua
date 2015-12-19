@@ -32,16 +32,8 @@ local function new_dispatcher(self)
     return Dispatcher:new(self)
 end
 
-local function new_bootstrap(lbootstrap, dispatcher)
+local function new_bootstrap_instance(lbootstrap, dispatcher)
     return require(lbootstrap):new(dispatcher)
-end
-
-local function run_bootstrap(bootstrap_instance)
-    bootstrap_instance:bootstrap()
-end
-
-local function run_dispatcher(dispatcher_instance)
-    dispatcher_instance:dispatch()
 end
 
 local Application = {}
@@ -71,13 +63,13 @@ function Application:bootstrap()
     if self.config['bootstrap'] ~= nil then
         lbootstrap = self.config['bootstrap']
     end
-    bootstrap = self:lpcall(new_bootstrap, lbootstrap, self.dispatcher)
-    self:lpcall(run_bootstrap, bootstrap)
+    bootstrap_instance = self:lpcall(new_bootstrap_instance, lbootstrap, self.dispatcher)
+    self:lpcall(bootstrap_instance.bootstrap, bootstrap_instance)
     return self
 end
 
 function Application:run()
-    self:lpcall(run_dispatcher, self.dispatcher)
+    self:lpcall(self.dispatcher.dispatch, self.dispatcher)
 end
 
 function Application:raise_syserror(err)
