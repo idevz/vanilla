@@ -29,5 +29,8 @@ end
 if arg[1] == 'new' and arg[2] then application.new(arg[2])
 elseif arg[1] == 'start' then launcher.start()
 elseif arg[1] == 'stop' then launcher.stop()
+elseif arg[1] == 'restart' then
+ launcher.stop()
+ launcher.start()
 else print(help_description)
 end
