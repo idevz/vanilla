@@ -72,7 +72,11 @@ Options:
 vanilla new app_name
 cd app_name
 vanilla start [--trace]     -- 默认运行在development环境
+
+在linux的bash环境下：
 VA_ENV=production vanilla start [--trace]  -- 运行在生产环境
+在BSD等tcsh环境下：
+setenv VA_ENV production;vanilla start [--trace]  -- 运行在生产环境
 ```
 #####*代码目录结构说明*
 ```
