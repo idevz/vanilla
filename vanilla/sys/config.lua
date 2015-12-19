@@ -16,8 +16,6 @@ Sysconf.app_dirs = {
     logs = 'logs'
 }
 
--- ngx.say(Sysconf.env)
-
 if Sysconf.env == 'development' then
     function sprint_r( ... )
         local helpers = require 'vanilla.v.libs.utils'

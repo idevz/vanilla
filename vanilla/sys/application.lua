@@ -186,7 +186,7 @@ local bootstrap = [[
 local Bootstrap = require('vanilla.v.bootstrap'):new(dispatcher)
 
 function Bootstrap:initWaf()
-    require 'vanilla.sys.waf.acc'
+    require('vanilla.sys.waf.acc'):check()
 end
 
 function Bootstrap:initErrorHandle()
