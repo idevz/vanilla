@@ -72,7 +72,10 @@ Options:
 vanilla new app_name
 cd app_name
 vanilla start [--trace]     -- default running in development environment.
+## under bash on linux
 VA_ENV=production vanilla start [--trace]  -- add VA_ENV to set the running environment.
+## under tcsh on BSD
+setenv VA_ENV production ; vanilla start [--trace]  -- add VA_ENV to set the running environment.
 ```
 ##### *The code directory structure*
 ```
