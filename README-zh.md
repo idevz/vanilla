@@ -156,7 +156,7 @@ return IndexController
 
 ### 社区组织
 #### *QQ群&&微信公众号*
-- Openresty/Vanilla开发QQ群：205773855（专题讨论Vanilla相关话题）*
+- *Openresty/Vanilla开发QQ群：205773855（专题讨论Vanilla相关话题）*
 - *Openresty 技术交流QQ群：34782325（讨论OpenResty和各种高级技术）*
 - *Vanilla开发微信公众号:Vanilla-OpenResty(Vanilla相关资讯、文档推送)*
 
