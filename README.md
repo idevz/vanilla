@@ -15,9 +15,11 @@
 - Luarocks
 
 #### *Tips of ```make install```:*
-Vanilla support many configuration options, many of those option have default value. You can use default installation but if your enviroment values different from which vanilla default, please config it with yours.
+*Vanilla support many configuration options, many of those option have default value. *
 
-Especially the ```--openresty-path``` option. you should make sure this is point to your own OpenResty install path.
+You can use default installation but if your enviroment values different from which vanilla default, please config it with yours.
+
+Especially the ```--openresty-path``` option. you should make sure it's point to your turely OpenResty install path.
 
 You can run command ```./configure --help``` to learn how to use those options. 
 
@@ -31,6 +33,7 @@ make install
 
 #### *Tips of ```luarocks install```:*
 *You can use luarocks to install vanilla, but three point should be clear:*
+
 1. Your luarocks should install with lua5.1.x because of the compatibility problems in ABIs between Lua and Luajit.
 2. parameter NGX_PATH will be disabled in the nginx.conf.
 3. make sure that command nginx is in your environment PATH.
