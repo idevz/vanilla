@@ -15,12 +15,10 @@
 - Luarocks
 
 #### *Tips of ```make install```:*
-*Vanilla support many configuration options, many of those option have default value. *
+*Vanilla support many configuration options, many of those option have default value.*
 
 You can use default installation but if your enviroment values different from which vanilla default, please config it with yours.
-
 Especially the ```--openresty-path``` option. you should make sure it's point to your turely OpenResty install path.
-
 You can run command ```./configure --help``` to learn how to use those options. 
 
 Below is the installation of a simple example:
