@@ -1,6 +1,6 @@
 -- dep
 -- https://github.com/cloudflare/lua-resty-shcache
-local http_handle = require('vanilla.v.libs.resty.shcache').new()
+local http_handle = require('resty.shcache')
 
 -- perf
 local setmetatable = setmetatable
