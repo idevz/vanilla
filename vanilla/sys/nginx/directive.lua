@@ -78,9 +78,9 @@ function Directive:initWorkerByLuaFile(lua_file)
     return res
 end
 
-function Directive:setByLua(lua_lib)
-    if lua_lib == nil then return '' end
-    local res = [[set_by_lua require(']] .. lua_lib .. [[');]]
+function Directive:setByLua(set_table)
+    if set_table.key == nil or set_table.lua_lib == nil then return '' end
+    local res = [[set_by_lua $]] .. set_table.key .. [[ 'return "]] .. require(set_table.lua_lib) .. [["';]]
     return res
 end
 
