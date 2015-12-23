@@ -14,7 +14,7 @@ local function init_errors()
     -- get app errors
     local errors = helpers.try_require('config.errors', {})
     -- add system errors
-    errors[100] = { status = 500, message = "Syntax Err." }
+    errors[100] = { status = 500, message = "Vanilla Inner Lpcall Err." }
     errors[101] = { status = 500, message = "DisPatcher Err: Request init Error." }
     errors[102] = { status = 404, message = "DisPatcher Err: Action didn't defined." }
     errors[103] = { status = 500, message = "Controller Err." }
@@ -22,6 +22,7 @@ local function init_errors()
     errors[105] = { status = 500, message = "Response Err." }
     errors[201] = { status = 500, message = "Routing Err: Empty Routes set." }
     errors[202] = { status = 404, message = "Routing Err: No Routes Match." }
+    errors[203] = { status = 500, message = "Plugins Err." }
 
     return errors
 end

@@ -1,6 +1,6 @@
 -- dep
 -- https://github.com/bungle/lua-resty-session
-local http_handle = require('vanilla.v.libs.resty.session').new()
+local http_handle = require('resty.session').new()
 
 -- perf
 local setmetatable = setmetatable

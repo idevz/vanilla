@@ -357,6 +357,7 @@ local waf_conf_regs_whiteurl = [[
 
 
 local nginx_config_tpl = [[
+# user www www;
 pid ]] .. va_conf.app_dirs.tmp .. [[/{{VA_ENV}}-nginx.pid;
 
 # This number should be at maxium the number of CPU on the server
@@ -370,7 +371,7 @@ events {
 http {
     # use sendfile
     sendfile on;
-    include {{NGX_PATH}}/conf/mime.types;
+    # include {{NGX_PATH}}/conf/mime.types;
 
     # Va initialization
     {{LUA_PACKAGE_PATH}}

@@ -4,53 +4,43 @@
 ![Vanilla](vanilla-pub.png)
 
 ### *邮件列表*
-vanilla-en <vanilla-en@googlegroups.com>
-
-vanilla-devel <vanilla-devel@googlegroups.com>
-
-vanilla中文邮件列表 <vanilla@googlegroups.com>
+- vanilla-en <vanilla-en@googlegroups.com>
+- vanilla-devel <vanilla-devel@googlegroups.com>
+- vanilla中文邮件列表 <vanilla@googlegroups.com>
 
 ### *安装*
-~~~
+*目前Vanilla支持两种安装方式*
+
+- Make（推荐使用此种）
+- Luarocks
+
+#### *```make install```安装须知*
+Vanilla 支持的选项都提供了默认值，如果你的环境与默认值不一样，请configure时指定成你自己的。
+
+特别注意选项```--openresty-path```，默认为```/usr/local/openresty```，请确保设置正确。
+
+可以在源码目录下执行```configure --help```来查看安装选项的使用方法。
+
+下面是一个简单的安装示例：
+```
 ./configure --prefix=/usr/local/vanilla --openresty-path=/usr/local/openresty
 
 make install （如果没有C模块【目前支持lua-filesystem】，则不需要make，直接make install）
-~~~
-
-##### *configure*
-Vanilla 支持的选项都提供了默认值，如果你的环境与默认值不一样，请configure时指定成你自己的。特别注意选项--openresty-path，默认为/usr/local/openresty，请确保设置正确。
-
-直接运行 ```make install```安装Vanilla。
 ```
-./configure --help
-  --help                                this message
+#### *```luarocks install```安装须知*
+*可以使用luarocks安装vanilla，但是下面三点请注意*
+1. Luarocks应该基于lua5.1.x的版本安装，因为其他版本Lua和Luajit的ABI存在兼容性问题。
+2. Luarocks安装的Vanilla在nginx.conf文件的NGX_PATH变量不可用。
+3. 请确保nginx命令可以直接运行（nginx命令在你的环境变量中）
 
-  --prefix=PATH                         set the installation prefix (default to /usr/local/vanilla)
-  --vanilla-bin-path=PATH               set vanilla bin path (default to /usr/local/bin)
-  --platform=                           set platform(darwin, linux...)
+### Vanilla 使用
+#### *Vanilla命令*
+*Vanilla 目前提供了两个命令 ```vanilla```，和 ```vanilla-console```*
+- ```vanilla```用来初始化应用骨架，停启服务（添加--trace参数可以看到执行的命令）
+- ```vanilla-console``` 是一个交互式命令行，主要提供一种方便学习Lua入门的工具，可以使用一些vanilla开发环境下的包，比如table输出的lprint_r方法。
 
-  --openresty-path=PATH                 set openresty install path (default to /usr/local/openresty)
-  --with-openresty-luajit-include-path=PATH
-                                        set openresty luajit include path for install C moudle
-                                        (like: /usr/local/openresty/luajit/include/luajit-2.1)
-  --with-luajit-or-lua-bin=BIN          set openresty luajit or standard lua bin for run vanilla vanilla-console
-                                        (default to $openresty_path/luajit/bin/luajit*)
-
-  --without-lua-resty-cookie            disable the lua-resty-cookie library
-  --without-lua-resty-template          disable the lua-resty-template library
-  --without-lua-resty-http              disable the lua-resty-http library
-  --without-lua-resty-logger-socket     disable the lua-resty-logger-socket library
-  --without-lua-resty-session           disable the lua-resty-session library
-  --without-lua-resty-shcache           disable the lua-resty-shcache library
-
-  --with-lua-filesystem                 enable and build lua-filesystem
-                                        (must need option --with-openresty-luajit-include-path)
-```
-##### *命令*
-Vanilla 目前提供了两个命令 ```vanilla```，和 ```vanilla-console```； ```vanilla```用来初始化应用骨架，停启服务（添加--trace参数可以看到执行的命令）， ```vanilla-console``` 是一个交互式命令行，主要提供一种方便学习Lua入门的工具，可以使用一些vanilla开发环境下的包，比如table输出的lprint_r方法。
-
-##### *vanilla命令选项*
 命令行执行 ```vanilla```就能清晰看到 ```vanilla```命令提供的选项。
+
 ~~~
 vanilla
 Vanilla v0.1.0-rc3, A MVC web framework for Lua powered by OpenResty.
@@ -66,8 +56,7 @@ Options:
  --trace                Shows additional logs
 ~~~
 
-## Vanilla 使用
-##### *创建应用*
+#### *创建应用*
 ```
 vanilla new app_name
 cd app_name
@@ -78,7 +67,7 @@ VA_ENV=production vanilla start [--trace]  -- 运行在生产环境
 ## 在BSD等tcsh环境下：
 setenv VA_ENV production;vanilla start [--trace]  -- 运行在生产环境
 ```
-#####*代码目录结构说明*
+#### *代码目录结构*
 ```
  /Users/zj-git/app_name/ tree ./
 ./
@@ -117,14 +106,9 @@ setenv VA_ENV production;vanilla start [--trace]  -- 运行在生产环境
 ├── logs（日志目录）
 │   └── hack（攻击日志目录 / 保持可写权限）
 ├── pub（应用Nginx配置根路径）
-│   └── index.lua（应用请求入口）
-└── spec（基于busted的单元测试路径）
-    ├── controllers
-    │   └── index_controller_spec.lua
-    ├── models
-    └── spec_helper.lua
+    └── index.lua（应用请求入口）
 ```
-#####*业务代码示例 IndexController*
+#### *业务代码示例 IndexController*
 ```
 local IndexController = {}
 
@@ -139,7 +123,7 @@ end
 
 return IndexController
 ```
-#####*模板示例 views/index/index.html*
+#### *模板示例 views/index/index.html*
 ```
 <!DOCTYPE html>
 <html>
@@ -150,30 +134,31 @@ return IndexController
 </html>
 ```
 
-##为什么需要Vanilla
+### 为什么需要Vanilla
 回答这个问题，我们只需要看清楚Openresty和Vanilla各自做了什么即可。
-#####*Openresty*
-* 提供了处理HTTP请求的全套整体解决方案
-* 给Nginx模块开发开辟了一条全新的道路，我们可以使用Lua来处理Web请求
-* 形成了一个日趋完善的生态，这个生态涵盖了高性能Web服务方方面面 
+#### *Openresty*
 
-#####*Vanilla*
-* 基于Openresty开发，具备Openresty一切优良特性
-* 实现了自动化、配置化的Nginx指令集管理
-* 更合理的利用Openresty封装的8个处理请求Phase
-* 支持不同运行环境（开发、测试、上线）服务的自动化配置和运行管理
-* 使复杂的Nginx配置对Web业务开发者更透明化
-* 开发者不再需要了解Openresty的实现细节，而更关注业务本身
-* 实现了Web开发常规的调试，错误处理，异常捕获
-* 实现了请求的完整处理流程和插件机制，支持路由协议、模板引擎的配置化
-* 整合、封装了一系列Web开发常用的工具集、类库（cookie、应用防火墙等）
-* 功能使用方便易于扩展
+- 提供了处理HTTP请求的全套整体解决方案
+- 给Nginx模块开发开辟了一条全新的道路，我们可以使用Lua来处理Web请求
+- 形成了一个日趋完善的生态，这个生态涵盖了高性能Web服务方方面面 
 
-##社区组织
-#####*QQ群&&微信公众号*
-*Openresty/Vanilla开发QQ群：205773855（专题讨论Vanilla相关话题）*<br />
-*Openresty 技术交流QQ群：34782325（讨论OpenResty和各种高级技术）*<br />
-*Vanilla开发微信公众号:Vanilla-OpenResty(Vanilla相关资讯、文档推送)*
+#### *Vanilla*
+- 使复杂的Nginx配置对Web业务开发者更透明化
+- 开发者不再需要了解Openresty的实现细节，而更关注业务本身
+- 实现了Web开发常规的调试，错误处理，异常捕获
+- 实现了请求的完整处理流程和插件机制，支持路由协议、模板引擎的配置化
+- 整合、封装了一系列Web开发常用的工具集、类库（cookie、应用防火墙等）
+- 实现了自动化、配置化的Nginx指令集管理
+- 更合理的利用Openresty封装的8个处理请求Phase
+- 支持不同运行环境（开发、测试、上线）服务的自动化配置和运行管理
+- 功能使用方便易于扩展
+- 基于Openresty开发，具备Openresty一切优良特性
+
+### 社区组织
+#### *QQ群&&微信公众号*
+- *Openresty/Vanilla开发QQ群：205773855（专题讨论Vanilla相关话题）*
+- *Openresty 技术交流QQ群：34782325（讨论OpenResty和各种高级技术）*
+- *Vanilla开发微信公众号:Vanilla-OpenResty(Vanilla相关资讯、文档推送)*
 
 
 [![QQ](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=673157ee0f0207ce2fb305d15999225c5aa967e88913dfd651a8cf59e18fd459)
