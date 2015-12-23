@@ -104,9 +104,9 @@ local error_tpl = [[
   <h1>{{status}}</h1>
   {% for k, v in pairs(body) do %}
       {% if k == 'message' then %}
-      <h4>{{k}}  =>  {{v}}</h4>
+      <h4><pre>{{k}}  =>  {{v}}</pre></h4>
       {% else %}
-      <h5>{{k}}  :  {{v}}</h5>
+      <h5><pre>{{k}}  :  {{v}}</pre></h5>
       {% end %}
   {% end %}
 </body>
