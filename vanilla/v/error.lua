@@ -22,6 +22,7 @@ local function init_errors()
     errors[105] = { status = 500, message = "Response Err." }
     errors[201] = { status = 500, message = "Routing Err: Empty Routes set." }
     errors[202] = { status = 404, message = "Routing Err: No Routes Match." }
+    errors[203] = { status = 500, message = "Plugins Err." }
 
     return errors
 end
