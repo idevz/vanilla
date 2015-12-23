@@ -17,6 +17,7 @@ function Request:new()
         req_uri = ngx.var.request_uri,
         req_args = ngx.var.args,
         params = params,
+        uri_args = ngx.req.get_uri_args(),
         method = ngx.req.get_method(),
         headers = ngx.req.get_headers(),
         body_raw = ngx.req.get_body_data()
