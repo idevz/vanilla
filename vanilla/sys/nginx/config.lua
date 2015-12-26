@@ -9,8 +9,6 @@ local app_run_evn = ogetenv("VA_ENV") or 'development'
 local va_ngx_conf = {}
 va_ngx_conf.common = {
 	VA_ENV = app_run_evn,
-	LUA_PACKAGE_PATH = '',
-	LUA_PACKAGE_CPATH = '',
 }
 
 if VANILLA_NGX_PATH ~= nil then

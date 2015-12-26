@@ -27,11 +27,11 @@ function Request:new()
 end
 
 function Request:getControllerName()
-    return self.request.controller_name
+    return self.controller_name
 end
 
 function Request:getActionName()
-    return self.request.action_name
+    return self.action_name
 end
 
 function Request:getParams()

@@ -414,6 +414,8 @@ local ngx_conf = {}
 ngx_conf.common = {
     INIT_BY_LUA = 'nginx.init',
     LUA_SHARED_DICT = 'nginx.sh_dict',
+    -- LUA_PACKAGE_PATH = '',
+    -- LUA_PACKAGE_CPATH = '',
     CONTENT_BY_LUA_FILE = './pub/index.lua'
 }
 

@@ -1,3 +1,6 @@
+package.path = './application/?.lua;./application/library/?.lua;./application/?/init.lua;' .. package.path
+package.cpath = './application/library/?.so;' .. package.cpath
+
 -- convert true|false to on|off
 local function convert_boolean_to_onoff(value)
     if value == true then value = 'on' else value = 'off' end
@@ -18,18 +21,16 @@ function Directive:new(env)
 end
 
 function Directive:luaPackagePath(lua_path)
-    local path = './application/?.lua;./application/library/?.lua;./application/?/init.lua;'
-    if lua_path ~= nil then path = path .. lua_path end
-    path = path .. './?.lua;'
-    local res = [[lua_package_path "]] .. path .. package.path .. [[;/?.lua;/lib/?.lua;;";]]
+    local path = package.path
+    if lua_path ~= nil then path = lua_path .. path end
+    local res = [[lua_package_path "]] .. path .. [[;;";]]
     return res
 end
 
 function Directive:luaPackageCpath(lua_cpath)
-    local path = './application/library/?.so;'
-    if lua_cpath ~= nil then path = path .. lua_cpath end
-    path = path .. './?.so;'
-    local res = [[lua_package_cpath "]] .. path .. package.cpath .. [[;/?.so;/lib/?.so;;";]]
+    local path = package.cpath
+    if lua_cpath ~= nil then path = lua_cpath .. path end
+    local res = [[lua_package_cpath "]] .. path .. [[;;";]]
     return res
 end
 
@@ -39,8 +40,6 @@ function Directive:codeCache(bool_var)
 end
 
 function Directive:luaSharedDict( lua_lib )
-    local path = './application/?.lua;./application/library/?.lua;./application/?/init.lua;'
-    package.path = path .. package.path
     local ok, sh_dict_conf_or_error = pcall(function() return require(lua_lib) end)
     if ok == false then
         return false
