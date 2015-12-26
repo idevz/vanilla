@@ -1,4 +1,5 @@
 #!/usr/bin/env luajit
+package.path = './?.lua;' .. package.path --;; didn't contains ./?.lua in cli
 local V = require 'vanilla.sys.config'
 
 local help_description = [[Vanilla v]] .. V.version .. [[, A MVC web framework for Lua powered by OpenResty.
