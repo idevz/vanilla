@@ -1,4 +1,6 @@
 ## Vanilla / (香草[中文文档](README-zh.md)) / OSC [Git](http://git.oschina.net/idevz/vanilla)
+
+[![Join the chat at https://gitter.im/idevz/vanilla](https://badges.gitter.im/idevz/vanilla.svg)](https://gitter.im/idevz/vanilla?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 *Vanilla is An OpenResty Lua MVC Web Framework.*
 
 ![Vanilla](vanilla-en.png)
