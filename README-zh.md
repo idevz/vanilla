@@ -47,13 +47,14 @@ Vanilla v0.1.0-rc3, A MVC web framework for Lua powered by OpenResty.
 
 Usage: vanilla COMMAND [ARGS] [OPTIONS]
 
-The available vanilla commands are:
- new [name]             Create a new Vanilla application
- start                  Starts the Vanilla server
- stop                   Stops the Vanilla server
+目前可用Vanilla命令选项如下:
+ new [name]             创建一个名字为name的新应用
+ start                  启动Vanilla应用 
+ stop                   停止Vanilla应用
+ restart				先停止再启动Vanilla应用
 
 Options:
- --trace                Shows additional logs
+ --trace                显式显示日志
 ~~~
 
 #### *创建应用*

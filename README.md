@@ -57,6 +57,7 @@ The available vanilla commands are:
  new [name]             Create a new Vanilla application
  start                  Starts the Vanilla server
  stop                   Stops the Vanilla server
+ restart				First Stops and then Starts the Vanilla servers
 
 Options:
  --trace                Shows additional logs
