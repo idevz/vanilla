@@ -16,7 +16,7 @@ Sysconf.app_dirs = {
     logs = 'logs'
 }
 
-if Sysconf.env == 'development' then
+if Sysconf.env == 'development' or Sysconf.env == 'test' then
     function sprint_r( ... )
         local helpers = require 'vanilla.v.libs.utils'
         return helpers.sprint_r(...)
