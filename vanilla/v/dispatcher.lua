@@ -26,6 +26,7 @@ local Dispatcher = {}
 
 function Dispatcher:new(application)
     self.request = Request:new()
+    self.response = Response:new()
     self.router = Router:new(self.request)
     local instance = {
         application = application,
@@ -97,7 +98,6 @@ function Dispatcher:dispatch()
     self:_runPlugins('routerStartup')
     self:_route()
     self:_runPlugins('routerShutdown')
-    self.response = Response:new()
     self.controller = Controller:new(self.request, self.response, self.application.config)
     self.view = self.application:lpcall(new_view, self.application.config.view)
     self:_runPlugins('dispatchLoopStartup')
