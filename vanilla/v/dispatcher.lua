@@ -25,7 +25,8 @@ end
 local Dispatcher = {}
 
 function Dispatcher:new(application)
-    self:_init(application)
+    self.request = Request:new()
+    self.router = Router:new(self.request)
     local instance = {
         application = application,
         plugins = {},
@@ -37,20 +38,12 @@ function Dispatcher:new(application)
     return instance
 end
 
-function Dispatcher:_init(application)
-	self.request = Request:new()
-    self.router = Router:new(self.request)
-	self.response = Response:new()
-    self.controller = Controller:new(self.request, self.response, application.config)
-    self.view = application:lpcall(new_view, application.config.view)
-end
-
 function Dispatcher:getRequest()
-	return self.request
+    return self.request
 end
 
 function Dispatcher:setRequest(request)
-	self.request = request
+    self.request = request
 end
 
 function Dispatcher:getResponse()
@@ -102,8 +95,11 @@ end
 
 function Dispatcher:dispatch()
     self:_runPlugins('routerStartup')
-	self:_route()
+    self:_route()
     self:_runPlugins('routerShutdown')
+    self.response = Response:new()
+    self.controller = Controller:new(self.request, self.response, self.application.config)
+    self.view = self.application:lpcall(new_view, self.application.config.view)
     self:_runPlugins('dispatchLoopStartup')
     self:_runPlugins('preDispatch')
     local matched_controller = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
@@ -152,11 +148,11 @@ function Dispatcher:raise_error(err)
 end
 
 function Dispatcher:getApplication()
-	return self.application
+    return self.application
 end
 
 function Dispatcher:setView(view)
-	self.view = view
+    self.view = view
 end
 
 function Dispatcher:returnResponse()
