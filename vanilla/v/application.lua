@@ -10,23 +10,6 @@ local pairs = pairs
 local pcall = pcall
 local require = require
 local setmetatable = setmetatable
-local function buildconf(config)
-    if config ~= nil then
-        for k,v in pairs(config) do sys_conf[k] = v end
-    end
-    if sys_conf.name == nil or sys_conf.app.root == nil then
-        Utils.raise_syserror([[
-            Sys Err: Please set app name and app root in config/application.lua like:
-            
-                Appconf.name = 'idevz.org'
-                Appconf.app.root='./'
-            ]])
-    end
-    Registry['app_name'] = sys_conf.name
-    Registry['app_root'] = sys_conf.app.root
-    Registry['app_version'] = sys_conf.version
-    return sys_conf
-end
 
 local function new_dispatcher(self)
     return Dispatcher:new(self)
@@ -47,8 +30,26 @@ function Application:lpcall( ... )
     end
 end
 
+function Application:buildconf(config)
+    if config ~= nil then
+        for k,v in pairs(config) do sys_conf[k] = v end
+    end
+    if sys_conf.name == nil or sys_conf.app.root == nil then
+        self:raise_syserror([[
+            Sys Err: Please set app name and app root in config/application.lua like:
+            
+                Appconf.name = 'idevz.org'
+                Appconf.app.root='./'
+            ]])
+    end
+    Registry['app_name'] = sys_conf.name
+    Registry['app_root'] = sys_conf.app.root
+    Registry['app_version'] = sys_conf.version
+    return sys_conf
+end
+
 function Application:new(config)
-    self.config = buildconf(config)
+    self.config = self:buildconf(config)
     local instance = {
         run = self.run,
         bootstrap = self.bootstrap,
