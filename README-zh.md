@@ -1,4 +1,7 @@
 ## 香草/Vanilla
+
+[![Join the chat at https://gitter.im/idevz/vanilla](https://badges.gitter.im/idevz/vanilla.svg)](https://gitter.im/idevz/vanilla?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 *香草/Vanilla是一个基于Openresty实现的高性能Web应用开发框架.*
 
 ![Vanilla](vanilla-pub.png)
