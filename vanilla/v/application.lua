@@ -51,8 +51,6 @@ end
 function Application:new(config)
     self.config = self:buildconf(config)
     local instance = {
-        run = self.run,
-        bootstrap = self.bootstrap,
         dispatcher = self:lpcall(new_dispatcher, self)
     }
     setmetatable(instance, {__index = self})
