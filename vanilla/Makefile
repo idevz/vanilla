@@ -3,7 +3,7 @@ OPENRESTY_PREFIX=/usr/local/openresty
 PREFIX ?=          /usr/local/vanilla
 VANILLA_LIB_DIR ?= $(PREFIX)/
 INSTALL ?= install
-DEV_ROCKS = busted luacov luacov-coveralls luacheck
+DEV_ROCKS = busted luacov luacov-coveralls luacheck lrexlib-pcre
 
 .PHONY: all test install dev
 
