@@ -59,7 +59,8 @@ The available vanilla commands are:
  start                  Starts the Vanilla server
  stop                   Stops the Vanilla server
  restart				First Stops and then Starts the Vanilla servers
-
+ reload					Reload nginx.conf of Vanilla server
+ 
 Options:
  --trace                Shows additional logs
 ```

@@ -45,6 +45,10 @@ local function stop_nginx(env, nginx_conf_file_path)
     return nginx_command(env, nginx_conf_file_path, '-s stop')
 end
 
+local function reload_nginx(env, nginx_conf_file_path)
+    return nginx_command(env, nginx_conf_file_path, '-s reload')
+end
+
 
 local NginxHandle = {}
 NginxHandle.__index = NginxHandle
@@ -74,4 +78,13 @@ function NginxHandle:stop(env)
 
     return result
 end
+
+function NginxHandle:reload(env)
+    remove_nginx_conf(self.nginx_conf_file_path) 
+    create_nginx_conf(self.nginx_conf_file_path, self.nginx_conf_content)
+
+    return reload_nginx(env, self.nginx_conf_file_path)
+end
+
+
 return NginxHandle
