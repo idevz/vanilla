@@ -90,4 +90,20 @@ function Vanilla.stop(env)
     end
 end
 
+function Vanilla.reload(env)
+    if env == nil then env = va_conf.env end
+    local base_launcher = base_launcher()
+    
+    result = base_launcher:reload(env)
+
+    if va_conf.env ~= 'test' then
+        if result == 0 then
+            print(ansicolors("Vanilla app in %{green}" .. va_conf.env .. "%{reset} was succesfully reloaded."))
+        else
+            print(ansicolors("%{red}ERROR:%{reset} Could not reload Vanilla app (are you sure it is running?)."))
+        end
+    end
+end
+
+
 return Vanilla

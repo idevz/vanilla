@@ -55,6 +55,7 @@ Usage: vanilla COMMAND [ARGS] [OPTIONS]
  start                  启动Vanilla应用 
  stop                   停止Vanilla应用
  restart				先停止再启动Vanilla应用
+ reload					重新加载Vanilla应用中的nginx.conf文件
 
 Options:
  --trace                显式显示日志
