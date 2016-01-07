@@ -18,12 +18,12 @@ end
 va_ngx_conf.env = {}
 va_ngx_conf.env.development = {
     LUA_CODE_CACHE = false,
-    PORT = 7200
+    PORT = 9110
 }
 
 va_ngx_conf.env.test = {
     LUA_CODE_CACHE = true,
-    PORT = 7201
+    PORT = 9111
 }
 
 va_ngx_conf.env.production = {
