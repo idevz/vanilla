@@ -74,6 +74,9 @@ end
 function Application:raise_syserror(err)
     if type(err) == 'table' then
         err = Error:new(err.code, err.msg)
+        ngx.status = err.status
+    else
+        ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
     end
     ngx.say('<pre />')
     ngx.say(Utils.sprint_r(err))

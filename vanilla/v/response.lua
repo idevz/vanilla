@@ -10,8 +10,8 @@ function Response:new()
     local app_version = Registry['app_version']
     ngx.header['Content_type'] = 'text/html; charset=UTF-8'
     ngx.header['Power_By'] = 'Vanilla-' .. app_version
+    ngx.status = ngx.HTTP_OK
     local instance = {
-        status = 200,
         headers = {},
         append_body = '',
         body = '',
@@ -66,7 +66,7 @@ function Response:setBody(body)
 end
 
 function Response:setStatus(status)
-    if status ~= nil then self.status = status end
+    if status ~= nil then ngx.status = status end
 end
 
 function Response:setHeaders(headers)

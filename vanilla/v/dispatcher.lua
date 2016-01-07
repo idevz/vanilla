@@ -144,6 +144,7 @@ function Dispatcher:raise_error(err)
     else
         error_controller.err = Error:new(100, {msg = err})
     end
+    self.response:setStatus(error_controller.err.status)
     return error_controller[self.error_action](error_controller)
 end
 
