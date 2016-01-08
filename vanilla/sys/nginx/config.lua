@@ -34,6 +34,11 @@ va_ngx_conf.env.production = {
 local function getNgxConf(conf_arr)
 	if conf_arr['common'] ~= nil then
 		local common_conf = conf_arr['common']
+		if common_conf['BASE_LIBRARY'] ~= nil then 
+			package.path = package.path .. ';' .. common_conf['BASE_LIBRARY'] .. '/?.lua;'
+						   .. common_conf['BASE_LIBRARY'] .. '/?/init.lua'
+			package.cpath = package.cpath .. ';' .. common_conf['BASE_LIBRARY'] .. '/?.so'
+		end
 		local env_conf = conf_arr['env'][app_run_evn]
 		for directive, info in pairs(common_conf) do
 			env_conf[directive] = info
