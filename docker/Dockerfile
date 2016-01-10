@@ -8,5 +8,6 @@ RUN luarocks install vanilla
 RUN cd /tmp && tar zxf ngx_openresty-1.9.3.1.tar.gz && cd ngx_openresty-1.9.3.1 && ./configure && gmake && gmake install && ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/bin/nginx
 ADD ./supervisord.conf /etc/
 RUN cd /tmp && vanilla new vdemo
-EXPOSE 7200
+EXPOSE 9110
+RUN cd /tmp/vdemo/ && vanilla start
 CMD ["/usr/bin/supervisord"]
