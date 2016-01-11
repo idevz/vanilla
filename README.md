@@ -143,7 +143,7 @@ return IndexController
 ```
 
 ### Why Vanilla
-*To answer this question, we just need to see what did Openresty and Vanilla have done.*
+*To answer this question, we just need to see what Openresty has done and Vanilla has done.*
 #### *Openresty*
 - Provides processing HTTP requests a full set of the overall solution
 - Opened up a new way for Nginx module development, we can use Lua to deal with Web requests
