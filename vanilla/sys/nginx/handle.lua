@@ -80,7 +80,8 @@ function NginxHandle:stop(env)
 end
 
 function NginxHandle:reload(env)
-    remove_nginx_conf(self.nginx_conf_file_path) 
+    remove_nginx_conf(self.nginx_conf_file_path)
+    create_dirs(self.necessary_dirs)
     create_nginx_conf(self.nginx_conf_file_path, self.nginx_conf_content)
 
     return reload_nginx(env, self.nginx_conf_file_path)
