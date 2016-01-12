@@ -1,6 +1,5 @@
 -- vanilla
 local Error = require 'vanilla.v.error'
-local sys_conf = require 'vanilla.sys.config'
 local Dispatcher = require 'vanilla.v.dispatcher'
 local Registry = require('vanilla.v.registry'):new('sys')
 local Utils = require 'vanilla.v.libs.utils'
@@ -31,6 +30,7 @@ function Application:lpcall( ... )
 end
 
 function Application:buildconf(config)
+    local sys_conf = require 'vanilla.sys.config'
     if config ~= nil then
         for k,v in pairs(config) do sys_conf[k] = v end
     end
@@ -45,11 +45,12 @@ function Application:buildconf(config)
     Registry['app_name'] = sys_conf.name
     Registry['app_root'] = sys_conf.app.root
     Registry['app_version'] = sys_conf.version
-    return sys_conf
+    self.config = sys_conf
+    return true
 end
 
 function Application:new(config)
-    self.config = self:buildconf(config)
+    self:buildconf(config)
     local instance = {
         dispatcher = self:lpcall(new_dispatcher, self)
     }
