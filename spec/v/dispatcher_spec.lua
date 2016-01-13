@@ -49,12 +49,6 @@ describe("Dispatcher", function()
         end)
     end)
 
-    describe("#_init", function()
-        it("init a dispatcher instance", function()
-            assert.are.same(request, dispatcher.request)
-        end)
-    end)
-
     describe("#getRequest", function()
         it("get a request instance", function()
             assert.are.same(request, dispatcher.request)
