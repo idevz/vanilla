@@ -135,6 +135,8 @@ function Dispatcher:errResponse(err)
 end
 
 function Dispatcher:raise_error(err)
+    if self.controller == nil then self.controller = Controller:new(self.request, self.response, self.application.config) end
+    if self.view == nil then self.view = self.application:lpcall(new_view, self.application.config.view) end
     local error_controller = require(self.controller_prefix .. self.error_controller)
     setmetatable(error_controller, { __index = self.controller })
     self:initView(self.view, self.error_controller, self.error_action)
