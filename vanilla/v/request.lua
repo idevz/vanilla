@@ -34,6 +34,18 @@ function Request:getActionName()
     return self.action_name
 end
 
+function Request:getHeaders()
+    return self.headers
+end
+
+function Request:getHeader(key)
+    if self.headers[key] ~= nil then
+        return self.headers[key]
+    else
+        return false
+    end
+end
+
 function Request:getParams()
     return self.params
 end
