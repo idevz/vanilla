@@ -20,7 +20,7 @@ local http_methods = {
 
 local function rule_pattern(pattern)
     local params = {}
-    local n_p = ngxgsub(pattern, "/:([A-Za-z0-9_]+)", function(m) tappend(params, m[1]); return "/([A-Za-z0-9_]+)" end)
+    local n_p = ngxgsub(pattern, "/:([A-Za-z0-9_]+)", function(m) tappend(params, m[1]); return "/([A-Za-z0-9_]+)" end, "io")
     return n_p, params
 end
 
@@ -68,7 +68,7 @@ function RestFul:match()
     local uri = self.request.uri
     local match_rs = nil
     for k,info in pairs(self.rules) do
-        match_rs = ngxmatch(uri, info['pattern'])
+        match_rs = ngxmatch(uri, info['pattern'], "io")
         if match_rs then
             for index, p in pairs(info['params']) do
                 self.request:setParam(p, match_rs[index])
