@@ -25,7 +25,7 @@ end
 
 function Router:removeRoute(route_name)
     for i,route in ipairs(self.routes) do
-        if (tostring(route) == route_name) then self.routes[i] = nil end
+        if (tostring(route) == route_name) then self.routes[i] = false end
     end
 end
 
@@ -47,18 +47,22 @@ end
 
 function Router:route()
     if #self.routes >= 1 then
+        local alive_route_num = 0
         local route_err = {}
         for k,route in ipairs(self.routes) do
-            local ok, controller_name_or_error, action = pcall(route_match, route)
-            if ok and controller_name_or_error then
-                self.current_route = route
-                return controller_name_or_error, action
-            else
-                route_err[k] = controller_name_or_error
+            if route then
+                alive_route_num = alive_route_num + 1
+                local ok, controller_name_or_error, action = pcall(route_match, route)
+                if ok and controller_name_or_error then
+                    self.current_route = route
+                    return controller_name_or_error, action
+                else
+                    route_err[k] = controller_name_or_error
+                end
             end
         end
         error({ code = 201, msg = {
-            Routes_No_Match = #self.routes .. "Routes All Didn't Match. Errs Like: " .. tconcat( route_err, ", ")}})
+            Routes_No_Match = alive_route_num .. "Routes All Didn't Match. Errs Like: " .. tconcat( route_err, ", ")}})
     end
     error({ code = 201, msg = {Empty_Routes = 'Null routes added.'}})
 end
