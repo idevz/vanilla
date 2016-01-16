@@ -57,7 +57,7 @@ function Router:route()
                 route_err[k] = controller_name_or_error
             end
         end
-        error({ code = 202, msg = {
+        error({ code = 201, msg = {
             Routes_No_Match = #self.routes .. "Routes All Didn't Match. Errs Like: " .. tconcat( route_err, ", ")}})
     end
     error({ code = 201, msg = {Empty_Routes = 'Null routes added.'}})
