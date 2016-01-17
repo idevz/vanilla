@@ -43,7 +43,7 @@ local function get_rules(request)
         end
     else
         error({ code = 201, msg = {Empty_Rules = 'Null routes rules for this Version Or Method Like:' 
-            .. 'v' .. version .. '/' .. req_method}})
+            .. 'v' .. version .. '.' .. req_method}})
     end
     return rules
 end
