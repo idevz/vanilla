@@ -28,6 +28,7 @@ install:
   - luarocks install https://luarocks.org/manifests/olivine-labs/busted-2.0.rc11-0.rockspec
   - luarocks install lrexlib-pcre 2.7.2-1
   - luarocks install luaposix
+  - luarocks install lua-cjson
   - luarocks make
 
 script: busted
