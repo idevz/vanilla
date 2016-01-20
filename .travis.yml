@@ -25,6 +25,7 @@ before_install:
   - source .travis/setenv_lua.sh
 
 install:
+  - luarocks install https://luarocks.org/manifests/olivine-labs/busted-2.0.rc11-0.rockspec
   - luarocks make
 
 script: busted
