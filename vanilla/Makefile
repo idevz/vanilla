@@ -12,8 +12,8 @@ all: ;
 install: all
 	$(INSTALL) -d $(DESTDIR)/$(VANILLA_LIB_DIR)/resty/
 	$(INSTALL) ./bin $(DESTDIR)/$(VANILLA_LIB_DIR)/bin
-	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla/v
-	$(INSTALL) ./sys $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla/sys
+	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
+	$(INSTALL) ./sys $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./vanilla $(VANILLA_BIN_PATH)/vanilla
 	$(INSTALL) ./vanilla-console $(VANILLA_BIN_PATH)/vanilla-console
 
