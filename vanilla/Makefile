@@ -3,6 +3,7 @@ OPENRESTY_PREFIX=/usr/local/openresty
 PREFIX ?=          /usr/local/vanilla
 VANILLA_LIB_DIR ?= $(PREFIX)/
 INSTALL ?= install
+MKDIR ?= mkdir -p
 DEV_ROCKS = busted luacov luacov-coveralls luacheck lrexlib-pcre
 
 .PHONY: all test install dev
@@ -12,6 +13,7 @@ all: ;
 install: all
 	$(INSTALL) -d $(DESTDIR)/$(VANILLA_LIB_DIR)/resty/
 	$(INSTALL) ./bin $(DESTDIR)/$(VANILLA_LIB_DIR)/bin
+	$(MKDIR) $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./sys $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./vanilla $(VANILLA_BIN_PATH)/vanilla
