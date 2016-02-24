@@ -7,9 +7,7 @@ RUN yum localinstall http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-releas
     tar zxf v2.2.2.tar.gz && cd luarocks-2.2.2 && ./configure && make build && make install && cd .. && \
     luarocks install vanilla && \
     tar zxf ngx_openresty-1.9.3.1.tar.gz && cd ngx_openresty-1.9.3.1 && ./configure && gmake && gmake install && cd .. && \
-    ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/bin/nginx && \
-    vanilla new vdemo && \
-    cd ./vdemo/ && vanilla start
+    ln -sf /usr/local/openresty/nginx/sbin/nginx /usr/bin/nginx 
 ADD ./supervisord.conf /etc/
 EXPOSE 9110
 CMD ["/usr/bin/supervisord"]
