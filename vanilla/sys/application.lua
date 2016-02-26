@@ -381,7 +381,7 @@ events {
 http {
     # use sendfile
     sendfile on;
-    # include {{NGX_PATH}}/conf/mime.types;
+    # include {{NGX_PATH}}/conf/mime.types; ###please locate your mime.types file here for a static Server.
 
     # Va initialization
     {{LUA_PACKAGE_PATH}}
