@@ -379,6 +379,7 @@ events {
 }
 
 http {
+    default_type text/html;
     # use sendfile
     sendfile on;
     # include {{NGX_PATH}}/conf/mime.types; ###please locate your mime.types file here for a static Server.
