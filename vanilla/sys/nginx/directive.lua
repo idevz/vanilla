@@ -1,4 +1,4 @@
-package.path = './application/?.luac;./application/?.lua;./application/library/?.lua;./application/?/init.lua;' .. package.path
+package.path = './application/?.lua;./application/library/?.lua;./application/?/init.lua;' .. package.path
 package.cpath = './application/library/?.so;' .. package.cpath
 
 -- convert true|false to on|off
