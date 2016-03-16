@@ -2,6 +2,7 @@
 local error = error
 local pairs = pairs
 local setmetatable = setmetatable
+local ngx_re_find = ngx.re.find
 
 local Request = {}
 

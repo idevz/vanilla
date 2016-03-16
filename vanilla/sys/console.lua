@@ -5,7 +5,7 @@ function Console.start()
 	if VANILLA_JIT_BIN ~= nil then
 		lua = VANILLA_JIT_BIN
 	end
-    local cmd = lua .. " -i -e \"package.path='" .. package.path 
+    local cmd = lua .. " -i -e \"_PROMPT='v-console>';package.path='" .. package.path 
               .. "' package.cpath='" .. package.cpath 
               .. "' require 'vanilla.sys.config';require 'vanilla.v.libs.utils'\""
     os.execute(cmd)

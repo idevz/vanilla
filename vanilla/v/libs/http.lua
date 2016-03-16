@@ -23,7 +23,7 @@ function Http:get(url, method, params, headers, timeout)
 		body = params,
 		headers = headers
 		})
-    return res
+        return res, err
 end
 
 return Http
