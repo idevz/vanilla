@@ -8,7 +8,7 @@ Response.__index = Response
 
 function Response:new()
     local app_version = Registry['app_version']
-    ngx.header['Content_type'] = 'text/html; charset=UTF-8'
+    ngx.header['Content_type'] = 'text/html'
     ngx.header['Power_By'] = 'Vanilla-' .. app_version
     ngx.status = ngx.HTTP_OK
     local instance = {
