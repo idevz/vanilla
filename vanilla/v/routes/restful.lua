@@ -36,9 +36,9 @@ local function get_rules(request)
     if rules_conf['v' .. version] ~= nil and rules_conf['v' .. version][req_method] ~= nil then
         for k,info in pairs(rules_conf['v' .. version][req_method]) do
             local pattern, params = rule_pattern(info['pattern'])
-            pattern = "^" .. pattern .. "$"
+            local pattern_reg = "^" .. pattern .. "$"
             rules[k] = info
-            rules[k]['pattern'] = pattern
+            rules[k]['pattern_reg'] = pattern_reg
             rules[k]['params'] = params
         end
     -- else
@@ -53,7 +53,7 @@ local RestFul = {}
 function RestFul:new(request)
     local instance = {
         route_name = 'vanilla.v.routes.restful',
-    	request = request,
+        request = request,
         rules = get_rules(request)
     }
 
@@ -68,7 +68,7 @@ function RestFul:match()
     local uri = self.request.uri
     local match_rs = nil
     for k,info in pairs(self.rules) do
-        match_rs = ngxmatch(uri, info['pattern'], "io")
+        match_rs = ngxmatch(uri, info['pattern_reg'], "io")
         if match_rs then
             for index, p in pairs(info['params']) do
                 self.request:setParam(p, match_rs[index])
