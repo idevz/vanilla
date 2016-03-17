@@ -16,6 +16,7 @@ function Request:new()
             -- upload request, should not invoke ngx.req.read_body()
         else
             ngx.req.read_body()
+	    params = ngx.req.get_uri_args()
             local post_args = ngx.req.get_post_args()
             if post_args and type(post_args) == "table" then
                 for k,v in pairs(post_args) do
@@ -25,6 +26,7 @@ function Request:new()
         end
     else
         ngx.req.read_body()
+	params = ngx.req.get_uri_args()
         local post_args = ngx.req.get_post_args()
         if post_args and type(post_args) == "table" then
             for k,v in pairs(post_args) do
@@ -87,3 +89,4 @@ function Request:isGet()
 end
 
 return Request
+
