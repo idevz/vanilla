@@ -2,24 +2,46 @@
 local error = error
 local pairs = pairs
 local setmetatable = setmetatable
-
+local sfind = string.find
 local Request = {}
 
 function Request:new()
-    ngx.req.read_body()
-    local params = ngx.req.get_uri_args()
-    for k,v in pairs(ngx.req.get_post_args()) do
-        params[k] = v
-    end
+    local params = {} -- body params
+    local headers = ngx.req.get_headers()
 
+    local header = headers['Content-Type']
+    if header then
+        local is_multipart = sfind(header, "multipart")
+        if is_multipart and is_multipart>0 then
+            -- upload request, should not invoke ngx.req.read_body()
+        else
+            ngx.req.read_body()
+	    params = ngx.req.get_uri_args()
+            local post_args = ngx.req.get_post_args()
+            if post_args and type(post_args) == "table" then
+                for k,v in pairs(post_args) do
+                    params[k] = v
+                end
+            end
+        end
+    else
+        ngx.req.read_body()
+	params = ngx.req.get_uri_args()
+        local post_args = ngx.req.get_post_args()
+        if post_args and type(post_args) == "table" then
+            for k,v in pairs(post_args) do
+                params[k] = v
+            end
+        end
+    end
     local instance = {
         uri = ngx.var.uri,
         req_uri = ngx.var.request_uri,
         req_args = ngx.var.args,
         params = params,
         uri_args = ngx.req.get_uri_args(),
-        method = ngx.req.get_method(),
-        headers = ngx.req.get_headers(),
+        method = ngx.req.get_method(), 
+        headers = headers, 
         body_raw = ngx.req.get_body_data()
     }
     setmetatable(instance, {__index = self})
@@ -67,3 +89,4 @@ function Request:isGet()
 end
 
 return Request
+
