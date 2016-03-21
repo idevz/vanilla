@@ -1,3 +1,8 @@
+-- Request moudle
+-- @since 2015-08-17 10:54
+-- @author idevz <zhoujing00k@gmail.com>
+-- version $Id$
+
 -- perf
 local error = error
 local pairs = pairs
