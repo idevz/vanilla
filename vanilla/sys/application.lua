@@ -1,4 +1,9 @@
 -- dep
+local sgsub = string.gsub
+local pairs = pairs
+local os_execute = os.execute
+local io_open = io.open
+local print = print
 local ansicolors = require 'vanilla.v.libs.ansicolors'
 
 -- vanilla
@@ -59,6 +64,7 @@ luac.out
 
 local index_controller = [[
 local IndexController = {}
+local req_args = require('vanilla.v.libs.reqargs')
 
 function IndexController:index()
     local view = self:getView()
@@ -67,6 +73,27 @@ function IndexController:index()
     p['zhoujing'] = 'Power by Openresty'
     view:assign(p)
     return view:display()
+end
+
+-- curl http://localhost:9110/get?ok=yes
+function IndexController:get()
+    local get = req_args:getRequestData({})
+    print_r(get)
+    do return 'get' end
+end
+
+-- curl -X POST http://localhost:9110/post -d '{"ok"="yes"}'
+function IndexController:post()
+    local _, post = req_args:getRequestData({})
+    print_r(post)
+    do return 'post' end
+end
+
+-- curl -H 'accept: application/vnd.YOUR_APP_NAME.v1.json' http://localhost:9110/api?ok=yes
+function IndexController:api_get()
+    local api_get = req_args:getRequestData({})
+    print_r(api_get)
+    do return 'api_get' end
 end
 
 return IndexController
@@ -96,11 +123,23 @@ local index_tpl = [[
 
 local error_controller = [[
 local ErrorController = {}
+local ngx_log = ngx.log
+local ngx_redirect = ngx.redirect
+local os_getenv = os.getenv
+
 
 function ErrorController:error()
-    local view = self:getView()
-    view:assign(self.err)
-    return view:display()
+    local env = os_getenv('VA_ENV') or 'development'
+    if env == 'development' then
+        local view = self:getView()
+        view:assign(self.err)
+        return view:display()
+    else
+        local helpers = require 'vanilla.v.libs.utils'
+        ngx_log(ngx.ERR, helpers.sprint_r(self.err))
+        -- return ngx_redirect("http://sina.cn?vt=4", ngx.HTTP_MOVED_TEMPORARILY)
+        return helpers.sprint_r(self.err)
+    end
 end
 
 return ErrorController
@@ -122,6 +161,7 @@ local error_tpl = [[
 </body>
 </html>
 ]]
+
 
 local dao = [[
 -- local TableDao = require('vanilla.v.model.dao'):new()
@@ -148,6 +188,7 @@ end
 return TableDao
 ]]
 
+
 local service = [[
 -- local UserService = require('vanilla.v.model.service'):new()
 local table_dao = require('application.models.dao.table'):new()
@@ -160,6 +201,7 @@ end
 
 return UserService
 ]]
+
 
 local admin_plugin_tpl = [[
 local AdminPlugin = require('vanilla.v.plugin'):new()
@@ -206,7 +248,9 @@ end
 function Bootstrap:initRoute()
     local router = self.dispatcher:getRouter()
     local simple_route = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
-    router:addRoute(simple_route, true)
+    local restful_route = require('vanilla.v.routes.restful'):new(self.dispatcher:getRequest())
+    router:addRoute(restful_route, true)
+    router:addRoute(simple_route)
 end
 
 function Bootstrap:initView()
@@ -221,7 +265,7 @@ function Bootstrap:boot_list()
     return {
         -- Bootstrap.initWaf,
         -- Bootstrap.initErrorHandle,
-        -- Bootstrap.initRoute,
+        Bootstrap.initRoute,
         -- Bootstrap.initView,
         -- Bootstrap.initPlugin,
     }
@@ -232,19 +276,21 @@ return Bootstrap
 
 
 local application_conf = [[
+local APP_ROOT = ngx.var.document_root
 local Appconf={}
 Appconf.name = '{{APP_NAME}}'
 
 Appconf.route='vanilla.v.routes.simple'
 Appconf.bootstrap='application.bootstrap'
+
 Appconf.app={}
-Appconf.app.root='./'
+Appconf.app.root=APP_ROOT
 
 Appconf.controller={}
-Appconf.controller.path=Appconf.app.root .. 'application/controllers/'
+Appconf.controller.path=Appconf.app.root .. '/application/controllers/'
 
 Appconf.view={}
-Appconf.view.path=Appconf.app.root .. 'application/views/'
+Appconf.view.path=Appconf.app.root .. '/application/views/'
 Appconf.view.suffix='.html'
 Appconf.view.auto_render=true
 
@@ -271,12 +317,14 @@ local Errors = {}
 return Errors
 ]]
 
+
 local waf_conf = [[
 local waf_conf = {}
 waf_conf.ipBlocklist={"1.0.0.1"}
 -- waf_conf.html="<!DOCTYPE html><html><body><h1>Fu*k U...</h1><h4>=======</h4><h5>--K--</h5></body></html>"
 return waf_conf
 ]]
+
 
 local waf_conf_regs_args = [[
 \.\./
@@ -303,6 +351,7 @@ java\.lang
 (onmouseover|onerror|onload)\=
 ]]
 
+
 local waf_conf_regs_cookie = [[
 \.\./
 \:\$
@@ -326,6 +375,7 @@ java\.lang
 \$_(GET|post|cookie|files|session|env|phplib|GLOBALS|SERVER)\[
 ]]
 
+
 local waf_conf_regs_post = [[
 select.+(from|limit)
 (?:(union(.*?)select))
@@ -348,6 +398,7 @@ java\.lang
 (onmouseover|onerror|onload)\=
 ]]
 
+
 local waf_conf_regs_url = [[
 \.(svn|htaccess|bash_history)
 \.(bak|inc|old|mdb|sql|backup|java|class)$
@@ -357,65 +408,317 @@ java\.lang
 /(attachments|upimg|images|css|uploadfiles|html|uploads|templets|static|template|data|inc|forumdata|upload|includes|cache|avatar)/(\\w+).(php|jsp)
 ]]
 
+
 local waf_conf_regs_ua = [[
 (HTTrack|harvest|audit|dirbuster|pangolin|nmap|sqln|-scan|hydra|Parser|libwww|BBBike|sqlmap|w3af|owasp|Nikto|fimap|havij|PycURL|zmeu|BabyKrokodil|netsparker|httperf|bench| SF/)
 ]]
+
 
 local waf_conf_regs_whiteurl = [[
 ^/123/$
 ]]
 
 
-local nginx_config_tpl = [[
-# user www www;
-pid ]] .. va_conf.app_dirs.tmp .. [[/{{VA_ENV}}-nginx.pid;
+local va_nginx_config_tpl = [[
+user zhoujing staff;
 
-# This number should be at maxium the number of CPU on the server
-worker_processes 4;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
 
 events {
-    # Number of connections per worker
-    worker_connections 4096;
+    worker_connections  1024;
 }
+
 
 http {
+    include       mime.types;
     default_type text/html;
-    # use sendfile
-    sendfile on;
-    # include {{NGX_PATH}}/conf/mime.types; ###please locate your mime.types file here for a static Server.
 
-    # Va initialization
-    {{LUA_PACKAGE_PATH}}
-    {{LUA_PACKAGE_CPATH}}
-    {{LUA_CODE_CACHE}}
-    {{LUA_SHARED_DICT}}
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile           on;
+    tcp_nopush         on;
+    tcp_nodelay        on;
+
+    keepalive_timeout  60;
+
+    gzip               on;
+    gzip_vary          on;
+
+    gzip_comp_level    6;
+    gzip_buffers       16 8k;
+
+    gzip_min_length    1000;
+    gzip_proxied       any;
+    gzip_disable       "msie6";
+
+    gzip_http_version  1.0;
+
+    gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
 
 
-    {{INIT_BY_LUA}}
-    {{INIT_BY_LUA_FILE}}
-    {{INIT_WORKER_BY_LUA}}
-    {{INIT_WORKER_BY_LUA_FILE}}
+    include vhost/*.conf;
+}
+]]
 
-    server {
-        # List port
-        listen {{PORT}};
-        set $template_root '';
 
-        location /static {
-            alias pub/static;
-        }
+local va_nginx_dev_config_tpl = [[
+user zhoujing staff;
 
-        # Access log with buffer, or disable it completetely if unneeded
-        access_log ]] .. va_conf.app_dirs.logs .. [[/{{VA_ENV}}-access.log combined buffer=16k;
-        # access_log off;
+worker_processes  1;
 
-        # Error log
-        error_log ]] .. va_conf.app_dirs.logs .. [[/{{VA_ENV}}-error.log;
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
 
-        # Va runtime
-        {{CONTENT_BY_LUA_FILE}}
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type text/html;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile           on;
+    tcp_nopush         on;
+    tcp_nodelay        on;
+
+    keepalive_timeout  60;
+
+    gzip               on;
+    gzip_vary          on;
+
+    gzip_comp_level    6;
+    gzip_buffers       16 8k;
+
+    gzip_min_length    1000;
+    gzip_proxied       any;
+    gzip_disable       "msie6";
+
+    gzip_http_version  1.0;
+
+    gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
+
+    include dev_vhost/*.conf;
+}
+]]
+
+
+local nginx_vhost_config_tpl = [[
+#lua_shared_dict idevz 20m;
+#init_by_lua require('nginx.init'):run();
+
+server {
+    server_name {{APP_NAME}}.idevz.com localhost;
+    lua_code_cache on;
+    root {{APP_ROOT}};
+    listen 80;
+    set $template_root '';
+
+    location /static {
+        access_log  off;
+        alias {{APP_ROOT}}/pub/static;
+        expires     max;
+    }
+
+    location = /favicon.ico {
+        access_log  off;
+        root {{APP_ROOT}}/pub/;
+        expires     max;
+    }
+
+    # Access log with buffer, or disable it completetely if unneeded
+    access_log logs/vanilla-access.log combined buffer=16k;
+    # access_log off;
+
+    # Error log
+    error_log logs/vanilla-error.log debug;
+
+    # Va runtime
+    location / {
+        content_by_lua_file $document_root/pub/index.lua;
     }
 }
+]]
+
+
+local dev_nginx_vhost_config_tpl = [[
+#lua_shared_dict idevz 20m;
+#init_by_lua require('nginx.init'):run();
+
+server {
+    server_name {{APP_NAME}}.idevz.com localhost;
+    lua_code_cache off;
+    root {{APP_ROOT}};
+    listen 9110;
+    set $template_root '';
+
+    location /static {
+        access_log  off;
+        alias {{APP_ROOT}}/pub/static;
+        expires     max;
+    }
+
+    location = /favicon.ico {
+        access_log  off;
+        root {{APP_ROOT}}/pub/;
+        expires     max;
+    }
+
+    # Access log with buffer, or disable it completetely if unneeded
+    access_log logs/vanilla-access.log combined buffer=16k;
+    # access_log off;
+
+    # Error log
+    error_log logs/vanilla-error.log debug;
+
+    # Va runtime
+    location / {
+        content_by_lua_file $document_root/pub/index.lua;
+    }
+}
+]]
+
+
+local service_manage_sh = [[
+#!/bin/sh
+
+### BEGIN ###
+# Author: idevz
+# Since: 2016/03/12
+# Description:       Manage a Vanilla App Service
+### END ###
+
+ok() { echo -e '\e[32m'$1'\e[m'; } # Green
+die() { echo -e '\e[1;31m'$1'\e[m'; exit $?; }
+
+OPENRESTY_NGINX_ROOT={{OPENRESTY_NGINX_ROOT}}
+NGINX=$OPENRESTY_NGINX_ROOT/sbin/nginx
+NGINX_CONF_PATH=$OPENRESTY_NGINX_ROOT/conf
+VA_APP_PATH=/Users/zhoujing/vanilla/ooo
+NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
+DESC=va-ooo-service
+
+if [ -n "$2" -a "$2" = 'dev' ];then
+    VA_ENV="development"
+    NGINX_CONF=$OPENRESTY_NGINX_ROOT/conf/va-nginx-$VA_ENV.conf
+    NGINX_APP_CONF=$OPENRESTY_NGINX_ROOT/conf/dev_vhost
+    NGINX_CONF_SRC=$NGINX_CONF_SRC_PATH/va-nginx-$VA_ENV.conf
+    VA_APP_CONF_SRC=$NGINX_CONF_SRC_PATH/dev_vhost
+else
+    NGINX_CONF=$OPENRESTY_NGINX_ROOT/conf/va-nginx.conf
+    NGINX_APP_CONF=$OPENRESTY_NGINX_ROOT/conf/vhost
+    NGINX_CONF_SRC=$NGINX_CONF_SRC_PATH/va-nginx.conf
+    VA_APP_CONF_SRC=$NGINX_CONF_SRC_PATH/vhost
+    VA_ENV=''
+fi
+
+if [ ! -f $NGINX ]; then
+    echo "Didn't Find Nginx sbin."; exit 0
+fi
+
+conf_move()
+{
+    echo -e 'cp \e[32m' $1 '\e[m' to '\e[32m' $2 '\e[m';
+    set -e
+    cp -rf $1/* $2/
+}
+
+nginx_conf_test() {
+    if $NGINX -t -c $1 >/dev/null 2>&1; then
+        return 0
+    else
+        $NGINX -t -c $1
+        return $?
+    fi
+}
+
+case "$1" in
+    start)
+        echo "Starting $DESC: "
+        nginx_conf_test $NGINX_CONF
+        $NGINX -c $NGINX_CONF || true
+        ok "Succ."
+        ;;
+
+    stop)
+        echo "Stopping $DESC: "
+        $NGINX -c $NGINX_CONF -s stop || true
+        ok "Succ."
+        ;;
+
+    restart|force-reload)
+        echo "Restarting $DESC: "
+        $NGINX -c $NGINX_CONF -s stop || true
+        sleep 1
+        nginx_conf_test $NGINX_CONF
+        $NGINX -c $NGINX_CONF || true
+        ok "Succ."
+        ;;
+
+    reload)
+        echo "Reloading $DESC configuration: "
+        nginx_conf_test $NGINX_CONF
+        $NGINX -c $NGINX_CONF -s reload || true
+        ok "Succ."
+        ;;
+
+    configtest)
+        echo "Testing $DESC configuration: "
+        if nginx_conf_test $NGINX_CONF; then
+            echo "Config Test Succ."
+        else
+            die "Config Test Fail."
+        fi
+        ;;
+
+    confinit|initconf)
+        echo "Initing $DESC configuration: "
+        if -e $NGINX_CONF; then
+            if conf_move $VA_APP_CONF_SRC/ $NGINX_APP_CONF/; then
+                if nginx_conf_test $NGINX_CONF; then
+                    tree $NGINX_CONF_PATH
+                    echo "Config init Succ."
+                fi
+                die "Config Test Fail."
+            fi
+        else
+            if conf_move $NGINX_CONF_SRC_PATH $NGINX_CONF_PATH; then
+                if nginx_conf_test $NGINX_CONF; then
+                    tree $NGINX_CONF_PATH
+                    echo "Config init Succ."
+                fi
+                die "Config Test Fail."
+            fi
+        fi
+        ;;
+    *)
+        echo "Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit|configtest}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
 ]]
 
 
@@ -449,6 +752,29 @@ ngx_conf.env.production = {
 return ngx_conf
 ]]
 
+
+local restful_route_conf = [[
+local restful = {
+    v1={},
+    v={}
+}
+
+restful.v.GET = {
+    {pattern = '/get', controller = 'index', action = 'get'},
+}
+
+restful.v.POST = {
+    {pattern = '/post', controller = 'index', action = 'post'},
+}
+
+restful.v1.GET = {
+    {pattern = '/api', controller = 'index', action = 'api_get'},
+}
+
+return restful
+]]
+
+
 local nginx_init_by_lua_tpl = [[
 local init_by_lua = {}
 function init_by_lua:run()
@@ -459,23 +785,53 @@ end
 return init_by_lua
 ]]
 
+
 local nginx_init_config_tpl = [[
 local config = require('config.application')
 return config
 ]]
 
-local nginx_share_dict_tpl = [[
-local sh_dict_conf = {
-    zhou = '10m',
-    jing = '2m'
-}
-return sh_dict_conf
-]]
 
 local vanilla_index = [[
+local APP_ROOT = ngx.var.document_root
+do dofile(APP_ROOT .. '/pub/init.lua') end
+
 local config = require('config.application')
 local app = require('vanilla.v.application'):new(config)
 app:bootstrap():run()
+]]
+
+
+local vanilla_init = [[
+local APP_ROOT = ngx.var.document_root
+local VA_ENV = 'development'
+-- local VA_ENV = 'production'
+local VANILLA_VERSION = '{{VANILLA_VERSION}}'
+local tconcat = table.concat
+
+
+local framwork_lua_path_arr = {
+    '/?.lua;',
+    '/?/init.lua;',
+}
+
+local app_lua_path_arr = {
+    '/application/?.lua;',
+    '/application/library/?.lua;',
+    '/application/?/init.lua;',
+    '/?.lua;'
+}
+
+local vanilla_root = '{{VANILLA_ROOT}}'
+local vanilla_root_path = vanilla_root .. '/' .. VANILLA_VERSION
+local app_lua_path = APP_ROOT .. tconcat(app_lua_path_arr, APP_ROOT)
+local vanilla_lua_path = vanilla_root_path .. tconcat(framwork_lua_path_arr, vanilla_root_path) .. package.path .. '/?.lua;'
+package.path = app_lua_path .. vanilla_lua_path
+package.cpath = APP_ROOT .. '/application/library/?.so;' .. package.cpath
+
+
+local Registry = require('vanilla.v.registry'):new('sys_env')
+Registry['VA_ENV'] = VA_ENV
 ]]
 
 
@@ -519,10 +875,11 @@ VaApplication.files = {
     ['application/bootstrap.lua'] = bootstrap,
     ['application/nginx/init/init.lua'] = nginx_init_by_lua_tpl,
     ['application/nginx/init/config.lua'] = nginx_init_config_tpl,
-    ['application/nginx/sh_dict.lua'] = nginx_share_dict_tpl,
     ['config/errors.lua'] = errors_conf,
-    ['config/nginx.conf'] = nginx_config_tpl,
-    ['config/nginx.lua'] = nginx_conf,
+    ['nginx_conf/va-nginx.conf'] = va_nginx_config_tpl,
+    ['nginx_conf/va-nginx-development.conf'] = va_nginx_dev_config_tpl,
+    -- ['config/nginx.lua'] = nginx_conf,
+    ['config/restful.lua'] = restful_route_conf,
     ['config/waf.lua'] = waf_conf,
     ['config/waf-regs/args'] = waf_conf_regs_args,
     ['config/waf-regs/cookie'] = waf_conf_regs_cookie,
@@ -532,16 +889,29 @@ VaApplication.files = {
     ['config/waf-regs/whiteurl'] = waf_conf_regs_whiteurl,
     ['logs/hack/.gitkeep'] = "",
     ['pub/index.lua'] = vanilla_index,
+    ['pub/init.lua'] = vanilla_init,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
     ['spec/spec_helper.lua'] = spec_helper
 }
 
-function VaApplication.new(name)
-    print(ansicolors("Creating app %{blue}" .. name .. "%{reset}..."))
+function VaApplication.new(app_path)
+    local app_name = utils.basename(app_path)
+    print(ansicolors("Creating app %{blue}" .. app_name .. "%{reset}..."))
+
+    service_manage_sh = sgsub(service_manage_sh, "{{APP_NAME}}", app_name)
+    service_manage_sh = sgsub(service_manage_sh, "{{OPENRESTY_NGINX_ROOT}}", VANILLA_NGX_PATH)
+    VaApplication.files['va-' .. app_name .. '-service'] = sgsub(service_manage_sh, "{{VA_APP_PATH}}", app_path)
+
+    dev_nginx_vhost_config_tpl = sgsub(dev_nginx_vhost_config_tpl, "{{APP_NAME}}", app_name)
+    VaApplication.files['nginx_conf/dev_vhost/' .. app_name .. '.conf'] = sgsub(dev_nginx_vhost_config_tpl, "{{APP_ROOT}}", app_path)
+    nginx_vhost_config_tpl = sgsub(nginx_vhost_config_tpl, "{{APP_NAME}}", app_name)
+    VaApplication.files['nginx_conf/vhost/' .. app_name .. '.conf'] = sgsub(nginx_vhost_config_tpl, "{{APP_ROOT}}", app_path)
     
-    VaApplication.files['config/application.lua'] = string.gsub(application_conf, "{{APP_NAME}}", name)
-    VaApplication.create_files(name)
+    VaApplication.files['config/application.lua'] = sgsub(application_conf, "{{APP_NAME}}", app_name)
+    VaApplication.files['pub/init.lua'] = sgsub(vanilla_init, "{{VANILLA_ROOT}}", VANILLA_ROOT)
+    VaApplication.files['pub/init.lua'] = sgsub(VaApplication.files['pub/init.lua'], "{{VANILLA_VERSION}}", VANILLA_VERSION)
+    VaApplication.create_files(app_path)
 end
 
 function VaApplication.create_files(parent)
@@ -549,11 +919,12 @@ function VaApplication.create_files(parent)
 
         local full_file_path = parent .. "/" .. file_path
         local full_file_dirname = utils.dirname(full_file_path)
-        os.execute("mkdir -p " .. full_file_dirname .. " > /dev/null")
+        os_execute("mkdir -p " .. full_file_dirname .. " > /dev/null")
 
-        local fw = io.open(full_file_path, "w")
+        local fw = io_open(full_file_path, "w")
         fw:write(file_content)
         fw:close()
+
         print(ansicolors("  %{blue}created file%{reset} " .. full_file_path))
     end
 end

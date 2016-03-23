@@ -16,8 +16,8 @@ install: all
 	$(MKDIR) $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./sys $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
-	$(INSTALL) ./vanilla $(VANILLA_BIN_PATH)/vanilla
-	$(INSTALL) ./vanilla-console $(VANILLA_BIN_PATH)/vanilla-console
+	$(INSTALL) ./vanilla-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/vanilla-$(VANILLA_VERSION)
+	$(INSTALL) ./v-console-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/v-console-$(VANILLA_VERSION)
 
 test: all
 	PATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t
