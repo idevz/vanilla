@@ -71,7 +71,7 @@ build = {
    install ={
       bin ={
       "vanilla/bin/vanilla",
-      "vanilla/bin/vanilla-console"
+      "vanilla/bin/v-console"
       }
    },
 }
