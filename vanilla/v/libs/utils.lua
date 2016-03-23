@@ -333,9 +333,14 @@ function Utils.shallowcopy(orig)
     return copy
 end
 
+function Utils.basename(str)
+    local name = sgsub(str, "(.*/)(.*)", "%2")
+    return name
+end
+
 function Utils.dirname(str)
     if str:match(".-/.-") then
-        local name = string.gsub(str, "(.*/)(.*)", "%1")
+        local name = sgsub(str, "(.*/)(.*)", "%1")
         return name
     else
         return ''
