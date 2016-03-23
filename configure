@@ -14,6 +14,8 @@ sub auto_complete ($);
 sub usage ($);
 sub trim ($);
 
+our $vanilla_version = '0.1.0.rc5';
+
 my (@make_cmds, @make_install_cmds);
 
 my $root_dir = `pwd`;
@@ -62,12 +64,14 @@ my $openresty_prefix = '/usr/local/openresty';
 my $vanilla_bin_path = '/usr/local/bin';
 my %resty_opts;
 my $cc;
+my $vanilla_root;
 
 for my $opt (@ARGV) {
     next unless defined $opt;
 
     if ($opt =~ /^--prefix=(.*)/) {
-        $prefix = $1;
+        $vanilla_root = $1;
+        $prefix = $1 . '/' . $vanilla_version;
 
     } elsif ($opt =~ /^--vanilla-bin-path=(.*)/) {
         $vanilla_bin_path = $1;
@@ -117,11 +121,16 @@ if ($resty_opts{luajit_or_lua_bin}) {
     $luajit_or_lua_bin = $resty_opts{luajit_or_lua_bin};
 }
 
+if (!$luajit_or_lua_bin) {
+    die "Didn't set luajit or lua bin. Or did't exists:" ,"$openresty_prefix/luajit/bin/luajit*";
+}
+
 build_resty_opts(\%resty_opts);
 
 my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
     ." INSTALL=$root_dir/build/install"
-    ." VANILLA_BIN_PATH=$vanilla_bin_path";
+    ." VANILLA_BIN_PATH=$vanilla_bin_path"
+    ." VANILLA_VERSION=$vanilla_version";
 
 push @make_install_cmds, "cd $root_dir/build/vanilla && " .
     "\$(MAKE) install$vanilla_extra_opts";
@@ -284,19 +293,20 @@ _EOC_
 }
 
 sub gen_vanilla_bins {
-    for my $bin_name (qw(vanilla vanilla-console)) {
+    for my $bin_name (qw(vanilla v-console)) {
+        my $rs_bin_name = "$bin_name-$vanilla_version";
 
-        open my $out, ">vanilla/$bin_name" or
-            die "Cannot open $bin_name for writing: $!\n";
+        open my $out, ">vanilla/$rs_bin_name" or
+            die "Cannot open $rs_bin_name for writing: $!\n";
 
         my $cmd_str = <<"_EOC_";
 #!/bin/sh
-exec '$luajit_or_lua_bin' -e 'VANILLA_NGX_PATH="$ngx_path"; VANILLA_JIT_BIN="$luajit_or_lua_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua"; package.cpath="$prefix/?.so"' '$prefix/bin/$bin_name' "\$@"
+exec '$luajit_or_lua_bin' -e 'VANILLA_ROOT="$vanilla_root"; VANILLA_VERSION="$vanilla_version"; VANILLA_NGX_PATH="$ngx_path"; VANILLA_JIT_BIN="$luajit_or_lua_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua"; package.cpath="$prefix/?.so"' '$prefix/bin/$bin_name' "\$@"
 _EOC_
 
         print $out $cmd_str;
         close $out;
-        chmod 0755, "vanilla/$bin_name";
+        chmod 0755, "vanilla/$rs_bin_name";
     }
 }
 
