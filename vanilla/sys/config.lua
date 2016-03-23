@@ -1,6 +1,6 @@
 -- perf
+local Registry = require('vanilla.v.registry'):new('sys_env')
 local ogetenv = os.getenv
-
 
 local Sysconf = {}
 
@@ -8,7 +8,8 @@ local Sysconf = {}
 Sysconf.version = '0.1.0-rc4'
 
 -- environment
-Sysconf.env = ogetenv("VA_ENV") or 'development'
+-- Sysconf.env = ogetenv("VA_ENV") or 'development'
+Sysconf.env = Registry['VA_ENV'] or 'development'
 
 -- directories
 Sysconf.app_dirs = {
