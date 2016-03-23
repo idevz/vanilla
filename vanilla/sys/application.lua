@@ -420,7 +420,7 @@ local waf_conf_regs_whiteurl = [[
 
 
 local va_nginx_config_tpl = [[
-user zhoujing staff;
+#user zhoujing staff;
 
 worker_processes  1;
 
@@ -473,7 +473,7 @@ http {
 
 
 local va_nginx_dev_config_tpl = [[
-user zhoujing staff;
+#user zhoujing staff;
 
 worker_processes  1;
 
@@ -615,9 +615,9 @@ die() { echo -e '\e[1;31m'$1'\e[m'; exit $?; }
 OPENRESTY_NGINX_ROOT={{OPENRESTY_NGINX_ROOT}}
 NGINX=$OPENRESTY_NGINX_ROOT/sbin/nginx
 NGINX_CONF_PATH=$OPENRESTY_NGINX_ROOT/conf
-VA_APP_PATH=/Users/zhoujing/vanilla/ooo
+VA_APP_PATH={{VA_APP_PATH}}
 NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
-DESC=va-ooo-service
+DESC=va-{{APP_NAME}}-service
 
 if [ -n "$2" -a "$2" = 'dev' ];then
     VA_ENV="development"
