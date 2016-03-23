@@ -446,13 +446,26 @@ http {
 
     #access_log  logs/access.log  main;
 
-    sendfile        on;
-    #tcp_nopush     on;
+    sendfile           on;
+    tcp_nopush         on;
+    tcp_nodelay        on;
 
-    #keepalive_timeout  0;
-    keepalive_timeout  65;
+    keepalive_timeout  60;
 
-    #gzip  on;
+    gzip               on;
+    gzip_vary          on;
+
+    gzip_comp_level    6;
+    gzip_buffers       16 8k;
+
+    gzip_min_length    1000;
+    gzip_proxied       any;
+    gzip_disable       "msie6";
+
+    gzip_http_version  1.0;
+
+    gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
+
 
     include vhost/*.conf;
 }
@@ -486,13 +499,25 @@ http {
 
     #access_log  logs/access.log  main;
 
-    sendfile        on;
-    #tcp_nopush     on;
+    sendfile           on;
+    tcp_nopush         on;
+    tcp_nodelay        on;
 
-    #keepalive_timeout  0;
-    keepalive_timeout  65;
+    keepalive_timeout  60;
 
-    #gzip  on;
+    gzip               on;
+    gzip_vary          on;
+
+    gzip_comp_level    6;
+    gzip_buffers       16 8k;
+
+    gzip_min_length    1000;
+    gzip_proxied       any;
+    gzip_disable       "msie6";
+
+    gzip_http_version  1.0;
+
+    gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
 
     include dev_vhost/*.conf;
 }
