@@ -31,7 +31,8 @@ local function get_rules(request)
     local version = ''
     local rules = {}
     if not http_methods[req_method] then error({ code = 201, msg = {Req_Method = 'Request Method Not Allowed...'}}) end
-    local v = ngxmatch(header_accept, accept_header_pattern)
+    local v
+    if header_accept then v = ngxmatch(header_accept, accept_header_pattern) end
     if v then version = v[1] end
     if rules_conf['v' .. version] ~= nil and rules_conf['v' .. version][req_method] ~= nil then
         for k,info in pairs(rules_conf['v' .. version][req_method]) do
