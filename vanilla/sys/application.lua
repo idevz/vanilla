@@ -713,7 +713,7 @@ case "$1" in
         fi
         ;;
     *)
-        echo "Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit|configtest}" >&2
+        echo "Usage: ./va-{{APP_NAME}}-service {start|stop|restart|reload|force-reload|confinit|configtest} [dev]" >&2
         exit 1
         ;;
 esac
