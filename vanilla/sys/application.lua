@@ -466,7 +466,8 @@ http {
 
     gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
 
-
+    lua_package_path "./application/?.lua;./application/library/?.lua;./application/?/init.lua;./?.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;/?.lua;/?/init.lua;;";
+    lua_package_cpath "./application/library/?.so;{{VANILLA_ROOT}}/?.so;;";
     include vhost/*.conf;
 }
 ]]
@@ -519,6 +520,8 @@ http {
 
     gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
 
+    lua_package_path "./application/?.lua;./application/library/?.lua;./application/?/init.lua;./?.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;/?.lua;/?/init.lua;;";
+    lua_package_cpath "./application/library/?.so;{{VANILLA_ROOT}}/?.so;;";
     include dev_vhost/*.conf;
 }
 ]]
@@ -876,8 +879,6 @@ VaApplication.files = {
     ['application/nginx/init/init.lua'] = nginx_init_by_lua_tpl,
     ['application/nginx/init/config.lua'] = nginx_init_config_tpl,
     ['config/errors.lua'] = errors_conf,
-    ['nginx_conf/va-nginx.conf'] = va_nginx_config_tpl,
-    ['nginx_conf/va-nginx-development.conf'] = va_nginx_dev_config_tpl,
     -- ['config/nginx.lua'] = nginx_conf,
     ['config/restful.lua'] = restful_route_conf,
     ['config/waf.lua'] = waf_conf,
@@ -898,6 +899,9 @@ VaApplication.files = {
 function VaApplication.new(app_path)
     local app_name = utils.basename(app_path)
     print(ansicolors("Creating app %{blue}" .. app_name .. "%{reset}..."))
+
+    VaApplication.files['nginx_conf/va-nginx.conf'] = sgsub(va_nginx_config_tpl, "{{VANILLA_ROOT}}", VANILLA_ROOT)
+    VaApplication.files['nginx_conf/va-nginx-development.conf'] = sgsub(va_nginx_dev_config_tpl, "{{VANILLA_ROOT}}", VANILLA_ROOT)
 
     service_manage_sh = sgsub(service_manage_sh, "{{APP_NAME}}", app_name)
     service_manage_sh = sgsub(service_manage_sh, "{{OPENRESTY_NGINX_ROOT}}", VANILLA_NGX_PATH)
