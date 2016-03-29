@@ -134,7 +134,7 @@ build_resty_opts(\%resty_opts);
 
 my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
     # ." INSTALL=$root_dir/build/install"
-    ." INSTALL=$root_dir/install"
+    ." INSTALL=$root_dir/vanilla/install"
     ." VANILLA_BIN_PATH=$vanilla_bin_path"
     ." VANILLA_VERSION=$vanilla_version";
 
