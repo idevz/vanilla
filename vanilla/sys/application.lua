@@ -278,6 +278,7 @@ return Bootstrap
 local application_conf = [[
 local APP_ROOT = ngx.var.document_root
 local Appconf={}
+Appconf.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
 Appconf.name = '{{APP_NAME}}'
 
 Appconf.route='vanilla.v.routes.simple'
@@ -796,9 +797,7 @@ return config
 
 
 local vanilla_index = [[
-local APP_ROOT = ngx.var.document_root
-do dofile(APP_ROOT .. '/pub/init.lua') end
-
+require('pub.init')
 local config = require('config.application')
 local app = require('vanilla.v.application'):new(config)
 app:bootstrap():run()
@@ -806,35 +805,19 @@ app:bootstrap():run()
 
 
 local vanilla_init = [[
-local APP_ROOT = ngx.var.document_root
-local VA_ENV = 'development'
--- local VA_ENV = 'production'
-local VANILLA_VERSION = '{{VANILLA_VERSION}}'
-local tconcat = table.concat
+local VANILLA_VERSION = require('config.application').vanilla_version
 
-
-local framwork_lua_path_arr = {
-    '/?.lua;',
-    '/?/init.lua;',
-}
-
-local app_lua_path_arr = {
-    '/application/?.lua;',
-    '/application/library/?.lua;',
-    '/application/?/init.lua;',
-    '/?.lua;'
-}
-
-local vanilla_root = '{{VANILLA_ROOT}}'
-local vanilla_root_path = vanilla_root .. '/' .. VANILLA_VERSION
-local app_lua_path = APP_ROOT .. tconcat(app_lua_path_arr, APP_ROOT)
-local vanilla_lua_path = vanilla_root_path .. tconcat(framwork_lua_path_arr, vanilla_root_path) .. package.path .. '/?.lua;'
-package.path = app_lua_path .. vanilla_lua_path
-package.cpath = APP_ROOT .. '/application/library/?.so;' .. package.cpath
-
-
-local Registry = require('vanilla.v.registry'):new('sys_env')
-Registry['VA_ENV'] = VA_ENV
+local old_require = require
+function require( ... )
+    local vanilla_module_name
+    if string.find(..., 'vanilla.', 1, true) then
+        vanilla_module_name = VANILLA_VERSION .. '/' .. ...
+    else
+        vanilla_module_name = ...
+    end
+    if package.loaded[vanilla_module_name] then return package.loaded[vanilla_module_name] end
+    return old_require(vanilla_module_name)
+end
 ]]
 
 
@@ -912,7 +895,9 @@ function VaApplication.new(app_path)
     nginx_vhost_config_tpl = sgsub(nginx_vhost_config_tpl, "{{APP_NAME}}", app_name)
     VaApplication.files['nginx_conf/vhost/' .. app_name .. '.conf'] = sgsub(nginx_vhost_config_tpl, "{{APP_ROOT}}", app_path)
     
-    VaApplication.files['config/application.lua'] = sgsub(application_conf, "{{APP_NAME}}", app_name)
+    application_conf = sgsub(application_conf, "{{APP_NAME}}", app_name)
+    application_conf = sgsub(application_conf, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
+    VaApplication.files['config/application.lua'] = application_conf
     VaApplication.files['pub/init.lua'] = sgsub(vanilla_init, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.files['pub/init.lua'] = sgsub(VaApplication.files['pub/init.lua'], "{{VANILLA_VERSION}}", VANILLA_VERSION)
     VaApplication.create_files(app_path)
