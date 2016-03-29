@@ -12,7 +12,7 @@ all: ;
 
 install: all
 	# $(INSTALL) -d $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla/resty/
-	# $(INSTALL) ./bin $(DESTDIR)/$(VANILLA_LIB_DIR)/bin
+	$(INSTALL) ./bin $(DESTDIR)/$(VANILLA_LIB_DIR)/bin
 	$(MKDIR) $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./resty $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
