@@ -32,6 +32,9 @@ build = {
    modules = {
       ["spec.helper"] = "spec/helper.lua",
       ["spec.v.dispatcher_spec"] = "spec/v/dispatcher_spec.lua",
+      ["vanilla.resty.template"] = "vanilla/resty/template.lua",
+      ["vanilla.resty.template.html"] = "vanilla/resty/template/html.lua",
+      ["vanilla.resty.template.microbenchmark"] = "vanilla/resty/template/microbenchmark.lua",
       ["vanilla.spec"] = "vanilla/spec/init.lua",
       ["vanilla.spec.runner"] = "vanilla/spec/runner.lua",
       ["vanilla.spec.runners.integration"] = "vanilla/spec/runners/integration.lua",
@@ -70,8 +73,8 @@ build = {
    },
    install ={
       bin ={
-      "vanilla/bin/vanilla",
-      "vanilla/bin/v-console"
+      "vanilla/bin/vanilla-0.1.0.rc5",
+      "vanilla/bin/v-console-0.1.0.rc5"
       }
    },
 }

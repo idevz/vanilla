@@ -80,34 +80,38 @@ for my $opt (@ARGV) {
     } elsif ($opt =~ /^--openresty-path=(.*)/) {
         $openresty_prefix = $1;
 
-    } elsif ($opt eq '--with-lua-filesystem') {
-        $resty_opts{lua_filesystem} = 1;
+    }
+    #  elsif ($opt eq '--with-lua-filesystem') {
+    #     $resty_opts{lua_filesystem} = 1;
 
-    } elsif ($opt =~ /^--with-openresty-luajit-include-path=(.*)/) {
+    # }
+     elsif ($opt =~ /^--with-openresty-luajit-include-path=(.*)/) {
         $resty_opts{or_jit_inc_path} = $1;
 
     } elsif ($opt =~ /^--with-luajit-or-lua-bin=(.*)/) {
         $resty_opts{luajit_or_lua_bin} = $1;
 
-    } elsif ($opt eq '--without-lua-resty-cookie') {
-        $resty_opts{no_lua_resty_cookie} = 1;
+    }
+    #  elsif ($opt eq '--without-lua-resty-cookie') {
+    #     $resty_opts{no_lua_resty_cookie} = 1;
 
-    } elsif ($opt eq '--without-lua-resty-template') {
-        $resty_opts{no_lua_resty_template} = 1;
+    # } elsif ($opt eq '--without-lua-resty-template') {
+    #     $resty_opts{no_lua_resty_template} = 1;
 
-    } elsif ($opt eq '--without-lua-resty-http') {
-        $resty_opts{no_lua_resty_http} = 1;
+    # } elsif ($opt eq '--without-lua-resty-http') {
+    #     $resty_opts{no_lua_resty_http} = 1;
 
-    } elsif ($opt eq '--without-lua-resty-logger-socket') {
-        $resty_opts{no_lua_resty_logger_socket} = 1;
+    # } elsif ($opt eq '--without-lua-resty-logger-socket') {
+    #     $resty_opts{no_lua_resty_logger_socket} = 1;
 
-    } elsif ($opt eq '--without-lua-resty-session') {
-        $resty_opts{no_lua_resty_session} = 1;
+    # } elsif ($opt eq '--without-lua-resty-session') {
+    #     $resty_opts{no_lua_resty_session} = 1;
 
-    } elsif ($opt eq '--without-lua-resty-shcache') {
-        $resty_opts{no_lua_resty_shcache} = 1;
+    # } elsif ($opt eq '--without-lua-resty-shcache') {
+    #     $resty_opts{no_lua_resty_shcache} = 1;
 
-    } elsif ($opt eq '--help') {
+    # }
+     elsif ($opt eq '--help') {
         usage 0;
 
     } else {
@@ -129,7 +133,8 @@ if (!$luajit_or_lua_bin) {
 build_resty_opts(\%resty_opts);
 
 my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
-    ." INSTALL=$root_dir/build/install"
+    # ." INSTALL=$root_dir/build/install"
+    ." INSTALL=$root_dir/install"
     ." VANILLA_BIN_PATH=$vanilla_bin_path"
     ." VANILLA_VERSION=$vanilla_version";
 
@@ -200,65 +205,65 @@ sub build_resty_opts {
     }
     shell "mkdir -p build/vanilla";
     shell "cp -rp vanilla/* build/vanilla";
-    shell "cp -rp resty/* build";
-    shell "cp -rp lualib/* build";
+    # shell "cp -rp resty/* build";
+    # shell "cp -rp lualib/* build";
 
     cd 'build';
 
     my $lualib_prefix = "$prefix/lualib";
 
-    if ($opts->{lua_filesystem}) {
-        if (!$opts->{or_jit_inc_path}) {
-            die "luafilesystem need add --with-openresty-luajit-include-path option.";
-        }
-        my $dir = auto_complete 'luafilesystem';
-        if (!defined $dir) {
-            die "No luafilesystem found";
-        }
+    # if ($opts->{lua_filesystem}) {
+    #     if (!$opts->{or_jit_inc_path}) {
+    #         die "luafilesystem need add --with-openresty-luajit-include-path option.";
+    #     }
+    #     my $dir = auto_complete 'luafilesystem';
+    #     if (!defined $dir) {
+    #         die "No luafilesystem found";
+    #     }
 
-        my $lua_inc = $opts->{or_jit_inc_path};
+    #     my $lua_inc = $opts->{or_jit_inc_path};
 
-        my $lib_option;
-        if ($platform eq 'macosx') {
-            $lib_option = "-bundle -undefined dynamic_lookup";
-        } else {
-            $lib_option = "-shared";
-        }
+    #     my $lib_option;
+    #     if ($platform eq 'macosx') {
+    #         $lib_option = "-bundle -undefined dynamic_lookup";
+    #     } else {
+    #         $lib_option = "-shared";
+    #     }
 
-        my $extra_opts = " DESTDIR=\$(DESTDIR) LUA_INC=$lua_inc LUA_LIBDIR=$lualib_prefix " .
-            "LUA_CMODULE_DIR=$lualib_prefix LUA_MODULE_DIR=$lualib_prefix" . 
-            " LIB_OPTION='$lib_option'";
+    #     my $extra_opts = " DESTDIR=\$(DESTDIR) LUA_INC=$lua_inc LUA_LIBDIR=$lualib_prefix " .
+    #         "LUA_CMODULE_DIR=$lualib_prefix LUA_MODULE_DIR=$lualib_prefix" . 
+    #         " LIB_OPTION='$lib_option'";
 
-        if (defined $cc) {
-            $extra_opts .= " CC='$cc'";
-        } else {
-            $extra_opts .= " CC=cc";
-        }
+    #     if (defined $cc) {
+    #         $extra_opts .= " CC='$cc'";
+    #     } else {
+    #         $extra_opts .= " CC=cc";
+    #     }
 
-        push @make_cmds, "cd $root_dir/build/$dir && ".
-            "\$(MAKE)$extra_opts";
+    #     push @make_cmds, "cd $root_dir/build/$dir && ".
+    #         "\$(MAKE)$extra_opts";
 
-        push @make_install_cmds, "cd $root_dir/build/$dir && " .
-            "\$(MAKE) install$extra_opts";
-    }
+    #     push @make_install_cmds, "cd $root_dir/build/$dir && " .
+    #         "\$(MAKE) install$extra_opts";
+    # }
 
-    for my $key (qw(cookie http logger_socket session shcache template))
-    {
-        unless ($opts->{"no_lua_resty_$key"}) {
-            (my $key2 = $key) =~ s/_/-/g;
-            my $name = "lua-resty-$key2";
-            my $dir = auto_complete $name;
-            if (!defined $dir) {
-                die "No $name found";
-            }
+    # for my $key (qw(cookie http logger_socket session shcache template))
+    # {
+    #     unless ($opts->{"no_lua_resty_$key"}) {
+    #         (my $key2 = $key) =~ s/_/-/g;
+    #         my $name = "lua-resty-$key2";
+    #         my $dir = auto_complete $name;
+    #         if (!defined $dir) {
+    #             die "No $name found";
+    #         }
 
-            my $extra_opts = " DESTDIR=\$(DESTDIR) LUA_LIB_DIR=$prefix/vanilla"
-                ." INSTALL=$root_dir/build/install";
+    #         my $extra_opts = " DESTDIR=\$(DESTDIR) LUA_LIB_DIR=$prefix/vanilla"
+    #             ." INSTALL=$root_dir/build/install";
 
-            push @make_install_cmds, "cd $root_dir/build/$dir && " .
-                "\$(MAKE) install$extra_opts";
-        }
-    }
+    #         push @make_install_cmds, "cd $root_dir/build/$dir && " .
+    #             "\$(MAKE) install$extra_opts";
+    #     }
+    # }
 }
 
 sub usage ($) {
@@ -277,17 +282,17 @@ sub usage ($) {
   --with-luajit-or-lua-bin=BIN          set openresty luajit or standard lua bin for run vanilla vanilla-console
                                         (default to $openresty_path/luajit/bin/luajit*)
 
-  --without-lua-resty-cookie            disable the lua-resty-cookie library
-  --without-lua-resty-template          disable the lua-resty-template library
-  --without-lua-resty-http              disable the lua-resty-http library
-  --without-lua-resty-logger-socket     disable the lua-resty-logger-socket library
-  --without-lua-resty-session           disable the lua-resty-session library
-  --without-lua-resty-shcache           disable the lua-resty-shcache library
-
-  --with-lua-filesystem                 enable and build lua-filesystem
-                                        (must need option --with-openresty-luajit-include-path)
-
 _EOC_
+
+# --without-lua-resty-cookie            disable the lua-resty-cookie library
+# --without-lua-resty-template          disable the lua-resty-template library
+# --without-lua-resty-http              disable the lua-resty-http library
+# --without-lua-resty-logger-socket     disable the lua-resty-logger-socket library
+# --without-lua-resty-session           disable the lua-resty-session library
+# --without-lua-resty-shcache           disable the lua-resty-shcache library
+
+# --with-lua-filesystem                 enable and build lua-filesystem
+#                                       (must need option --with-openresty-luajit-include-path)
 
     warn $msg;
     exit $retval;
