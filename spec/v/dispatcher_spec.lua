@@ -24,7 +24,7 @@ describe("Dispatcher", function()
         package.loaded['vanilla.v.controller'] = nil
         package.loaded['vanilla.v.request'] = nil
         package.loaded['vanilla.v.response'] = nil
-        package.loaded['vanilla.v.views.rtpl'] = nil
+        -- package.loaded['vanilla.v.views.rtpl'] = nil
         package.loaded['vanilla.v.error'] = nil
         package.loaded['vanilla.v.plugin'] = nil
         Application = nil

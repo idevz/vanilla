@@ -3,9 +3,7 @@
 # A script for setting up environment for travis-ci testing.
 # Sets up openresty.
 OPENRESTY_VERSION="1.9.3.1"
-VANILLA_VERSION="0_1_0_rc5"
 OPENRESTY_DIR=$TRAVIS_BUILD_DIR/install/openresty
-VANILLA_ROOT=$TRAVIS_BUILD_DIR/install/vanilla
 
 #if [ "$LUA" == "lua5.1" ]; then
 #	luarocks install LuaBitOp
@@ -33,8 +31,3 @@ cd ../
 rm -rf ngx_openresty-$OPENRESTY_VERSION
 cd $TRAVIS_BUILD_DIR
 
-./configure --prefix=$VANILLA_ROOT --openresty-path=$OPENRESTY_DIR --vanilla-bin-path=$HOME/.lua/
-
-make install
-
-ln -s $VANILLA_ROOT/$VANILLA_VERSION/vanilla/resty ./vanilla/resty
