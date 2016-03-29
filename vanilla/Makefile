@@ -11,7 +11,7 @@ DEV_ROCKS = busted luacov luacov-coveralls luacheck lrexlib-pcre
 all: ;
 
 install: all
-	$(INSTALL) -d $(DESTDIR)/$(VANILLA_LIB_DIR)/resty/
+	$(INSTALL) -d $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla/resty/
 	$(INSTALL) ./bin $(DESTDIR)/$(VANILLA_LIB_DIR)/bin
 	$(MKDIR) $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./v $(DESTDIR)/$(VANILLA_LIB_DIR)/vanilla
