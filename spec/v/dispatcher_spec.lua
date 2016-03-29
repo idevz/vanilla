@@ -7,7 +7,7 @@ describe("Dispatcher", function()
         Controller = require 'vanilla.v.controller'
         Request = require 'vanilla.v.request'
         Response = require 'vanilla.v.response'
-        -- View = require 'vanilla.v.views.rtpl'
+        View = require 'vanilla.v.views.spec_rtpl'
         Error = require 'vanilla.v.error'
         Plugin = require 'vanilla.v.plugin'
 
@@ -24,7 +24,7 @@ describe("Dispatcher", function()
         package.loaded['vanilla.v.controller'] = nil
         package.loaded['vanilla.v.request'] = nil
         package.loaded['vanilla.v.response'] = nil
-        -- package.loaded['vanilla.v.views.rtpl'] = nil
+        package.loaded['vanilla.v.views.spec_rtpl'] = nil
         package.loaded['vanilla.v.error'] = nil
         package.loaded['vanilla.v.plugin'] = nil
         Application = nil
