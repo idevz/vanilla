@@ -73,8 +73,8 @@ build = {
    },
    install ={
       bin ={
-      "vanilla/bin/vanilla-0.1.0.rc5",
-      "vanilla/bin/v-console-0.1.0.rc5"
+      "vanilla/bin/vanilla",
+      "vanilla/bin/v-console"
       }
    },
 }
