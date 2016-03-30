@@ -60,12 +60,12 @@ if ($OS =~ /solaris|sunos/i) {
     $platform = 'posix';
 }
 
-my $prefix = '/usr/local/vanilla';
+my $prefix = '/usr/local/vanilla' . '/' . $vanilla_version_dir_str;
 my $openresty_prefix = '/usr/local/openresty';
 my $vanilla_bin_path = '/usr/local/bin';
 my %resty_opts;
 my $cc;
-my $vanilla_root;
+my $vanilla_root = $prefix;
 
 for my $opt (@ARGV) {
     next unless defined $opt;
