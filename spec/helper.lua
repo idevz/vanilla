@@ -225,6 +225,7 @@ _G.ngx = {
     end,
     var = {
         uri = "/users",
+        document_root = './',
         request_method = 'GET'
     }
 }
@@ -237,6 +238,8 @@ setmetatable(ngx, getmetatable(protoype))
 local config={}
 config.name = 'bluebird'
 
+config.vanilla_root = '{{VANILLA_ROOT}}'
+config.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
 config.route='vanilla.v.routes.simple'
 config.bootstrap='application.bootstrap'
 config.app={}

@@ -4,13 +4,12 @@ local pcall = pcall
 local old_require = require
 local setmetatable = setmetatable
 
-
-local DOCUMENT_ROOT = ngx.var.document_root
-local config = old_require(DOCUMENT_ROOT .. '/config.application')
-local VANILLA_VERSION = config.vanilla_version
-local VANILLA_ROOT = config.vanilla_root
-
 function require(m_name)
+    local DOCUMENT_ROOT = ngx.var.document_root
+    -- 'config or' for busted test
+    local config = config or old_require(DOCUMENT_ROOT .. '/config.application')
+    local VANILLA_VERSION = config.vanilla_version
+    local VANILLA_ROOT = config.vanilla_root
     local vanilla_module_name
     local vanilla_framework_path = VANILLA_ROOT .. '/?.lua;' .. VANILLA_ROOT .. '/?/init.lua'
     if package.searchpath(VANILLA_VERSION .. '/' .. m_name, vanilla_framework_path) ~=nil then
