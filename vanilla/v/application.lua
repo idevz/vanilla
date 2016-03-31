@@ -1,14 +1,40 @@
+-- perf
+local pairs = pairs
+local pcall = pcall
+local old_require = require
+local setmetatable = setmetatable
+
+function require(m_name)
+    local DOCUMENT_ROOT = ngx.var.document_root
+    -- 'config or' for busted test
+    local config = config or old_require(DOCUMENT_ROOT .. '/config.application')
+    local VANILLA_VERSION = config.vanilla_version
+    local VANILLA_ROOT = config.vanilla_root
+    local vanilla_module_name
+    local vanilla_framework_path = VANILLA_ROOT .. '/?.lua;' .. VANILLA_ROOT .. '/?/init.lua'
+    if package.searchpath(VANILLA_VERSION .. '/' .. m_name, vanilla_framework_path) ~=nil then
+        vanilla_module_name = VANILLA_VERSION .. '/' .. m_name
+    elseif package.searchpath(VANILLA_VERSION .. '/vanilla/' .. m_name, vanilla_framework_path) ~=nil then
+        vanilla_module_name = VANILLA_VERSION .. '/vanilla/' .. m_name
+    elseif package.searchpath(DOCUMENT_ROOT .. '/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = DOCUMENT_ROOT .. '/' .. m_name
+    elseif package.searchpath(DOCUMENT_ROOT .. '/application/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = DOCUMENT_ROOT .. '/application/' .. m_name
+    elseif package.searchpath(DOCUMENT_ROOT .. '/application/library/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = DOCUMENT_ROOT .. '/application/library/' .. m_name
+    else
+        vanilla_module_name = m_name
+    end
+    -- ngx.say(vanilla_module_name .. '<br />')
+    if package.loaded[vanilla_module_name] then return package.loaded[vanilla_module_name] end
+    return old_require(vanilla_module_name)
+end
+
 -- vanilla
 local Error = require 'vanilla.v.error'
 local Dispatcher = require 'vanilla.v.dispatcher'
 local Registry = require('vanilla.v.registry'):new('sys')
 local Utils = require 'vanilla.v.libs.utils'
-
--- perf
-local pairs = pairs
-local pcall = pcall
-local require = require
-local setmetatable = setmetatable
 
 local function new_dispatcher(self)
     return Dispatcher:new(self)

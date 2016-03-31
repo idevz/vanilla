@@ -64,12 +64,13 @@ luac.out
 
 local index_controller = [[
 local IndexController = {}
+local service = require 'models.service.user'
 local req_args = require('vanilla.v.libs.reqargs')
 
 function IndexController:index()
     local view = self:getView()
     local p = {}
-    p['vanilla'] = 'Welcome To Vanilla...'
+    p['vanilla'] = 'Welcome To Vanilla...' .. service:get()
     p['zhoujing'] = 'Power by Openresty'
     view:assign(p)
     return view:display()
@@ -97,6 +98,7 @@ function IndexController:api_get()
 end
 
 return IndexController
+
 ]]
 
 
@@ -278,6 +280,7 @@ return Bootstrap
 local application_conf = [[
 local APP_ROOT = ngx.var.document_root
 local Appconf={}
+Appconf.vanilla_root = '{{VANILLA_ROOT}}'
 Appconf.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
 Appconf.name = '{{APP_NAME}}'
 
@@ -467,8 +470,8 @@ http {
 
     gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
 
-    lua_package_path "./application/?.lua;./application/library/?.lua;./application/?/init.lua;./?.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;/?.lua;/?/init.lua;;";
-    lua_package_cpath "./application/library/?.so;{{VANILLA_ROOT}}/?.so;;";
+    lua_package_path "/?.lua;/?/init.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;;";
+    lua_package_cpath "/?.so;{{VANILLA_ROOT}}/?.so;;";
     include vhost/*.conf;
 }
 ]]
@@ -521,8 +524,8 @@ http {
 
     gzip_types         text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript image/svg+xml;
 
-    lua_package_path "./application/?.lua;./application/library/?.lua;./application/?/init.lua;./?.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;/?.lua;/?/init.lua;;";
-    lua_package_cpath "./application/library/?.so;{{VANILLA_ROOT}}/?.so;;";
+    lua_package_path "/?.lua;/?/init.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;;";
+    lua_package_cpath "/?.so;{{VANILLA_ROOT}}/?.so;;";
     include dev_vhost/*.conf;
 }
 ]]
@@ -797,27 +800,12 @@ return config
 
 
 local vanilla_index = [[
-require('pub.init')
-local config = require('config.application')
-local app = require('vanilla.v.application'):new(config)
+local DOCUMENT_ROOT = ngx.var.document_root
+local config = require(DOCUMENT_ROOT .. '/config.application')
+local VANILLA_VERSION = config.vanilla_version
+
+local app = require(VANILLA_VERSION .. '/vanilla.v.application'):new(config)
 app:bootstrap():run()
-]]
-
-
-local vanilla_init = [[
-local VANILLA_VERSION = require('config.application').vanilla_version
-
-local old_require = require
-function require( ... )
-    local vanilla_module_name
-    if string.find(..., 'vanilla.', 1, true) then
-        vanilla_module_name = VANILLA_VERSION .. '/' .. ...
-    else
-        vanilla_module_name = ...
-    end
-    if package.loaded[vanilla_module_name] then return package.loaded[vanilla_module_name] end
-    return old_require(vanilla_module_name)
-end
 ]]
 
 
@@ -872,8 +860,6 @@ VaApplication.files = {
     ['config/waf-regs/user-agent'] = waf_conf_regs_ua,
     ['config/waf-regs/whiteurl'] = waf_conf_regs_whiteurl,
     ['logs/hack/.gitkeep'] = "",
-    ['pub/index.lua'] = vanilla_index,
-    ['pub/init.lua'] = vanilla_init,
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
     ['spec/spec_helper.lua'] = spec_helper
@@ -897,9 +883,9 @@ function VaApplication.new(app_path)
     
     application_conf = sgsub(application_conf, "{{APP_NAME}}", app_name)
     application_conf = sgsub(application_conf, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
+    application_conf = sgsub(application_conf, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.files['config/application.lua'] = application_conf
-    VaApplication.files['pub/init.lua'] = sgsub(vanilla_init, "{{VANILLA_ROOT}}", VANILLA_ROOT)
-    VaApplication.files['pub/init.lua'] = sgsub(VaApplication.files['pub/init.lua'], "{{VANILLA_VERSION}}", VANILLA_VERSION)
+    VaApplication.files['pub/index.lua'] = sgsub(vanilla_index, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.create_files(app_path)
 end
 

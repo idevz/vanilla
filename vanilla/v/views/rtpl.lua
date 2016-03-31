@@ -1,6 +1,6 @@
 -- dep
 -- https://github.com/bungle/lua-resty-template
-local template = require "vanilla.resty.template"
+local template = require "resty.template"
 local Registry = require('vanilla.v.registry'):new('sys')
 
 -- perf

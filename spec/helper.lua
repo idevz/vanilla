@@ -180,9 +180,9 @@ _G.ngx = {
         },
     shared = setmetatable({}, shared_mt),
     req = {
-        read_body = function() return end,
-        get_body_data = function() return end,
-        get_headers = function() return end,
+        read_body = function() return {} end,
+        get_body_data = function() return {} end,
+        get_headers = function() return {} end,
         get_uri_args = function() return {} end,
         get_method = function() return {} end,
         get_post_args = function() return {busted = 'busted'} end,
@@ -225,6 +225,7 @@ _G.ngx = {
     end,
     var = {
         uri = "/users",
+        document_root = './',
         request_method = 'GET'
     }
 }
@@ -237,6 +238,8 @@ setmetatable(ngx, getmetatable(protoype))
 local config={}
 config.name = 'bluebird'
 
+config.vanilla_root = '{{VANILLA_ROOT}}'
+config.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
 config.route='vanilla.v.routes.simple'
 config.bootstrap='application.bootstrap'
 config.app={}
