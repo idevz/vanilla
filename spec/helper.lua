@@ -180,9 +180,9 @@ _G.ngx = {
         },
     shared = setmetatable({}, shared_mt),
     req = {
-        read_body = function() return end,
-        get_body_data = function() return end,
-        get_headers = function() return end,
+        read_body = function() return {} end,
+        get_body_data = function() return {} end,
+        get_headers = function() return {} end,
         get_uri_args = function() return {} end,
         get_method = function() return {} end,
         get_post_args = function() return {busted = 'busted'} end,
