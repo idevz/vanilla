@@ -280,6 +280,7 @@ return Bootstrap
 local application_conf = [[
 local APP_ROOT = ngx.var.document_root
 local Appconf={}
+Appconf.vanilla_root = '{{VANILLA_ROOT}}'
 Appconf.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
 Appconf.name = '{{APP_NAME}}'
 
@@ -799,32 +800,11 @@ return config
 
 
 local vanilla_index = [[
-local old_require = require
 local DOCUMENT_ROOT = ngx.var.document_root
-local config = old_require(DOCUMENT_ROOT .. '/config.application')
+local config = require(DOCUMENT_ROOT .. '/config.application')
 local VANILLA_VERSION = config.vanilla_version
 
-function require(m_name)
-    local vanilla_module_name
-    if package.searchpath(VANILLA_VERSION .. '/' .. m_name, '{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua') ~=nil then
-        vanilla_module_name = VANILLA_VERSION .. '/' .. m_name
-    elseif package.searchpath(VANILLA_VERSION .. '/vanilla/' .. m_name, '{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua') ~=nil then
-        vanilla_module_name = VANILLA_VERSION .. '/vanilla/' .. m_name
-    elseif package.searchpath(DOCUMENT_ROOT .. '/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
-        vanilla_module_name = DOCUMENT_ROOT .. '/' .. m_name
-    elseif package.searchpath(DOCUMENT_ROOT .. '/application/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
-        vanilla_module_name = DOCUMENT_ROOT .. '/application/' .. m_name
-    elseif package.searchpath(DOCUMENT_ROOT .. '/application/library/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
-        vanilla_module_name = DOCUMENT_ROOT .. '/application/library/' .. m_name
-    else
-        vanilla_module_name = m_name
-    end
-    -- ngx.say(vanilla_module_name .. '<br />')
-    if package.loaded[vanilla_module_name] then return package.loaded[vanilla_module_name] end
-    return old_require(vanilla_module_name)
-end
-
-local app = require('vanilla.v.application'):new(config)
+local app = require(VANILLA_VERSION .. '/vanilla.v.application'):new(config)
 app:bootstrap():run()
 ]]
 
@@ -889,9 +869,6 @@ function VaApplication.new(app_path)
     local app_name = utils.basename(app_path)
     print(ansicolors("Creating app %{blue}" .. app_name .. "%{reset}..."))
 
-
-    VaApplication.files['pub/index.lua'] = sgsub(vanilla_index, "{{VANILLA_ROOT}}", VANILLA_ROOT)
-
     VaApplication.files['nginx_conf/va-nginx.conf'] = sgsub(va_nginx_config_tpl, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.files['nginx_conf/va-nginx-development.conf'] = sgsub(va_nginx_dev_config_tpl, "{{VANILLA_ROOT}}", VANILLA_ROOT)
 
@@ -906,9 +883,9 @@ function VaApplication.new(app_path)
     
     application_conf = sgsub(application_conf, "{{APP_NAME}}", app_name)
     application_conf = sgsub(application_conf, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
+    application_conf = sgsub(application_conf, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.files['config/application.lua'] = application_conf
-    VaApplication.files['pub/init.lua'] = sgsub(vanilla_init, "{{VANILLA_ROOT}}", VANILLA_ROOT)
-    VaApplication.files['pub/init.lua'] = sgsub(VaApplication.files['pub/init.lua'], "{{VANILLA_VERSION}}", VANILLA_VERSION)
+    VaApplication.files['pub/index.lua'] = sgsub(vanilla_index, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.create_files(app_path)
 end
 
