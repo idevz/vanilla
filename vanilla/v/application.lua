@@ -10,23 +10,37 @@ function require(m_name)
     local config = config or old_require(DOCUMENT_ROOT .. '/config.application')
     local VANILLA_VERSION = config.vanilla_version
     local VANILLA_ROOT = config.vanilla_root
+
+    local va_m_name = VANILLA_VERSION .. '/' .. m_name
+    local va_name_no_va_m_name = VANILLA_VERSION .. '/vanilla/' .. m_name
+    local app_m_name = DOCUMENT_ROOT .. '/' .. m_name
+    local app_application_m_name = DOCUMENT_ROOT .. '/application/' .. m_name
+    local app_library_m_name = DOCUMENT_ROOT .. '/application/library/' .. m_name
+
+    if package.loaded[va_m_name] then return package.loaded[va_m_name]
+    elseif package.loaded[va_name_no_va_m_name] then return package.loaded[va_name_no_va_m_name]
+    elseif package.loaded[app_m_name] then return package.loaded[app_m_name]
+    elseif package.loaded[app_application_m_name] then return package.loaded[app_application_m_name]
+    elseif package.loaded[app_library_m_name] then return package.loaded[app_library_m_name]
+    elseif package.loaded[m_name] then return package.loaded[m_name] end
+    -- ngx.say(m_name .. '<br />')
+
     local vanilla_module_name
     local vanilla_framework_path = VANILLA_ROOT .. '/?.lua;' .. VANILLA_ROOT .. '/?/init.lua'
-    if package.searchpath(VANILLA_VERSION .. '/' .. m_name, vanilla_framework_path) ~=nil then
-        vanilla_module_name = VANILLA_VERSION .. '/' .. m_name
-    elseif package.searchpath(VANILLA_VERSION .. '/vanilla/' .. m_name, vanilla_framework_path) ~=nil then
-        vanilla_module_name = VANILLA_VERSION .. '/vanilla/' .. m_name
-    elseif package.searchpath(DOCUMENT_ROOT .. '/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
-        vanilla_module_name = DOCUMENT_ROOT .. '/' .. m_name
-    elseif package.searchpath(DOCUMENT_ROOT .. '/application/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
-        vanilla_module_name = DOCUMENT_ROOT .. '/application/' .. m_name
-    elseif package.searchpath(DOCUMENT_ROOT .. '/application/library/' .. m_name, '/?.lua;/?/init.lua') ~=nil then
-        vanilla_module_name = DOCUMENT_ROOT .. '/application/library/' .. m_name
+    if package.searchpath(va_m_name, vanilla_framework_path) ~=nil then
+        vanilla_module_name = va_m_name
+    elseif package.searchpath(va_name_no_va_m_name, vanilla_framework_path) ~=nil then
+        vanilla_module_name = va_name_no_va_m_name
+    elseif package.searchpath(app_m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = app_m_name
+    elseif package.searchpath(app_application_m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = app_application_m_name
+    elseif package.searchpath(app_library_m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = app_library_m_name
     else
         vanilla_module_name = m_name
     end
     -- ngx.say(vanilla_module_name .. '<br />')
-    if package.loaded[vanilla_module_name] then return package.loaded[vanilla_module_name] end
     return old_require(vanilla_module_name)
 end
 
