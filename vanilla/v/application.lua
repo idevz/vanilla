@@ -6,6 +6,7 @@ local setmetatable = setmetatable
 -- vanilla
 local Error = require 'vanilla.v.error'
 local Dispatcher = require 'vanilla.v.dispatcher'
+-- local Registry = require('vanilla.v.registry'):new('sys')
 local Utils = require 'vanilla.v.libs.utils'
 local Bootstrap = require 'vanilla.v.bootstrap'
 
@@ -31,6 +32,9 @@ function Application:buildconf(config)
                 Appconf.app.root='/data1/VANILLA_ROOT/idevz.org/'
             ]])
     end
+    -- Registry['app_name'] = sys_conf.name
+    -- Registry['app_root'] = sys_conf.app.root
+    -- Registry['app_version'] = sys_conf.version
     self.config = sys_conf
     return true
 end
