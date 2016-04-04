@@ -237,7 +237,10 @@ return AdminPlugin
 
 
 local bootstrap = [[
-local Bootstrap = require('vanilla.v.bootstrap'):new(dispatcher)
+local simple = require 'vanilla.v.routes.simple'
+local restful = require 'vanilla.v.routes.restful'
+
+local Bootstrap = {}
 
 function Bootstrap:initWaf()
     require('vanilla.sys.waf.acc'):check()
@@ -249,10 +252,11 @@ end
 
 function Bootstrap:initRoute()
     local router = self.dispatcher:getRouter()
-    local simple_route = require('vanilla.v.routes.simple'):new(self.dispatcher:getRequest())
-    local restful_route = require('vanilla.v.routes.restful'):new(self.dispatcher:getRequest())
+    local simple_route = simple:new(self.dispatcher:getRequest())
+    local restful_route = restful:new(self.dispatcher:getRequest())
     router:addRoute(restful_route, true)
     router:addRoute(simple_route)
+    -- print_r(router:getRoutes())
 end
 
 function Bootstrap:initView()
@@ -263,11 +267,20 @@ function Bootstrap:initPlugin()
     self.dispatcher:registerPlugin(admin_plugin);
 end
 
+function Bootstrap:new(dispatcher)
+    local instance = {
+        dispatcher = dispatcher,
+        boot_list = self.boot_list
+    }
+    setmetatable(instance, {__index=self})
+    return instance
+end
+
 function Bootstrap:boot_list()
     return {
         -- Bootstrap.initWaf,
         -- Bootstrap.initErrorHandle,
-        Bootstrap.initRoute,
+        -- Bootstrap.initRoute,
         -- Bootstrap.initView,
         -- Bootstrap.initPlugin,
     }
@@ -536,10 +549,12 @@ local nginx_vhost_config_tpl = [[
 #init_by_lua require('nginx.init'):run();
 
 server {
-    server_name {{APP_NAME}}.idevz.com localhost;
+    server_name {{APP_NAME}}.idevz.com;
     lua_code_cache on;
     root {{APP_ROOT}};
     listen 80;
+    set $app_name '{{APP_NAME}}';
+    set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
     set $template_root '';
 
     location /static {
@@ -563,7 +578,7 @@ server {
 
     # Va runtime
     location / {
-        content_by_lua_file $document_root/pub/index.lua;
+        content_by_lua 'require("{{APP_ROOT}}/pub.index"):run(ngx)';
     }
 }
 ]]
@@ -574,10 +589,12 @@ local dev_nginx_vhost_config_tpl = [[
 #init_by_lua require('nginx.init'):run();
 
 server {
-    server_name {{APP_NAME}}.idevz.com localhost;
+    server_name {{APP_NAME}}.idevz.com;
     lua_code_cache off;
     root {{APP_ROOT}};
     listen 9110;
+    set $app_name '{{APP_NAME}}';
+    set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
     set $template_root '';
 
     location /static {
@@ -601,7 +618,7 @@ server {
 
     # Va runtime
     location / {
-        content_by_lua_file $document_root/pub/index.lua;
+        content_by_lua 'require("{{APP_ROOT}}/pub.index"):run(ngx)';
     }
 }
 ]]
@@ -800,12 +817,59 @@ return config
 
 
 local vanilla_index = [[
-local DOCUMENT_ROOT = ngx.var.document_root
-local config = require(DOCUMENT_ROOT .. '/config.application')
-local VANILLA_VERSION = config.vanilla_version
+local old_require = require
 
-local app = require(VANILLA_VERSION .. '/vanilla.v.application'):new(config)
-app:bootstrap():run()
+function require(m_name)
+    local APP_ROOT = ngx.var.document_root
+    -- 'config or' for busted test
+    local config = old_require(APP_ROOT .. '/config.application')
+    local VANILLA_VERSION = config.vanilla_version
+    local VANILLA_ROOT = config.vanilla_root
+
+    local va_m_name = VANILLA_VERSION .. '/' .. m_name
+    local va_name_no_va_m_name = VANILLA_VERSION .. '/vanilla/' .. m_name
+    local app_m_name = APP_ROOT .. '/' .. m_name
+    local app_application_m_name = APP_ROOT .. '/application/' .. m_name
+    local app_library_m_name = APP_ROOT .. '/application/library/' .. m_name
+
+    if package.loaded[va_m_name] then return package.loaded[va_m_name]
+    elseif package.loaded[va_name_no_va_m_name] then return package.loaded[va_name_no_va_m_name]
+    elseif package.loaded[app_m_name] then return package.loaded[app_m_name]
+    elseif package.loaded[app_application_m_name] then return package.loaded[app_application_m_name]
+    elseif package.loaded[app_library_m_name] then return package.loaded[app_library_m_name]
+    elseif package.loaded[m_name] then return package.loaded[m_name] end
+    -- ngx.say(m_name .. '<br />')
+
+    local vanilla_module_name
+    local vanilla_framework_path = VANILLA_ROOT .. '/?.lua;' .. VANILLA_ROOT .. '/?/init.lua'
+    if package.searchpath(va_m_name, vanilla_framework_path) ~=nil then
+        vanilla_module_name = va_m_name
+    elseif package.searchpath(va_name_no_va_m_name, vanilla_framework_path) ~=nil then
+        vanilla_module_name = va_name_no_va_m_name
+    elseif package.searchpath(app_m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = app_m_name
+    elseif package.searchpath(app_application_m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = app_application_m_name
+    elseif package.searchpath(app_library_m_name, '/?.lua;/?/init.lua') ~=nil then
+        vanilla_module_name = app_library_m_name
+    else
+        vanilla_module_name = m_name
+    end
+    -- ngx.say(vanilla_module_name .. '<-------><br />')
+    return old_require(vanilla_module_name)
+end
+
+local vanilla_application = require 'vanilla.v.application'
+local application_config = require 'config.application'
+local boots = require 'application.bootstrap'
+
+local App = {}
+
+function App:run( ngx )
+    vanilla_application:new(ngx, application_config):bootstrap(boots):run()
+end
+
+return App
 ]]
 
 
@@ -877,8 +941,10 @@ function VaApplication.new(app_path)
     VaApplication.files['va-' .. app_name .. '-service'] = sgsub(service_manage_sh, "{{VA_APP_PATH}}", app_path)
 
     dev_nginx_vhost_config_tpl = sgsub(dev_nginx_vhost_config_tpl, "{{APP_NAME}}", app_name)
+    dev_nginx_vhost_config_tpl = sgsub(dev_nginx_vhost_config_tpl, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
     VaApplication.files['nginx_conf/dev_vhost/' .. app_name .. '.conf'] = sgsub(dev_nginx_vhost_config_tpl, "{{APP_ROOT}}", app_path)
     nginx_vhost_config_tpl = sgsub(nginx_vhost_config_tpl, "{{APP_NAME}}", app_name)
+    nginx_vhost_config_tpl = sgsub(nginx_vhost_config_tpl, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
     VaApplication.files['nginx_conf/vhost/' .. app_name .. '.conf'] = sgsub(nginx_vhost_config_tpl, "{{APP_ROOT}}", app_path)
     
     application_conf = sgsub(application_conf, "{{APP_NAME}}", app_name)
