@@ -2,13 +2,14 @@
 local error = error
 local tconcat = table.concat
 local function tappend(t, v) t[#t+1] = v end
+local simple_route = require 'vanilla.v.routes.simple'
 
 -- init Router and set routes
 local Router = {}
 
 function Router:new(request)
     local instance = {
-        routes = {require('vanilla.v.routes.simple'):new(request)},
+        routes = {simple_route:new(request)},
     	request = request
     }
 
