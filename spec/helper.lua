@@ -1,5 +1,6 @@
 package.loaded['config.routes'] = { }
 package.loaded['config.application'] = {}
+package.loaded['resty.upload'] = {}
 
 local reg = require "rex_pcre"
 -- DICT Proxy
@@ -226,6 +227,7 @@ _G.ngx = {
     var = {
         uri = "/users",
         document_root = './',
+        VANILLA_VERSION = './test-vanilla',
         request_method = 'GET'
     }
 }

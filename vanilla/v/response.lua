@@ -1,5 +1,3 @@
--- vanilla
-local Registry = require('vanilla.v.registry'):new('sys')
 -- perf
 local setmetatable = setmetatable
 
@@ -7,10 +5,10 @@ local Response = {}
 Response.__index = Response
 
 function Response:new()
-    local app_version = Registry['app_version']
-    ngx.header['Content_type'] = 'text/html'
-    ngx.header['Power_By'] = 'Vanilla-' .. app_version
+    local vanilla_version = ngx.var.VANILLA_VERSION
     ngx.status = ngx.HTTP_OK
+    ngx.header['Content_type'] = 'text/html'
+    ngx.header['Power_By'] = 'Vanilla-' .. vanilla_version
     local instance = {
         headers = {},
         append_body = '',

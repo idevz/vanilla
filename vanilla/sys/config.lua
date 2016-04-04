@@ -1,4 +1,5 @@
 -- perf
+local helpers = require 'vanilla.v.libs.utils'
 local Registry = require('vanilla.v.registry'):new('sys_env')
 local ogetenv = os.getenv
 
@@ -19,7 +20,6 @@ Sysconf.app_dirs = {
 
 if Sysconf.env == 'development' or Sysconf.env == 'test' then
     function sprint_r( ... )
-        local helpers = require 'vanilla.v.libs.utils'
         return helpers.sprint_r(...)
     end
 
