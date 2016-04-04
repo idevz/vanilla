@@ -11,7 +11,7 @@ describe("Dispatcher", function()
         Error = require 'vanilla.v.error'
         Plugin = require 'vanilla.v.plugin'
 
-        application = Application:new(config)
+        application = Application:new(ngx, config)
         dispatcher = Dispatcher:new(application)
         request = Request:new()
         response = Response:new()
