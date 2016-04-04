@@ -16,7 +16,7 @@ end
 
 function Bootstrap:bootstrap()
 	for k,v in pairs(self.lboot_instance:boot_list()) do
-		v(self)
+		v(self.lboot_instance)
 	end
 end
 
