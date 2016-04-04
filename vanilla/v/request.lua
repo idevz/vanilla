@@ -15,6 +15,7 @@ function Request:new()
     local GET, POST, FILE = Reqargs:getRequestData({})
     local params = GET
     if POST ~= nil then for k,v in pairs(POST) do params[k] = v end end
+    if FILE ~= nil then params['VA_FILE']=FILE end
     -- local headers = ngx.req.get_headers()
 
     -- url:http://zj.com:9210/di0000/111?aa=xx
