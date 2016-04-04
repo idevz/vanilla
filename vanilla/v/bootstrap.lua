@@ -1,13 +1,14 @@
 -- perf
 local pairs = pairs
 local setmetatable = setmetatable
-local lbootstrap = require 'application.bootstrap'
+-- local lbootstrap = require 'application.bootstrap'
+
 
 local Bootstrap = {}
 
-function Bootstrap:new(dispatcher)
+function Bootstrap:new(lboot_instance)
     local instance = {
-    	lboot_instance = lbootstrap:new(dispatcher)
+    	lboot_instance = lboot_instance
     }
     setmetatable(instance, {__index=self})
     return instance

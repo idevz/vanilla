@@ -42,8 +42,8 @@ function Application:new(ngx, config)
     return instance
 end
 
-function Application:bootstrap()
-    bootstrap_instance = Bootstrap:new(self.dispatcher)
+function Application:bootstrap(lboots)
+    bootstrap_instance = Bootstrap:new(lboots:new(self.dispatcher))
     self:lpcall(bootstrap_instance.bootstrap, bootstrap_instance)
     return self
 end
