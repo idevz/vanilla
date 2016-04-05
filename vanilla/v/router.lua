@@ -9,7 +9,7 @@ local Router = {}
 function Router:new(request)
     local instance = {
         routes = {require('vanilla.v.routes.simple'):new(request)},
-    	request = request
+        request = request
     }
 
     setmetatable(instance, {__index = self})
@@ -53,7 +53,8 @@ function Router:route()
             if route then
                 alive_route_num = alive_route_num + 1
                 local ok, controller_name_or_error, action = pcall(route_match, route)
-                if ok and controller_name_or_error then
+                if ok and package.searchpath('controllers.' .. controller_name_or_error, package.path) ~=nil
+                    and type(require('controllers.' .. controller_name_or_error)[action]) == 'function' then
                     self.current_route = route
                     return controller_name_or_error, action
                 else
