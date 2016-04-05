@@ -12,10 +12,6 @@ local Reqargs = require 'vanilla.v.libs.reqargs'
 local Request = {}
 
 function Request:new()
-    local GET, POST, FILE = Reqargs:getRequestData({})
-    local params = GET
-    if POST ~= nil then for k,v in pairs(POST) do params[k] = v end end
-    if FILE ~= nil then params['VA_FILE']=FILE end
     -- local headers = ngx.req.get_headers()
 
     -- url:http://zj.com:9210/di0000/111?aa=xx
@@ -23,7 +19,7 @@ function Request:new()
         uri = ngx.var.uri,                  -- /di0000/111
         -- req_uri = ngx.var.request_uri,      -- /di0000/111?aa=xx
         -- req_args = ngx.var.args,            -- aa=xx
-        params = params,
+        -- params = params,
         -- uri_args = ngx.req.get_uri_args(),  -- { aa = "xx" }
         -- method = ngx.req.get_method(),
         -- headers = headers,
@@ -55,12 +51,21 @@ function Request:getHeader(key)
     end
 end
 
-function Request:getParams()
+function Request:buildParams()
+    local GET, POST, FILE = Reqargs:getRequestData({})
+    local params = GET
+    if #POST ~= 0 then for k,v in pairs(POST) do params[k] = v end end
+    if #FILE ~= 0 then params['VA_FILE']=FILE end
+    self.params = params
     return self.params
 end
 
+function Request:getParams()
+    return self.params or self:buildParams()
+end
+
 function Request:getParam(key)
-    return self.params[key]
+    return self.params[key] or self:buildParams()[key]
 end
 
 function Request:setParam(key, value)
