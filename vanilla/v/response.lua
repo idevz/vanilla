@@ -5,10 +5,6 @@ local Response = {}
 Response.__index = Response
 
 function Response:new()
-    local vanilla_version = ngx.var.VANILLA_VERSION
-    ngx.status = ngx.HTTP_OK
-    ngx.header['Content_type'] = 'text/html'
-    ngx.header['Power_By'] = 'Vanilla-' .. vanilla_version
     local instance = {
         headers = {},
         append_body = '',
@@ -54,6 +50,9 @@ function Response:prependBody(prepend_body)
 end
 
 function Response:response()
+    local vanilla_version = ngx.var.VANILLA_VERSION
+    ngx.header['Power_By'] = 'Vanilla-' .. vanilla_version
+    ngx.header['Content_type'] = ngx.header['Content_type'] or 'text/html'
     local body = {[1]=self.append_body, [2]=self.body, [3]=self.prepend_body}
     ngx.print(table.concat( body, ""))
     return true
