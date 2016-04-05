@@ -54,8 +54,8 @@ end
 function Request:buildParams()
     local GET, POST, FILE = Reqargs:getRequestData({})
     local params = GET
-    if #POST ~= 0 then for k,v in pairs(POST) do params[k] = v end end
-    if #FILE ~= 0 then params['VA_FILE']=FILE end
+    if #POST >= 1 then for k,v in pairs(POST) do params[k] = v end end
+    if #FILE >= 1 then params['VA_FILE']=FILE end
     self.params = params
     return self.params
 end

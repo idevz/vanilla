@@ -8,9 +8,7 @@ local simple_route = require 'vanilla.v.routes.simple'
 local Router = {}
 
 function Router:new(request)
-    local instance = {
-        routes = {simple_route:new(request)}
-    }
+    local instance = { routes = {simple_route:new(request)} }
 
     setmetatable(instance, {__index = self})
     return instance
