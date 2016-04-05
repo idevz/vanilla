@@ -9,8 +9,7 @@ local Router = {}
 
 function Router:new(request)
     local instance = {
-        routes = {simple_route:new(request)},
-    	request = request
+        routes = {simple_route:new(request)}
     }
 
     setmetatable(instance, {__index = self})
