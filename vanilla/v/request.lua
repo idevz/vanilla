@@ -6,6 +6,7 @@
 -- perf
 local error = error
 local pairs = pairs
+local pcall = pcall
 local setmetatable = setmetatable
 local Reqargs = require 'vanilla.v.libs.reqargs'
 
@@ -65,7 +66,8 @@ function Request:getParams()
 end
 
 function Request:getParam(key)
-    return self.params[key] or self:buildParams()[key]
+    local ok, params_or_err = pcall(function(self) return self.params[key] end)
+    if ok then return params_or_err else return self:buildParams()[key] end
 end
 
 function Request:setParam(key, value)
