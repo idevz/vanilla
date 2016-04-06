@@ -8,10 +8,7 @@ local simple_route = require 'vanilla.v.routes.simple'
 local Router = {}
 
 function Router:new(request)
-    local instance = {
-        routes = {simple_route:new(request)},
-    	request = request
-    }
+    local instance = { routes = {simple_route:new(request)} }
 
     setmetatable(instance, {__index = self})
     return instance
@@ -54,7 +51,10 @@ function Router:route()
             if route then
                 alive_route_num = alive_route_num + 1
                 local ok, controller_name_or_error, action = pcall(route_match, route)
-                if ok and controller_name_or_error then
+                if ok and package.searchpath(ngx.var.document_root .. '/application/controllers.'
+                    .. controller_name_or_error, '/?.lua;/?/init.lua') ~=nil
+                    and type(require('controllers.' .. controller_name_or_error)[action]) == 'function' then
+                -- if ok and controller_name_or_error then
                     self.current_route = route
                     return controller_name_or_error, action
                 else
