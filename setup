@@ -90,7 +90,6 @@ while getopts v:o:a:u:g:eh OPT; do
     esac
 done
 
-echo $VANILLA_PROJ_ROOT
 [ -n "$VANILLA_PROJ_ROOT" ] && install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
 
 [ -n "$VANILLA_APP_ROOT" ] && init_vanilla_app $VANILLA_APP_ROOT $VANILLA_APP_USER $VANILLA_APP_GROUP $VANILLA_RUNNING_ENV
