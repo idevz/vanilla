@@ -1,0 +1,31 @@
+# vanilla
+client_body_temp
+fastcgi_temp
+logs
+proxy_temp
+tmp
+uwsgi_temp
+build
+Makefile
+*.zj
+
+# vim
+.*.sw[a-z]
+*.un~
+Session.vim
+
+# textmate
+*.tmproj
+*.tmproject
+tmtags
+
+# OSX
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+*.swp
+pretty/zj
+
+# luarocks
+*.rock
