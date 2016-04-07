@@ -4,27 +4,36 @@ VANILLA_VERSION=0.1.0.rc5
 VANILLA_VERSION_DIR_STR=0_1_0_rc5
 VANILLA_APP_USER=idevz
 VANILLA_APP_GROUP=sina
-VANILLA_RUNNING_ENV=''
+VANILLA_RUNNING_ENV='' #default '' is for production environment
 OPENRESTY_ROOT=/usr/local/openresty
+TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
+
 
 install_vanilla_framework()
 {
     echo -e "\033[45mBegin install Vanilla Frameowrk! \033[0m\n"
     VANILLA_PROJ_ROOT=$1
     VANILLA_FRAMEWORK_ROOT=$1/framework
+    VANILLA_FRAMEWORK_V=$VANILLA_FRAMEWORK_ROOT/$VANILLA_VERSION_DIR_STR
     [ -n $2 ] && OPENRESTY_ROOT=$2
     VANILLA_BIN=/usr/local/bin/vanilla-$VANILLA_VERSION
     VANILLA_CONSOLE_BIN=/usr/local/bin/v-console-$VANILLA_VERSION
 
-    [ -f $VANILLA_BIN ] && rm -f $VANILLA_BIN
-    [ -f $VANILLA_CONSOLE_BIN ] && rm -f $VANILLA_CONSOLE_BIN
-    [ -d $VANILLA_FRAMEWORK_ROOT ] && rm -rf $VANILLA_FRAMEWORK_ROOT
+    [ -f $VANILLA_BIN ] && mv -f $VANILLA_BIN $VANILLA_BIN".old_"$TIME_MARK
+    [ -f $VANILLA_CONSOLE_BIN ] && mv -f $VANILLA_CONSOLE_BIN $VANILLA_CONSOLE_BIN".old_"$TIME_MARK
+    [ -d $VANILLA_FRAMEWORK_V ] && mv -f $VANILLA_FRAMEWORK_V $VANILLA_FRAMEWORK_V".old_"$TIME_MARK
 
     make clean
     ./configure --prefix=$VANILLA_FRAMEWORK_ROOT --openresty-path=$OPENRESTY_ROOT
     make install
 
     echo -e "\033[35mVanilla Frameowrk Installed $VANILLA_FRAMEWORK_ROOT \033[0m\n"
+}
+
+alert()
+{
+    MSG=$1
+    echo -e "\033[31m$MSG \033[0m\n"
 }
 
 init_vanilla_app()
@@ -36,8 +45,9 @@ init_vanilla_app()
     [ -n $4 ] && VANILLA_RUNNING_ENV=$4
     APP_NAME=`basename $VANILLA_APP_ROOT`
     SERVICE_SH=$VANILLA_APP_ROOT/va-$APP_NAME-service
-    [ -d $VANILLA_APP_ROOT ] && rm -rf $VANILLA_APP_ROOT
-    [ -x /usr/local/bin/vanilla-$VANILLA_VERSION ] && /usr/local/bin/vanilla-$VANILLA_VERSION new $VANILLA_APP_ROOT
+    VANILLA_BIN=/usr/local/bin/vanilla-$VANILLA_VERSION
+    [ -d $VANILLA_APP_ROOT ] && mv -f $VANILLA_APP_ROOT $VANILLA_APP_ROOT".old_"$TIME_MARK
+    [ -x $VANILLA_BIN ] && $VANILLA_BIN new $VANILLA_APP_ROOT || alert $VANILLA_BIN" is not exist, You shoud install vanilla first, to see './setup -h' for more info."
     sed "s/#user zhoujing staff/user $VANILLA_APP_USER $VANILLA_APP_GROUP/" $VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf>$VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf.tmp
     mv -f $VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf.tmp $VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf
     chmod +x $SERVICE_SH
@@ -50,12 +60,12 @@ init_vanilla_app()
 show_usage()
 {
     echo -e "`printf %-16s "Usage: $0"` -h   show this help info"
-    echo -e "`printf %-16s ` -v   vanilla project root, will contain vanilla framework and apps"
-    echo -e "`printf %-16s ` -o   openresty install path(openresty root)"
-    echo -e "`printf %-16s ` -a   app absolute path(which path to init app)"
-    echo -e "`printf %-16s ` -u   user to run app"
-    echo -e "`printf %-16s ` -g   user group to run app"
-    echo -e "`printf %-16s ` -e   app running environment"
+    echo -e "`printf %-16s ` -v   VANILLA_PROJ_ROOT, vanilla project root, will contain vanilla framework and apps"
+    echo -e "`printf %-16s ` -o   OPENRESTY_ROOT, openresty install path(openresty root)"
+    echo -e "`printf %-16s ` -a   VANILLA_APP_ROOT, app absolute path(which path to init app)"
+    echo -e "`printf %-16s ` -u   VANILLA_APP_USER, user to run app"
+    echo -e "`printf %-16s ` -g   VANILLA_APP_GROUP, user group to run app"
+    echo -e "`printf %-16s ` -e   VANILLA_RUNNING_ENV, app running environment"
 }
 
 while getopts v:o:a:u:g:eh OPT; do
@@ -85,7 +95,7 @@ while getopts v:o:a:u:g:eh OPT; do
             shift break
             ;;
         ? )
-            echo -e "\033[31mERROR: unknown argument! \033[0m\n" && show_usage && exit 1
+            alert "ERROR: unknown argument!" && show_usage && exit 1
             ;;
     esac
 done
