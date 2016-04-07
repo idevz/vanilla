@@ -578,7 +578,7 @@ server {
 
     # Va runtime
     location / {
-        content_by_lua 'require("{{APP_ROOT}}/pub.index"):run(ngx)';
+        content_by_lua_file $document_root/pub/index.lua;
     }
 }
 ]]
@@ -596,6 +596,7 @@ server {
     set $app_name '{{APP_NAME}}';
     set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
     set $template_root '';
+    set $VA_DEV 'on';
 
     location /static {
         access_log  off;
@@ -618,7 +619,7 @@ server {
 
     # Va runtime
     location / {
-        content_by_lua 'require("{{APP_ROOT}}/pub.index"):run(ngx)';
+        content_by_lua_file $document_root/pub/index.lua;
     }
 }
 ]]
@@ -820,17 +821,15 @@ local vanilla_index = [[
 local old_require = require
 
 function require(m_name)
-    local APP_ROOT = ngx.var.document_root
-    -- 'config or' for busted test
-    local config = old_require(APP_ROOT .. '/config.application')
-    local VANILLA_VERSION = config.vanilla_version
-    local VANILLA_ROOT = config.vanilla_root
+    local APP_ROOT = '{{APP_ROOT}}'
+    local VANILLA_VERSION_DIR_STR = '{{VANILLA_VERSION_DIR_STR}}'
+    local VANILLA_ROOT = '{{VANILLA_ROOT}}'
 
-    local va_m_name = VANILLA_VERSION .. '/' .. m_name
-    local va_name_no_va_m_name = VANILLA_VERSION .. '/vanilla/' .. m_name
-    local app_m_name = APP_ROOT .. '/' .. m_name
-    local app_application_m_name = APP_ROOT .. '/application/' .. m_name
-    local app_library_m_name = APP_ROOT .. '/application/library/' .. m_name
+    local va_m_name = VANILLA_VERSION_DIR_STR .. "/" .. m_name
+    local va_name_no_va_m_name = VANILLA_VERSION_DIR_STR .. "/vanilla/" .. m_name
+    local app_m_name = APP_ROOT .. "/" .. m_name
+    local app_application_m_name = APP_ROOT .. "/application/" .. m_name
+    local app_library_m_name = APP_ROOT .. "/application/library/" .. m_name
 
     if package.loaded[va_m_name] then return package.loaded[va_m_name]
     elseif package.loaded[va_name_no_va_m_name] then return package.loaded[va_name_no_va_m_name]
@@ -838,38 +837,53 @@ function require(m_name)
     elseif package.loaded[app_application_m_name] then return package.loaded[app_application_m_name]
     elseif package.loaded[app_library_m_name] then return package.loaded[app_library_m_name]
     elseif package.loaded[m_name] then return package.loaded[m_name] end
-    -- ngx.say(m_name .. '<br />')
+    -- ngx.say(m_name .. "<br />")
 
     local vanilla_module_name
-    local vanilla_framework_path = VANILLA_ROOT .. '/?.lua;' .. VANILLA_ROOT .. '/?/init.lua'
+    local vanilla_framework_path = VANILLA_ROOT .. "/?.lua;" .. VANILLA_ROOT .. "/?/init.lua"
     if package.searchpath(va_m_name, vanilla_framework_path) ~=nil then
         vanilla_module_name = va_m_name
     elseif package.searchpath(va_name_no_va_m_name, vanilla_framework_path) ~=nil then
         vanilla_module_name = va_name_no_va_m_name
-    elseif package.searchpath(app_m_name, '/?.lua;/?/init.lua') ~=nil then
+    elseif package.searchpath(app_m_name, "/?.lua;/?/init.lua") ~=nil then
         vanilla_module_name = app_m_name
-    elseif package.searchpath(app_application_m_name, '/?.lua;/?/init.lua') ~=nil then
+    elseif package.searchpath(app_application_m_name, "/?.lua;/?/init.lua") ~=nil then
         vanilla_module_name = app_application_m_name
-    elseif package.searchpath(app_library_m_name, '/?.lua;/?/init.lua') ~=nil then
+    elseif package.searchpath(app_library_m_name, "/?.lua;/?/init.lua") ~=nil then
         vanilla_module_name = app_library_m_name
     else
         vanilla_module_name = m_name
     end
-    -- ngx.say(vanilla_module_name .. '<-------><br />')
+    -- ngx.say(vanilla_module_name .. "<-------><br />")
     return old_require(vanilla_module_name)
+end
+
+if ngx.var.VA_DEV ~= nil then
+    local helpers = require "vanilla.v.libs.utils"
+    function sprint_r( ... )
+        return helpers.sprint_r(...)
+    end
+
+    function lprint_r( ... )
+        local rs = sprint_r(...)
+        print(rs)
+    end
+
+    function print_r( ... )
+        local rs = sprint_r(...)
+        ngx.say(rs)
+    end
+
+    function err_log(msg)
+        ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
+    end
 end
 
 local vanilla_application = require 'vanilla.v.application'
 local application_config = require 'config.application'
 local boots = require 'application.bootstrap'
 
-local App = {}
-
-function App:run( ngx )
-    vanilla_application:new(ngx, application_config):bootstrap(boots):run()
-end
-
-return App
+vanilla_application:new(ngx, application_config):bootstrap(boots):run()
 ]]
 
 
@@ -951,6 +965,9 @@ function VaApplication.new(app_path)
     application_conf = sgsub(application_conf, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
     application_conf = sgsub(application_conf, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.files['config/application.lua'] = application_conf
+
+    vanilla_index = sgsub(vanilla_index, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
+    vanilla_index = sgsub(vanilla_index, "{{APP_ROOT}}", app_path)
     VaApplication.files['pub/index.lua'] = sgsub(vanilla_index, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.create_files(app_path)
 end
