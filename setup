@@ -49,7 +49,9 @@ init_vanilla_app()
     [ -d $VANILLA_APP_ROOT ] && mv -f $VANILLA_APP_ROOT $VANILLA_APP_ROOT".old_"$TIME_MARK
     [ -x $VANILLA_BIN ] && $VANILLA_BIN new $VANILLA_APP_ROOT || alert $VANILLA_BIN" is not exist, You shoud install vanilla first, to see './setup -h' for more info."
     sed "s/#user zhoujing staff/user $VANILLA_APP_USER $VANILLA_APP_GROUP/" $VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf>$VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf.tmp
+    sed "s/#user zhoujing staff/user $VANILLA_APP_USER $VANILLA_APP_GROUP/" $VANILLA_APP_ROOT/nginx_conf/va-nginx.conf>$VANILLA_APP_ROOT/nginx_conf/va-nginx.conf.tmp
     mv -f $VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf.tmp $VANILLA_APP_ROOT/nginx_conf/va-nginx-development.conf
+    mv -f $VANILLA_APP_ROOT/nginx_conf/va-nginx.conf.tmp $VANILLA_APP_ROOT/nginx_conf/va-nginx.conf
     chmod +x $SERVICE_SH
     sudo $SERVICE_SH initconf $VANILLA_RUNNING_ENV
     sudo $SERVICE_SH start $VANILLA_RUNNING_ENV
