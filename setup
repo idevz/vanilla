@@ -1,13 +1,22 @@
 #!/bin/bash
 
 VANILLA_VERSION=0.1.0.rc5
-VANILLA_VERSION_DIR_STR=0_1_0_rc5
+VANILLA_VERSION_DIR_STR=0_1_0_rc
+VANILLA_PROJ_ROOT=/data/vanilla
+VANILLA_APP_ROOT=/data/vanilla/appdemoidevz
 VANILLA_APP_USER=idevz
 VANILLA_APP_GROUP=sina
 VANILLA_RUNNING_ENV='' #default '' is for production environment
 OPENRESTY_ROOT=/usr/local/openresty
+SETUP_ACTION='af'
 TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
 
+
+alert()
+{
+    MSG=$1
+    echo -e "\033[31m$MSG \033[0m\n"
+}
 
 install_vanilla_framework()
 {
@@ -16,6 +25,7 @@ install_vanilla_framework()
     VANILLA_FRAMEWORK_ROOT=$1/framework
     VANILLA_FRAMEWORK_V=$VANILLA_FRAMEWORK_ROOT/$VANILLA_VERSION_DIR_STR
     [ -n $2 ] && OPENRESTY_ROOT=$2
+    [ ! -d $OPENRESTY_ROOT ] && alert "OPENRESTY_ROOT set ERROR, OpenResty Path "$OPENRESTY_ROOT "didn't exist" && exit 1
     VANILLA_BIN=/usr/local/bin/vanilla-$VANILLA_VERSION
     VANILLA_CONSOLE_BIN=/usr/local/bin/v-console-$VANILLA_VERSION
 
@@ -28,12 +38,6 @@ install_vanilla_framework()
     make install
 
     echo -e "\033[35mVanilla Frameowrk Installed $VANILLA_FRAMEWORK_ROOT \033[0m\n"
-}
-
-alert()
-{
-    MSG=$1
-    echo -e "\033[31m$MSG \033[0m\n"
 }
 
 init_vanilla_app()
@@ -68,6 +72,9 @@ show_usage()
     echo -e "`printf %-16s ` -u   VANILLA_APP_USER, user to run app"
     echo -e "`printf %-16s ` -g   VANILLA_APP_GROUP, user group to run app"
     echo -e "`printf %-16s ` -e   VANILLA_RUNNING_ENV, app running environment"
+    echo -e "`printf %-16s ` -s   SETUP_ACTION, values 'f' for only setup framework"
+    echo -e "`printf %-16s `                    values 'a' for only setup demo app default named appdemoidevz"
+    echo -e "`printf %-16s `                    values 'af' for setup framework and demo app default named appdemoidevz"
 }
 
 while getopts v:o:a:u:g:eh OPT; do
@@ -90,6 +97,9 @@ while getopts v:o:a:u:g:eh OPT; do
         e )
             VANILLA_RUNNING_ENV=$OPTARG
             ;;
+        s )
+            SETUP_ACTION=$OPTARG
+            ;;
         h )
             show_usage && exit 0
             ;;
@@ -102,9 +112,9 @@ while getopts v:o:a:u:g:eh OPT; do
     esac
 done
 
-[ -n "$VANILLA_PROJ_ROOT" ] && install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
+[ -n "$VANILLA_PROJ_ROOT" ]  || $SETUP_ACTION = "f" || $SETUP_ACTION = "af" && install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
 
-[ -n "$VANILLA_APP_ROOT" ] && init_vanilla_app $VANILLA_APP_ROOT $VANILLA_APP_USER $VANILLA_APP_GROUP $VANILLA_RUNNING_ENV
+[ -n "$VANILLA_APP_ROOT" ] || $SETUP_ACTION = "a" || $SETUP_ACTION = "af" && init_vanilla_app $VANILLA_APP_ROOT $VANILLA_APP_USER $VANILLA_APP_GROUP $VANILLA_RUNNING_ENV
 
 echo
 echo "You are setup Vanilla-$VANILLA_VERSION and using:"
