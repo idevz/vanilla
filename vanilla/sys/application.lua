@@ -853,12 +853,12 @@ conf_move()
     NGINX_CONF=$2
     VA_APP_CONF_SRC=$3
     NGINX_APP_CONF=$4
-    if -e $NGINX_CONF; then
+    if [ -e $NGINX_CONF ]; then
         mv -f $NGINX_CONF $NGINX_CONF".old."$TIME_MARK && cp -f $NGINX_CONF_SRC $NGINX_CONF
     else
         cp -f $NGINX_CONF_SRC $NGINX_CONF
     fi
-    if -e $NGINX_APP_CONF; then
+    if [ -e $NGINX_APP_CONF ]; then
         mv -f $NGINX_APP_CONF $NGINX_APP_CONF".old."$TIME_MARK && cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
     else
         cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
