@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/bin/sh
+
+### BEGIN ###
+# Author: idevz
+# Since: 2016/04/09
+# Description:       Setup Vanilla Framework and DemoApp
+### END ###
 
 VANILLA_VERSION=0.1.0.rc5
 VANILLA_VERSION_DIR_STR=0_1_0_rc

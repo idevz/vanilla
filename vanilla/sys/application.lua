@@ -800,8 +800,27 @@ local service_manage_sh = [[
 # Description:       Manage a Vanilla App Service
 ### END ###
 
-ok() { echo -e '\e[32m'$1'\e[m'; } # Green
-die() { echo -e '\e[1;31m'$1'\e[m'; exit $?; }
+
+OPENRESTY_NGINX_ROOT=/usr/local/nginx_x/nginx
+NGINX=$OPENRESTY_NGINX_ROOT/sbin/nginx
+NGINX_CONF_PATH=$OPENRESTY_NGINX_ROOT/conf
+VA_APP_PATH=/data/vanilla/ok
+VA_APP_NAME=`basename $VA_APP_PATH`
+NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
+DESC=va-ok-service
+TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
+
+ok()
+{
+    MSG=$1
+    echo -e "\033[35m$MSG \033[0m\n"
+}
+
+die()
+{
+    MSG=$1
+    echo -e "\033[31m$MSG \033[0m\n"; exit $?;
+}
 
 OPENRESTY_NGINX_ROOT={{OPENRESTY_NGINX_ROOT}}
 NGINX=$OPENRESTY_NGINX_ROOT/sbin/nginx
@@ -830,9 +849,23 @@ fi
 
 conf_move()
 {
-    echo -e 'cp \e[32m' $1 '\e[m' to '\e[32m' $2 '\e[m';
-    set -e
-    cp -rf $1/* $2/
+    NGINX_CONF_SRC=$1
+    NGINX_CONF=$2
+    VA_APP_CONF_SRC=$3
+    NGINX_APP_CONF=$4
+    if -e $NGINX_CONF; then
+        mv -f $NGINX_CONF $NGINX_CONF".old."$TIME_MARK && cp -f $NGINX_CONF_SRC $NGINX_CONF
+    else
+        cp -f $NGINX_CONF_SRC $NGINX_CONF
+    fi
+    if -e $NGINX_APP_CONF; then
+        mv -f $NGINX_APP_CONF $NGINX_APP_CONF".old."$TIME_MARK && cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
+    else
+        cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
+    fi 
+    echo -e "copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
+    echo -e "copy \033[32m" $VA_APP_CONF_SRC "\033[0m" to "\033[31m" $NGINX_APP_CONF "\033[m";
+    exit 0
 }
 
 nginx_conf_test() {
@@ -885,22 +918,13 @@ case "$1" in
 
     confinit|initconf)
         echo "Initing $DESC configuration: "
-        if -e $NGINX_CONF; then
-            if conf_move $VA_APP_CONF_SRC/ $NGINX_APP_CONF/; then
-                if nginx_conf_test $NGINX_CONF; then
-                    tree $NGINX_CONF_PATH
-                    echo "Config init Succ."
-                fi
-                die "Config Test Fail."
+        if conf_move $NGINX_CONF_SRC $NGINX_CONF $VA_APP_CONF_SRC $NGINX_APP_CONF; then
+            if nginx_conf_test $NGINX_CONF; then
+                tree $NGINX_CONF_PATH/vhost
+                tree $NGINX_CONF_PATH/dev_vhost
+                echo "Config init Succ."
             fi
-        else
-            if conf_move $NGINX_CONF_SRC_PATH $NGINX_CONF_PATH; then
-                if nginx_conf_test $NGINX_CONF; then
-                    tree $NGINX_CONF_PATH
-                    echo "Config init Succ."
-                fi
-                die "Config Test Fail."
-            fi
+            die "Config Test Fail."
         fi
         ;;
     *)
