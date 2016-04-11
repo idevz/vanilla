@@ -1,0 +1,81 @@
+#!/bin/sh
+
+### BEGIN ###
+# Author: idevz
+# Since: 2016/04/09
+# Description:       Setup Vanilla Framework
+### END ###
+
+VANILLA_VERSION=0.1.0.rc5
+VANILLA_VERSION_DIR_STR=0_1_0_rc5
+VANILLA_PROJ_ROOT=/data/vanilla
+OPENRESTY_ROOT=/usr/local/openresty
+TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
+
+
+alert()
+{
+    MSG=$1
+    echo -e "\033[31m$MSG \033[0m\n"
+}
+
+install_vanilla_framework()
+{
+    echo -e "\033[45mBegin install Vanilla Frameowrk! \033[0m\n"
+    VANILLA_PROJ_ROOT=$1
+    VANILLA_FRAMEWORK_ROOT=$1/framework
+    VANILLA_FRAMEWORK_V=$VANILLA_FRAMEWORK_ROOT/$VANILLA_VERSION_DIR_STR
+    [ -n $2 ] && OPENRESTY_ROOT=$2
+    [ ! -d $OPENRESTY_ROOT ] && alert "OPENRESTY_ROOT set ERROR, OpenResty Path "$OPENRESTY_ROOT" didn't exist, and -o to set the ture OPENRESTY_ROOT" && exit 1
+    VANILLA_BIN=/usr/local/bin/vanilla-$VANILLA_VERSION
+    VANILLA_CONSOLE_BIN=/usr/local/bin/v-console-$VANILLA_VERSION
+
+    echo $VANILLA_FRAMEWORK_V
+
+    [ -f $VANILLA_BIN ] && mv -f $VANILLA_BIN $VANILLA_BIN".old_"$TIME_MARK
+    [ -f $VANILLA_CONSOLE_BIN ] && mv -f $VANILLA_CONSOLE_BIN $VANILLA_CONSOLE_BIN".old_"$TIME_MARK
+    [ -d $VANILLA_FRAMEWORK_V ] && mv -f $VANILLA_FRAMEWORK_V $VANILLA_FRAMEWORK_V".old_"$TIME_MARK
+
+    make clean
+    ./configure --prefix=$VANILLA_FRAMEWORK_ROOT --openresty-path=$OPENRESTY_ROOT
+    make install
+
+    echo -e "\033[35mVanilla Frameowrk Installed $VANILLA_FRAMEWORK_ROOT \033[0m\n"
+}
+
+show_usage()
+{
+    echo -e "`printf %-16s "Usage: $0"` -h   show this help info"
+    echo -e "`printf %-16s ` -v   VANILLA_PROJ_ROOT, vanilla project root, will contain vanilla framework and apps"
+    echo -e "`printf %-16s ` -o   OPENRESTY_ROOT, openresty install path(openresty root)"
+}
+
+while getopts v:o:h OPT; do
+    case "$OPT" in
+        v )
+            VANILLA_PROJ_ROOT=$OPTARG
+            ;;
+        o )
+            OPENRESTY_ROOT=$OPTARG
+            ;;
+        h )
+            show_usage && exit 0
+            ;;
+        -- )
+            shift break
+            ;;
+        ? )
+            alert "ERROR: unknown argument!" && show_usage && exit 1
+            ;;
+    esac
+done
+
+install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
+
+echo
+echo "You are setup Vanilla-$VANILLA_VERSION and using:"
+echo -e "`printf %-36s "\"$OPENRESTY_ROOT\""` ---- as OpenResty install path(OpenResty root)"
+echo -e "`printf %-36s "\"$VANILLA_PROJ_ROOT\""` ---- as vanilla project root(will contain vanilla framework and apps)"
+echo
+
+exit 0
