@@ -154,6 +154,7 @@ function ReqArgs:getRequestData(options)
         end
         local t, r, e = form:read()
         if not t then return nil, e end
+        FILE[1] = true
     elseif s_sub(content_type, 1, 16) == "application/json" then
         req_read_body()
         POST = json_decode(req_get_body_data()) or {}
