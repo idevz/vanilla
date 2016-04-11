@@ -16,12 +16,12 @@ TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
 alert()
 {
     MSG=$1
-    echo -e "\033[31m$MSG \033[0m\n"
+    echo "\033[31m$MSG \033[0m\n"
 }
 
 install_vanilla_framework()
 {
-    echo -e "\033[45mBegin install Vanilla Frameowrk! \033[0m\n"
+    echo "\033[45mBegin install Vanilla Frameowrk! \033[0m\n"
     VANILLA_PROJ_ROOT=$1
     VANILLA_FRAMEWORK_ROOT=$1/framework
     VANILLA_FRAMEWORK_V=$VANILLA_FRAMEWORK_ROOT/$VANILLA_VERSION_DIR_STR
@@ -40,14 +40,19 @@ install_vanilla_framework()
     ./configure --prefix=$VANILLA_FRAMEWORK_ROOT --openresty-path=$OPENRESTY_ROOT
     make install
 
-    echo -e "\033[35mVanilla Frameowrk Installed $VANILLA_FRAMEWORK_ROOT \033[0m\n"
+    if [[ !$? -eq 0 ]];then
+        alert "Install Vanilla Frameowrk Fail. Pleas check your access permissions."
+        exit 1
+    fi
+    echo "\033[35mVanilla Frameowrk Installed $VANILLA_FRAMEWORK_ROOT \033[0m\n"
 }
 
 show_usage()
 {
-    echo -e "`printf %-16s "Usage: $0"` -h   show this help info"
-    echo -e "`printf %-16s ` -v   VANILLA_PROJ_ROOT, vanilla project root, will contain vanilla framework and apps"
-    echo -e "`printf %-16s ` -o   OPENRESTY_ROOT, openresty install path(openresty root)"
+    echo "`printf %-16s "Usage: $0"`"
+    echo "`printf %-16s ` -h   show this help info"
+    echo "`printf %-16s ` -v   VANILLA_PROJ_ROOT, vanilla project root, will contain vanilla framework and apps"
+    echo "`printf %-16s ` -o   OPENRESTY_ROOT, openresty install path(openresty root)"
 }
 
 while getopts v:o:h OPT; do
@@ -74,8 +79,8 @@ install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
 
 echo
 echo "You are setup Vanilla-$VANILLA_VERSION and using:"
-echo -e "`printf %-36s "\"$OPENRESTY_ROOT\""` ---- as OpenResty install path(OpenResty root)"
-echo -e "`printf %-36s "\"$VANILLA_PROJ_ROOT\""` ---- as vanilla project root(will contain vanilla framework and apps)"
+echo "`printf %-30s "\"$OPENRESTY_ROOT\""` ---- as OpenResty install path(OpenResty root)"
+echo "`printf %-30s "\"$VANILLA_PROJ_ROOT\""` ---- as vanilla project root(will contain vanilla framework and apps)"
 echo
 
 exit 0
