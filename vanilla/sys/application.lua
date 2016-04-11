@@ -809,6 +809,7 @@ VA_APP_NAME=`basename $VA_APP_PATH`
 NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
 DESC=va-ok-service
 TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
+IS_FORCE=''
 
 ok()
 {
@@ -831,15 +832,17 @@ DESC=va-{{APP_NAME}}-service
 
 if [ -n "$2" -a "$2" = 'dev' ];then
     VA_ENV="development"
+    IS_FORCE=$3
     NGINX_CONF=$OPENRESTY_NGINX_ROOT/conf/va-nginx-$VA_ENV.conf
-    NGINX_APP_CONF=$OPENRESTY_NGINX_ROOT/conf/dev_vhost
+    NGINX_APP_CONF=$OPENRESTY_NGINX_ROOT/conf/dev_vhost/$VA_APP_NAME.conf
     NGINX_CONF_SRC=$NGINX_CONF_SRC_PATH/va-nginx-$VA_ENV.conf
-    VA_APP_CONF_SRC=$NGINX_CONF_SRC_PATH/dev_vhost
+    VA_APP_CONF_SRC=$NGINX_CONF_SRC_PATH/dev_vhost/$VA_APP_NAME.conf
 else
     NGINX_CONF=$OPENRESTY_NGINX_ROOT/conf/va-nginx.conf
-    NGINX_APP_CONF=$OPENRESTY_NGINX_ROOT/conf/vhost
+    NGINX_APP_CONF=$OPENRESTY_NGINX_ROOT/conf/vhost/$VA_APP_NAME.conf
     NGINX_CONF_SRC=$NGINX_CONF_SRC_PATH/va-nginx.conf
-    VA_APP_CONF_SRC=$NGINX_CONF_SRC_PATH/vhost
+    VA_APP_CONF_SRC=$NGINX_CONF_SRC_PATH/vhost/$VA_APP_NAME.conf
+    IS_FORCE=$2
     VA_ENV=''
 fi
 
@@ -853,17 +856,18 @@ conf_move()
     NGINX_CONF=$2
     VA_APP_CONF_SRC=$3
     NGINX_APP_CONF=$4
-    if [ -e $NGINX_CONF ]; then
+    IS_FORCE=$5
+    if [ -e "$NGINX_CONF" -a "$IS_FORCE" = "-f" ]; then
         mv -f $NGINX_CONF $NGINX_CONF".old."$TIME_MARK && cp -f $NGINX_CONF_SRC $NGINX_CONF
+        echo -e "Move And Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
     else
-        cp -f $NGINX_CONF_SRC $NGINX_CONF
+        ok $NGINX_CONF" is already exist, Add param '-f' to Force move."
     fi
     if [ -e $NGINX_APP_CONF ]; then
         mv -f $NGINX_APP_CONF $NGINX_APP_CONF".old."$TIME_MARK && cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
     else
         cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
     fi 
-    echo -e "copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
     echo -e "copy \033[32m" $VA_APP_CONF_SRC "\033[0m" to "\033[31m" $NGINX_APP_CONF "\033[m";
     exit 0
 }
@@ -918,7 +922,7 @@ case "$1" in
 
     confinit|initconf)
         echo "Initing $DESC configuration: "
-        if conf_move $NGINX_CONF_SRC $NGINX_CONF $VA_APP_CONF_SRC $NGINX_APP_CONF; then
+        if conf_move $NGINX_CONF_SRC $NGINX_CONF $VA_APP_CONF_SRC $NGINX_APP_CONF $IS_FORCE; then
             if nginx_conf_test $NGINX_CONF; then
                 tree $NGINX_CONF_PATH/vhost
                 tree $NGINX_CONF_PATH/dev_vhost
@@ -928,7 +932,7 @@ case "$1" in
         fi
         ;;
     *)
-        echo "Usage: ./va-{{APP_NAME}}-service {start|stop|restart|reload|force-reload|confinit|configtest} [dev]" >&2
+        echo "Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit[-f]|configtest} [dev]" >&2
         exit 1
         ;;
 esac
