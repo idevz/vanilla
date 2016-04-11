@@ -3,7 +3,7 @@
 ### BEGIN ###
 # Author: idevz
 # Since: 2016/04/09
-# Description:       Setup Vanilla DemoApp
+# Description:       Setup Vanilla DemoApp named vademo
 ### END ###
 
 VANILLA_VERSION=0.1.0.rc5
