@@ -697,10 +697,11 @@ server {
     server_name {{APP_NAME}}.idevz.com;
     lua_code_cache on;
     root {{APP_ROOT}};
-    listen 80;
+    listen 9110;
     set $app_name '{{APP_NAME}}';
     set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
     set $template_root '';
+    set $VA_DEV on;
 
     location /static {
         access_log  off;
@@ -801,14 +802,16 @@ local service_manage_sh = [[
 ### END ###
 
 
-OPENRESTY_NGINX_ROOT=/usr/local/nginx_x/nginx
+OPENRESTY_NGINX_ROOT={{OPENRESTY_NGINX_ROOT}}
 NGINX=$OPENRESTY_NGINX_ROOT/sbin/nginx
 NGINX_CONF_PATH=$OPENRESTY_NGINX_ROOT/conf
-VA_APP_PATH=/data/vanilla/ok
+VA_APP_PATH={{VA_APP_PATH}}
 VA_APP_NAME=`basename $VA_APP_PATH`
 NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
-DESC=va-ok-service
 TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
+NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
+DESC=va-{{APP_NAME}}-service
+DESC=va-ok-service
 IS_FORCE=''
 
 ok()
@@ -822,13 +825,6 @@ die()
     MSG=$1
     echo -e "\033[31m$MSG \033[0m\n"; exit $?;
 }
-
-OPENRESTY_NGINX_ROOT={{OPENRESTY_NGINX_ROOT}}
-NGINX=$OPENRESTY_NGINX_ROOT/sbin/nginx
-NGINX_CONF_PATH=$OPENRESTY_NGINX_ROOT/conf
-VA_APP_PATH={{VA_APP_PATH}}
-NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
-DESC=va-{{APP_NAME}}-service
 
 if [ -n "$2" -a "$2" = 'dev' ];then
     VA_ENV="development"
