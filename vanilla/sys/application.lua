@@ -817,13 +817,13 @@ IS_FORCE=''
 ok()
 {
     MSG=$1
-    echo -e "\033[35m$MSG \033[0m\n"
+    echo "\033[35m$MSG \033[0m\n"
 }
 
 die()
 {
     MSG=$1
-    echo -e "\033[31m$MSG \033[0m\n"; exit $?;
+    echo "\033[31m$MSG \033[0m\n"; exit $?;
 }
 
 if [ -n "$2" -a "$2" = 'dev' ];then
@@ -853,18 +853,24 @@ conf_move()
     VA_APP_CONF_SRC=$3
     NGINX_APP_CONF=$4
     IS_FORCE=$5
+    NGINX_APP_CONF_DIR=`dirname $NGINX_APP_CONF`
     if [ -e "$NGINX_CONF" -a "$IS_FORCE" = "-f" ]; then
         mv -f $NGINX_CONF $NGINX_CONF".old."$TIME_MARK && cp -f $NGINX_CONF_SRC $NGINX_CONF
-        echo -e "Move And Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
+        echo "Move And Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
+    elif [ ! -e "$NGINX_CONF" ]; then
+        cp -f $NGINX_CONF_SRC $NGINX_CONF
+        echo "Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
     else
         ok $NGINX_CONF" is already exist, Add param '-f' to Force move."
     fi
     if [ -e $NGINX_APP_CONF ]; then
         mv -f $NGINX_APP_CONF $NGINX_APP_CONF".old."$TIME_MARK && cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
+    elif [ ! -d "$NGINX_APP_CONF_DIR" ]; then
+        mkdir -p $NGINX_APP_CONF_DIR && cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
     else
         cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
     fi 
-    echo -e "copy \033[32m" $VA_APP_CONF_SRC "\033[0m" to "\033[31m" $NGINX_APP_CONF "\033[m";
+    echo "copy \033[32m" $VA_APP_CONF_SRC "\033[0m" to "\033[31m" $NGINX_APP_CONF "\033[m";
     exit 0
 }
 
