@@ -83,7 +83,7 @@ show_usage()
     echo -e "`printf %-16s `                    values 'af' for setup framework and demo app default named appdemoidevz"
 }
 
-while getopts v:o:a:u:g:eh OPT; do
+while getopts v:o:a:u:g:s:e:h OPT; do
     case "$OPT" in
         v )
             VANILLA_PROJ_ROOT=$OPTARG
@@ -118,9 +118,9 @@ while getopts v:o:a:u:g:eh OPT; do
     esac
 done
 
-[ -n "$VANILLA_PROJ_ROOT" ]  || $SETUP_ACTION = "f" || $SETUP_ACTION = "af" && install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
+[ "$SETUP_ACTION" = "f" -o "$SETUP_ACTION" = "af" ] && install_vanilla_framework $VANILLA_PROJ_ROOT $OPENRESTY_ROOT
 
-[ -n "$VANILLA_APP_ROOT" ] || $SETUP_ACTION = "a" || $SETUP_ACTION = "af" && init_vanilla_app $VANILLA_APP_ROOT $VANILLA_APP_USER $VANILLA_APP_GROUP $VANILLA_RUNNING_ENV
+[ "$SETUP_ACTION" = "a" -o "$SETUP_ACTION" = "af" ] && init_vanilla_app $VANILLA_APP_ROOT $VANILLA_APP_USER $VANILLA_APP_GROUP $VANILLA_RUNNING_ENV
 
 echo
 echo "You are setup Vanilla-$VANILLA_VERSION and using:"
