@@ -39,7 +39,7 @@
 
 <p><em>Vanilla is An OpenResty Lua MVC Web Framework.</em></p>
 
-<p><img src="vanilla-en.png" alt="Vanilla"></p>
+<p><img src="http://m1.sinaimg.cn/maxwidth.300/m1.sinaimg.cn/120d7329960e19cf073f264751e8d959_2043_2241.png" alt="Vanilla"></p>
 
 <h3>
 <a id="maillist" class="anchor" href="#maillist" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>MailList</em>
@@ -58,15 +58,41 @@
 <a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Install</em>
 </h3>
 
-<p><em>There are two ways to install:</em></p>
-
-<ul>
-<li>Make (recommended way)</li>
-<li>Luarocks</li>
-</ul>
+<h4>
+<a id="vanilla-v010-rc41-or-the-older-vanillas-installation-to-see-readme-v010-rc41md" class="anchor" href="#vanilla-v010-rc41-or-the-older-vanillas-installation-to-see-readme-v010-rc41md" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Vanilla-V0.1.0-rc4.1 Or the older Vanillas Installation to see: <a href="README/README-V0.1.0-rc4.1.md">README-V0.1.0-rc4.1.md</a></em>
+</h4>
 
 <h4>
-<a id="tips-of-make-install" class="anchor" href="#tips-of-make-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Tips of <code>make install</code>:</em>
+<a id="use-setup-framework-install-vanilla" class="anchor" href="#use-setup-framework-install-vanilla" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Use ./setup-framework Install Vanilla</em>
+</h4>
+
+<p><em><code>./setup-framework</code> is a auto script to <code>make install</code> Vanilla, only need to set OpenResty install path to install Vanilla in a simple way</em></p>
+
+<pre><code>./setup-framework -h
+Usage: ./setup-framework
+                 -h   show this help info
+                 -v   VANILLA_PROJ_ROOT, vanilla project root, will contain vanilla framework and apps
+                 -o   OPENRESTY_ROOT, openresty install path(openresty root)
+</code></pre>
+
+<p>Options of <code>./setup-framework</code>:</p>
+
+<ul>
+<li><p>-v : Set Vanilla project root, Default is <code>/data/vanilla</code>, So Vanilla installed at <code>/data/vanilla/framework/0_1_0_rc5/vanilla/</code> directory.</p></li>
+<li><p>-o : Set OpenResty install path, Default is <code>/usr/local/openresty</code>, if its different from your OpenResty install path,set to yours.</p></li>
+</ul>
+
+<p>Here is the Directory Structure:</p>
+
+<pre><code>tree /data/vanilla -L 2
+/data/vanilla
+├── framework
+│   ├── 0_1_0_rc5
+│   └── 0_1_0_rc5.old_2016_04_12_11_04_18 # Repeat the installation will mv the older one to an time backup.
+</code></pre>
+
+<h4>
+<a id="use-make-install-cmd-to-install-vanilla" class="anchor" href="#use-make-install-cmd-to-install-vanilla" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Use <code>make install</code> cmd to install Vanilla</em>
 </h4>
 
 <p><em>Vanilla support many configuration options, many of those option have default value.</em></p>
@@ -82,64 +108,76 @@ You can run command <code>./configure --help</code> to learn how to use those op
 make install
 </code></pre>
 
-<h4>
-<a id="tips-of-luarocks-install" class="anchor" href="#tips-of-luarocks-install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Tips of <code>luarocks install</code>:</em>
-</h4>
-
-<p><em>You can use luarocks to install vanilla, but three point should be clear:</em></p>
-
-<ol>
-<li>Your luarocks should install with lua5.1.x because of the compatibility problems in ABIs between Lua and Luajit.</li>
-<li>parameter NGX_PATH will be disabled in the nginx.conf.</li>
-<li>make sure that command nginx is in your environment PATH.</li>
-</ol>
-
 <h3>
 <a id="vanilla-usage" class="anchor" href="#vanilla-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Vanilla usage</h3>
+
+<h4>
+<a id="vanilla-v010-rc41-or-the-older-vanillas-installation-to-see-readme-zh-v010-rc41md" class="anchor" href="#vanilla-v010-rc41-or-the-older-vanillas-installation-to-see-readme-zh-v010-rc41md" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Vanilla-V0.1.0-rc4.1 Or the older Vanillas Installation to see: <a href="README/README-zh-V0.1.0-rc4.1.md">README-zh-V0.1.0-rc4.1.md</a></em>
+</h4>
 
 <h4>
 <a id="vanilla-cmds" class="anchor" href="#vanilla-cmds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Vanilla CMDs</em>
 </h4>
 
-<p><em>Vanilla provide two commands <code>vanilla</code>, and <code>vanilla-console</code>.</em></p>
+<p><em>Vanilla-V0.1.0-rc5 always support two cmds, but from rc5, each cmd just like the framework itselvese generate with an  version number like <code>vanilla-0.1.0.rc5</code>, and <code>v-console-0.1.0.rc5</code>, this is good for muilt version vanilla coexistence and painless upgrade Vanilla.</em></p>
 
 <ul>
 <li>
-<code>vanilla</code> is for application building, service start, stop and so on.</li>
+<code>vanilla-0.1.0.rc5</code> use to init an app skeleton, after <code>vanilla-0.1.0.rc5</code> we use an script in the app root named <code>va-appname-service</code> to manage the app service but not <code>vanilla-0.1.0.rc5</code> cmd,  see below for the use details of script <code>va-appname-service</code>.</li>
 <li>
-<code>vanilla-console</code> is an interactive command line， you can use it for debugging, testing, Lua learning...</li>
+<code>v-console-0.1.0.rc5</code> is an interactive command line, its mainly to provide a convenient learning Lua tools with many building Vanilla libs just like lprint_r fuction to output and table.</li>
 </ul>
-
-<p>Run <code>vanilla</code> in command line, you can find command <code>vanilla</code> provide three options.</p>
-
-<pre><code>vanilla
-Vanilla v0.1.0-rc3, A MVC web framework for Lua powered by OpenResty.
-
-Usage: vanilla COMMAND [ARGS] [OPTIONS]
-
-The available vanilla commands are:
- new [name]             Create a new Vanilla application
- start                  Starts the Vanilla server
- stop                   Stops the Vanilla server
- restart                First Stops and then Starts the Vanilla servers
- reload                 Reload nginx.conf of Vanilla server
-
-Options:
- --trace                Shows additional logs
-</code></pre>
 
 <h4>
 <a id="building-up-an-application-skeleton" class="anchor" href="#building-up-an-application-skeleton" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Building up an application skeleton</em>
 </h4>
 
-<pre><code>vanilla new app_name
-cd app_name
-vanilla start [--trace]     -- default running in development environment.
--- under bash on linux
-VA_ENV=production vanilla start [--trace]  -- add VA_ENV to set the running environment.
--- under tcsh on BSD
-setenv VA_ENV production ; vanilla start [--trace]  -- add VA_ENV to set the running environment.
+<pre><code>vanilla-0.1.0.rc5 new app_full_path                         #use cmd `vanilla-0.1.0.rc5` to auto create an app skeleton, Attention to give an full path as an param, but not just an APP_NAME
+chmod +x app_full_path/va-appname-service                   #add an execute permissions to va-appname-service
+app_full_path/va-appname-service initconf [dev]             #init the nginx config for the app, the nginx config file base on the config file in app_full_path/nginx_conf, if you have any personal configration, you should add thire into those config files first, then you can execute the initconf action, param [dev] is an optional one, add this for development environment, default empty for production environment.
+app_full_path/va-appname-service start [dev]                #start this inited service, then you can visit it through http://localhost, it also have a [dev] option just like initconf.
 </code></pre>
+
+<p>These multi process can be simply completed through script <code>./setup-vanilal-demoapp</code>:</p>
+
+<pre><code>./setup-vanilal-demoapp -h
+Usage: ./setup-vanilal-demoapp -h   show this help info
+                 -a   VANILLA_APP_ROOT, app absolute path(which path to init app)
+                 -u   VANILLA_APP_USER, user to run app
+                 -g   VANILLA_APP_GROUP, user group to run app
+                 -e   VANILLA_RUNNING_ENV, app running environment
+</code></pre>
+
+<p>Options of <code>./setup-vanilal-demoapp</code></p>
+
+<ul>
+<li>-a : Set a abslute full path for Application, Default is <code>/data/vanilla/vademo</code>
+</li>
+<li>-u : Set the username to run nginx service, Default is idevz</li>
+<li>-g : Set the usergroup to run nginx service, Default is sina</li>
+<li>-e : Set the running enviroment, Default is '' for production environment.</li>
+</ul>
+
+<p>Here is the Directory Structure:</p>
+
+<pre><code>tree /data/vanilla/ -L 1
+/data/vanilla/
+├── framework                             # vanilla framework path
+├── vademo                                # demo app "vademo" path
+└── vademo.old_2016_04_12_11_04_26        # Repeat the installation will mv the older one to an time backup.
+</code></pre>
+
+<h4>
+<a id="application-init-and-service-management" class="anchor" href="#application-init-and-service-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Application init and service management</em>
+</h4>
+
+<p><em>We use script <code>/data/vanilla/vademo/va-vademo-service</code> to manage the vademo service</em></p>
+
+<pre><code>/data/vanilla/vademo/va-vademo-service -h
+Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit[-f]|configtest} [dev] #dev set up the running environment, none dev for default production envionment.
+</code></pre>
+
+<p>Tips:* You should run cmd <code>/data/vanilla/vademo/va-vademo-service initconf [dev]</code> first if you new the App didn't use the <code>/data/vanilla/vademo/va-vademo-service</code> script but run cmd <code>vanilla-0.1.0.rc5 new vademo</code> to new an app by hand.*</p>
 
 <h4>
 <a id="directory-structure" class="anchor" href="#directory-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><em>Directory Structure</em>
