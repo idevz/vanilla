@@ -8,32 +8,26 @@ Usage: vanilla COMMAND [ARGS] [OPTIONS]
 
 The available vanilla commands are:
  new [name]             Create a new Vanilla application
- start                  Starts the Vanilla server
- stop                   Stops the Vanilla server
- reload                 Reload nginx.conf of Vanilla server
- 
-Options:
- --trace                Shows additional logs
 ]]
 
 local launcher = require 'vanilla.sys.vanilla'
 local application = require 'vanilla.sys.application'
 
 -- check trace
-V_TRACE = false
-if arg[#arg] == '--trace' then
-  table.remove(arg, #arg)
-  
-  V_TRACE = true
-end
+-- V_TRACE = false
+-- if arg[#arg] == '--trace' then
+--   table.remove(arg, #arg)
+--   
+--   V_TRACE = true
+-- end
 
 -- check args
 if arg[1] == 'new' and arg[2] then application.new(arg[2])
-elseif arg[1] == 'start' then launcher.start()
-elseif arg[1] == 'stop' then launcher.stop()
-elseif arg[1] == 'restart' then
- launcher.stop()
- launcher.start()
-elseif arg[1] == 'reload' then launcher.reload()
+-- elseif arg[1] == 'start' then launcher.start()
+-- elseif arg[1] == 'stop' then launcher.stop()
+-- elseif arg[1] == 'restart' then
+--  launcher.stop()
+--  launcher.start()
+-- elseif arg[1] == 'reload' then launcher.reload()
 else print(help_description)
 end
