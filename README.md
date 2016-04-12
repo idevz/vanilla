@@ -15,12 +15,39 @@
 - vanilla中文邮件列表 <vanilla@googlegroups.com>
 
 ### *Install*
-*There are two ways to install:*
 
-- Make (recommended way)
-- Luarocks
+####*Vanilla-V0.1.0-rc4.1 Or the older Vanillas Installation to see: [README-zh-V0.1.0-rc4.1.md](README/README-zh-V0.1.0-rc4.1.md)*
 
-#### *Tips of ```make install```:*
+#### *Use ./setup-framework Install Vanilla*
+
+*`./setup-framework` is a auto script to `make install` Vanilla, only need to set OpenResty install path to install Vanilla in a simple way*
+
+```
+./setup-framework -h
+Usage: ./setup-framework
+                 -h   show this help info
+                 -v   VANILLA_PROJ_ROOT, vanilla project root, will contain vanilla framework and apps
+                 -o   OPENRESTY_ROOT, openresty install path(openresty root)
+```
+
+Options of `./setup-framework`:
+
+- -v : Set Vanilla project root, Default is `/data/vanilla`, So Vanilla installed at `/data/vanilla/framework/0_1_0_rc5/vanilla/` directory.
+
+- -o : Set OpenResty install path, Default is `/usr/local/openresty`, if its different from your OpenResty install path,set to yours.
+
+Here is the Directory Structure:
+
+```
+tree /data/vanilla -L 2
+/data/vanilla
+├── framework
+│   ├── 0_1_0_rc5
+│   └── 0_1_0_rc5.old_2016_04_12_11_04_18 # Repeat the installation will mv the older one to an time backup.
+```
+
+#### *Use ```make install``` cmd to install Vanilla*
+
 *Vanilla support many configuration options, many of those option have default value.*
 
 You can use default installation but if your enviroment values different from which vanilla default, please config it with yours.
@@ -29,55 +56,65 @@ You can run command ```./configure --help``` to learn how to use those options.
 
 Below is the installation of a simple example:
 
-~~~
+```
 ./configure --prefix=/usr/local/vanilla --openresty-path=/usr/local/openresty
 
 make install
-~~~
+```
 
-#### *Tips of ```luarocks install```:*
-*You can use luarocks to install vanilla, but three point should be clear:*
-
-1. Your luarocks should install with lua5.1.x because of the compatibility problems in ABIs between Lua and Luajit.
-2. parameter NGX_PATH will be disabled in the nginx.conf.
-3. make sure that command nginx is in your environment PATH.
 
 ### Vanilla usage
+
+####*Vanilla-V0.1.0-rc4.1 Or the older Vanillas Installation to see: [README-zh-V0.1.0-rc4.1.md](README/README-zh-V0.1.0-rc4.1.md)*
+
 #### *Vanilla CMDs*
-*Vanilla provide two commands ```vanilla```, and ```vanilla-console```.*
 
-- ```vanilla``` is for application building, service start, stop and so on.
-- ```vanilla-console``` is an interactive command line， you can use it for debugging, testing, Lua learning...
-
-Run ```vanilla``` in command line, you can find command ```vanilla``` provide three options.
-
-```
-vanilla
-Vanilla v0.1.0-rc3, A MVC web framework for Lua powered by OpenResty.
-
-Usage: vanilla COMMAND [ARGS] [OPTIONS]
-
-The available vanilla commands are:
- new [name]             Create a new Vanilla application
- start                  Starts the Vanilla server
- stop                   Stops the Vanilla server
- restart				First Stops and then Starts the Vanilla servers
- reload					Reload nginx.conf of Vanilla server
- 
-Options:
- --trace                Shows additional logs
-```
+*Vanilla-V0.1.0-rc5 always support two cmds, but from rc5, each cmd just like the framework itselvese generate with an  version number like ```vanilla-0.1.0.rc5```, and ```v-console-0.1.0.rc5```, this is good for muilt version vanilla coexistence and painless upgrade Vanilla.*
+- ```vanilla-0.1.0.rc5``` use to init an app skeleton, after `vanilla-0.1.0.rc5` we use an script in the app root named `va-appname-service` to manage the app service but not `vanilla-0.1.0.rc5` cmd,  see below for the use details of script `va-appname-service`.
+- ```v-console-0.1.0.rc5``` is an interactive command line, its mainly to provide a convenient learning Lua tools with many building Vanilla libs just like lprint_r fuction to output and table.
 
 #### *Building up an application skeleton*
 ```
-vanilla new app_name
-cd app_name
-vanilla start [--trace]     -- default running in development environment.
--- under bash on linux
-VA_ENV=production vanilla start [--trace]  -- add VA_ENV to set the running environment.
--- under tcsh on BSD
-setenv VA_ENV production ; vanilla start [--trace]  -- add VA_ENV to set the running environment.
+vanilla-0.1.0.rc5 new app_full_path							#use cmd `vanilla-0.1.0.rc5` to auto create an app skeleton, Attention to give an full path as an param, but not just an APP_NAME
+chmod +x app_full_path/va-appname-service					#add an execute permissions to va-appname-service
+app_full_path/va-appname-service initconf [dev]				#init the nginx config for the app, the nginx config file base on the config file in app_full_path/nginx_conf, if you have any personal configration, you should add thire into those config files first, then you can execute the initconf action, param [dev] is an optional one, add this for development environment, default empty for production environment.
+app_full_path/va-appname-service start [dev]				#start this inited service, then you can visit it through http://localhost, it also have a [dev] option just like initconf.
 ```
+These multi process can be simply completed through script `./setup-vanilal-demoapp`:
+```
+./setup-vanilal-demoapp -h
+Usage: ./setup-vanilal-demoapp -h   show this help info
+                 -a   VANILLA_APP_ROOT, app absolute path(which path to init app)
+                 -u   VANILLA_APP_USER, user to run app
+                 -g   VANILLA_APP_GROUP, user group to run app
+                 -e   VANILLA_RUNNING_ENV, app running environment
+```
+Options of `./setup-vanilal-demoapp`
+- -a : Set a abslute full path for Application, Default is `/data/vanilla/vademo`
+- -u : Set the username to run nginx service, Default is idevz
+- -g : Set the usergroup to run nginx service, Default is sina
+- -e : Set the running enviroment, Default is '' for production environment.
+
+Here is the Directory Structure:
+
+```
+tree /data/vanilla/ -L 1
+/data/vanilla/
+├── framework 							# vanilla framework path
+├── vademo 								# demo app "vademo" path
+└── vademo.old_2016_04_12_11_04_26 		# Repeat the installation will mv the older one to an time backup.
+```
+
+#### *Application init and service management*
+*We use script `/data/vanilla/vademo/va-vademo-service` to manage the vademo service*
+
+```
+/data/vanilla/vademo/va-vademo-service -h
+Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit[-f]|configtest} [dev] #dev set up the running environment, none dev for default production envionment.
+```
+
+Tips:* You should run cmd `/data/vanilla/vademo/va-vademo-service initconf [dev]` first if you new the App didn't use the `/data/vanilla/vademo/va-vademo-service` script but run cmd `vanilla-0.1.0.rc5 new vademo` to new an app by hand.*
+
 #### *Directory Structure*
 ```
  /Users/zj-git/app_name/ tree ./
