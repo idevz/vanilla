@@ -16,7 +16,7 @@
 
 ### *Install*
 
-####*Vanilla-V0.1.0-rc4.1 Or the older Vanillas Installation to see: [README-V0.1.0-rc4.1.md](README/README-zh-V0.1.0-rc4.1.md)*
+####*Vanilla-V0.1.0-rc4.1 Or the older Vanillas Installation to see: [README-V0.1.0-rc4.1.md](README/README-V0.1.0-rc4.1.md)*
 
 #### *Use ./setup-framework Install Vanilla*
 
