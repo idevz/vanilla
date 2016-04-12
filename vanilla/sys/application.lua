@@ -813,17 +813,20 @@ NGINX_CONF_SRC_PATH=$VA_APP_PATH/nginx_conf
 DESC=va-{{APP_NAME}}-service
 DESC=va-ok-service
 IS_FORCE=''
+PLATFORM=`uname`
+ECHO_E=" -e "
+[ $PLATFORM = "Darwin" ] && ECHO_E=""
 
 ok()
 {
     MSG=$1
-    echo "\033[35m$MSG \033[0m\n"
+    echo $ECHO_E"\033[35m$MSG \033[0m\n"
 }
 
 die()
 {
     MSG=$1
-    echo "\033[31m$MSG \033[0m\n"; exit $?;
+    echo $ECHO_E"\033[31m$MSG \033[0m\n"; exit $?;
 }
 
 if [ -n "$2" -a "$2" = 'dev' ];then
@@ -843,7 +846,7 @@ else
 fi
 
 if [ ! -f $NGINX ]; then
-    echo "Didn't Find Nginx sbin."; exit 0
+    echo $ECHO_E"Didn't Find Nginx sbin."; exit 0
 fi
 
 conf_move()
@@ -856,10 +859,10 @@ conf_move()
     NGINX_APP_CONF_DIR=`dirname $NGINX_APP_CONF`
     if [ -e "$NGINX_CONF" -a "$IS_FORCE" = "-f" ]; then
         mv -f $NGINX_CONF $NGINX_CONF".old."$TIME_MARK && cp -f $NGINX_CONF_SRC $NGINX_CONF
-        echo "Move And Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
+        echo $ECHO_E"Move And Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
     elif [ ! -e "$NGINX_CONF" ]; then
         cp -f $NGINX_CONF_SRC $NGINX_CONF
-        echo "Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
+        echo $ECHO_E"Copy \033[32m" $NGINX_CONF_SRC "\033[0m" to "\033[31m" $NGINX_CONF "\033[m";
     else
         ok $NGINX_CONF" is already exist, Add param '-f' to Force move."
     fi
@@ -870,7 +873,7 @@ conf_move()
     else
         cp -f $VA_APP_CONF_SRC $NGINX_APP_CONF
     fi 
-    echo "copy \033[32m" $VA_APP_CONF_SRC "\033[0m" to "\033[31m" $NGINX_APP_CONF "\033[m";
+    echo $ECHO_E"copy \033[32m" $VA_APP_CONF_SRC "\033[0m" to "\033[31m" $NGINX_APP_CONF "\033[m";
     exit 0
 }
 
@@ -885,20 +888,20 @@ nginx_conf_test() {
 
 case "$1" in
     start)
-        echo "Starting $DESC: "
+        echo $ECHO_E"Starting $DESC: "
         nginx_conf_test $NGINX_CONF
         $NGINX -c $NGINX_CONF || true
         ok "Succ."
         ;;
 
     stop)
-        echo "Stopping $DESC: "
+        echo $ECHO_E"Stopping $DESC: "
         $NGINX -c $NGINX_CONF -s stop || true
         ok "Succ."
         ;;
 
     restart|force-reload)
-        echo "Restarting $DESC: "
+        echo $ECHO_E"Restarting $DESC: "
         $NGINX -c $NGINX_CONF -s stop || true
         sleep 1
         nginx_conf_test $NGINX_CONF
@@ -907,34 +910,34 @@ case "$1" in
         ;;
 
     reload)
-        echo "Reloading $DESC configuration: "
+        echo $ECHO_E"Reloading $DESC configuration: "
         nginx_conf_test $NGINX_CONF
         $NGINX -c $NGINX_CONF -s reload || true
         ok "Succ."
         ;;
 
     configtest)
-        echo "Testing $DESC configuration: "
+        echo $ECHO_E"Testing $DESC configuration: "
         if nginx_conf_test $NGINX_CONF; then
-            echo "Config Test Succ."
+            echo $ECHO_E"Config Test Succ."
         else
             die "Config Test Fail."
         fi
         ;;
 
     confinit|initconf)
-        echo "Initing $DESC configuration: "
+        echo $ECHO_E"Initing $DESC configuration: "
         if conf_move $NGINX_CONF_SRC $NGINX_CONF $VA_APP_CONF_SRC $NGINX_APP_CONF $IS_FORCE; then
             if nginx_conf_test $NGINX_CONF; then
                 tree $NGINX_CONF_PATH/vhost
                 tree $NGINX_CONF_PATH/dev_vhost
-                echo "Config init Succ."
+                echo $ECHO_E"Config init Succ."
             fi
             die "Config Test Fail."
         fi
         ;;
     *)
-        echo "Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit[-f]|configtest} [dev]" >&2
+        echo $ECHO_E"Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit[-f]|configtest} [dev]" >&2
         exit 1
         ;;
 esac

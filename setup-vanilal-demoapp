@@ -13,18 +13,21 @@ VANILLA_APP_USER=idevz
 VANILLA_APP_GROUP=sina
 VANILLA_RUNNING_ENV='' #default '' is for production environment
 TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
+PLATFORM=`uname`
+ECHO_E=" -e "
+[ $PLATFORM = "Darwin" ] && ECHO_E=""
 
 
 alert()
 {
     MSG=$1
-    echo "\033[31m$MSG \033[0m\n"
+    echo $ECHO_E"\033[31m$MSG \033[0m\n"
 }
 
 init_vanilla_app()
 {
     VANILLA_APP_ROOT=$1
-    echo "\033[40mBegin init Vanilla App: $VANILLA_APP_ROOT \033[0m\n"
+    echo $ECHO_E"\033[40mBegin init Vanilla App: $VANILLA_APP_ROOT \033[0m\n"
     [ -n $2 ] && VANILLA_APP_USER=$2
     [ -n $3 ] && VANILLA_APP_GROUP=$3
     [ -n $4 ] && APP_NAME=$4
@@ -46,16 +49,16 @@ init_vanilla_app()
     sudo $SERVICE_SH initconf $VANILLA_RUNNING_ENV
     sudo $SERVICE_SH start $VANILLA_RUNNING_ENV
     sudo $SERVICE_SH restart $VANILLA_RUNNING_ENV
-    echo "\033[40mVanilla App: $APP_NAME is running \033[0m\n"
+    echo $ECHO_E"\033[40mVanilla App: $APP_NAME is running \033[0m\n"
 }
 
 show_usage()
 {
-    echo "`printf %-16s "Usage: $0"` -h   show this help info"
-    echo "`printf %-16s ` -a   VANILLA_APP_ROOT, app absolute path(which path to init app)"
-    echo "`printf %-16s ` -u   VANILLA_APP_USER, user to run app"
-    echo "`printf %-16s ` -g   VANILLA_APP_GROUP, user group to run app"
-    echo "`printf %-16s ` -e   VANILLA_RUNNING_ENV, app running environment"
+    echo $ECHO_E"`printf %-16s "Usage: $0"` -h   show this help info"
+    echo $ECHO_E"`printf %-16s ` -a   VANILLA_APP_ROOT, app absolute path(which path to init app)"
+    echo $ECHO_E"`printf %-16s ` -u   VANILLA_APP_USER, user to run app"
+    echo $ECHO_E"`printf %-16s ` -g   VANILLA_APP_GROUP, user group to run app"
+    echo $ECHO_E"`printf %-16s ` -e   VANILLA_RUNNING_ENV, app running environment"
 }
 
 while getopts a:u:g:e:h OPT; do
@@ -88,11 +91,11 @@ APP_NAME=`basename $VANILLA_APP_ROOT`
 init_vanilla_app $VANILLA_APP_ROOT $VANILLA_APP_USER $VANILLA_APP_GROUP $APP_NAME $VANILLA_RUNNING_ENV
 
 echo
-echo "You are setup $APP_NAME and using:"
-echo "`printf %-36s "\"$VANILLA_APP_ROOT\""` ---- as vanilla app root"
-echo "`printf %-36s "\"$VANILLA_RUNNING_ENV\""` ---- as running environment"
-echo "`printf %-36s "\"$VANILLA_APP_USER\""` ---- as vanilla app nginx user"
-echo "`printf %-36s "\"$VANILLA_APP_GROUP\""` ---- as vanilla app nginx group"
+echo $ECHO_E"You are setup $APP_NAME and using:"
+echo $ECHO_E"`printf %-36s "\"$VANILLA_APP_ROOT\""` ---- as vanilla app root"
+echo $ECHO_E"`printf %-36s "\"$VANILLA_RUNNING_ENV\""` ---- as running environment"
+echo $ECHO_E"`printf %-36s "\"$VANILLA_APP_USER\""` ---- as vanilla app nginx user"
+echo $ECHO_E"`printf %-36s "\"$VANILLA_APP_GROUP\""` ---- as vanilla app nginx group"
 echo
 
 exit 0
