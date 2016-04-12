@@ -79,21 +79,21 @@ end
 
 -- curl http://localhost:9110/get?ok=yes
 function IndexController:get()
-    local get = req_args:getRequestData({})
+    local get = self:getRequest():getParams()
     print_r(get)
     do return 'get' end
 end
 
 -- curl -X POST http://localhost:9110/post -d '{"ok"="yes"}'
 function IndexController:post()
-    local _, post = req_args:getRequestData({})
+    local _, post = self:getRequest():getParams()
     print_r(post)
     do return 'post' end
 end
 
 -- curl -H 'accept: application/vnd.YOUR_APP_NAME.v1.json' http://localhost:9110/api?ok=yes
 function IndexController:api_get()
-    local api_get = req_args:getRequestData({})
+    local api_get = self:getRequest():getParams()
     print_r(api_get)
     do return 'api_get' end
 end
@@ -120,21 +120,21 @@ end
 
 -- curl http://localhost:9110/get?ok=yes
 function IdevzController:get()
-    local get = req_args:getRequestData({})
+    local get = self:getRequest():getParams()
     print_r(get)
     do return 'get' end
 end
 
 -- curl -X POST http://localhost:9110/post -d '{"ok"="yes"}'
 function IdevzController:post()
-    local _, post = req_args:getRequestData({})
+    local _, post = self:getRequest():getParams()
     print_r(post)
     do return 'post' end
 end
 
 -- curl -H 'accept: application/vnd.YOUR_APP_NAME.v1.json' http://localhost:9110/api?ok=yes
 function IdevzController:api_get()
-    local api_get = req_args:getRequestData({})
+    local api_get = self:getRequest():getParams()
     print_r(api_get)
     do return 'api_get' end
 end
@@ -1014,6 +1014,28 @@ return config
 
 
 local vanilla_index = [[
+if ngx.var.VA_DEV == nil then
+
+    local helpers = require "vanilla.v.libs.utils"
+    function sprint_r( ... )
+        return helpers.sprint_r(...)
+    end
+
+    function lprint_r( ... )
+        local rs = sprint_r(...)
+        print(rs)
+    end
+
+    function print_r( ... )
+        local rs = sprint_r(...)
+        ngx.say(rs)
+    end
+
+    function err_log(msg)
+        ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
+    end
+end
+
 local vanilla_application = require 'vanilla.v.application'
 local application_config = require 'config.application'
 local boots = require 'application.bootstrap'
