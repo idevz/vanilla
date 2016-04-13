@@ -30,26 +30,21 @@ function Request:new()
     return instance
 end
 
-function Request:getControllerName()
-    return self.controller_name
-end
+-- function Request:getControllerName()
+--     return self.controller_name
+-- end
 
-function Request:getActionName()
-    return self.action_name
-end
+-- function Request:getActionName()
+--     return self.action_name
+-- end
 
 function Request:getHeaders()
-    local headers = self.headers or ngx.req.get_headers()
-    return headers
+    if self.headers == nil then self.headers = ngx.req.get_headers() end
+    return self.headers
 end
 
 function Request:getHeader(key)
-    local headers = self.headers or ngx.req.get_headers()
-    if headers[key] ~= nil then
-        return headers[key]
-    else
-        return false
-    end
+    return self:getHeaders()[key]
 end
 
 function Request:buildParams()
