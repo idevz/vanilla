@@ -43,7 +43,7 @@ install_vanilla_framework()
     ./configure --prefix=$VANILLA_FRAMEWORK_ROOT --openresty-path=$OPENRESTY_ROOT
     make install
 
-    if [[ !$? -eq 0 ]];then
+    if [[ ! $? -eq 0 ]];then
         alert "Install Vanilla Frameowrk Fail. Pleas check your access permissions."
         exit 1
     fi

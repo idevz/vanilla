@@ -48,7 +48,7 @@ $ ./$VANILLA_APP_ROOT/va-appname-service start
 
 ## More Information
 
-- Read the [documentation](https://idevz.gitbooks.io/vanilla-zh/content/)
+- Read the [documentation](https://idevz.gitbooks.io/vanilla-doc/content/index.html)
 
 ## License
 
