@@ -37,7 +37,7 @@ init_vanilla_app()
     VANILLA_BIN=/usr/local/bin/vanilla-$VANILLA_VERSION
     [ -d $VANILLA_APP_ROOT ] && mv -f $VANILLA_APP_ROOT $VANILLA_APP_ROOT".old_"$TIME_MARK
     [ -x $VANILLA_BIN ] && $VANILLA_BIN new $VANILLA_APP_ROOT
-    if [[ ! $? -eq 0 ]];then
+    if [[ $? -ne 0 ]];then
         alert $VANILLA_BIN" is not exist, You shoud install vanilla first, to see './setup-framework -h' for more info."
         exit 1
     fi
