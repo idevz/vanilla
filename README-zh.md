@@ -49,7 +49,7 @@ $ ./$VANILLA_APP_ROOT/va-appname-service start
 
 ## 更多信息
 
-- 参见 [文档](https://idevz.gitbooks.io/vanilla-zh/content/)
+- 参见 [文档](https://idevz.gitbooks.io/vanilla-zh/content/index.html)
 
 ## License
 
