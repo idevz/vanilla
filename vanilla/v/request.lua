@@ -49,11 +49,34 @@ end
 
 function Request:buildParams()
     local GET, POST, FILE = Reqargs:getRequestData({})
-    local params = GET
-    for k,v in pairs(POST) do params[k] = v end
+    local params = {}
+    params['VA_GET'] = GET
+    params['VA_POST'] = POST
     if #FILE >= 1 then params['VA_FILE']=FILE end
+    for k,v in pairs(GET) do params[k] = v end
+    for k,v in pairs(POST) do params[k] = v end
     self.params = params
     return self.params
+end
+
+function Request:GET()
+    if self.params ~= nil then return self.params.VA_GET end
+    return self:buildParams()['VA_GET']
+end
+
+function Request:POST()
+    if self.params ~= nil then return self.params.VA_POST end
+    return self:buildParams()['VA_POST']
+end
+
+function Request:FILE()
+    if self.params ~= nil then return self.params.VA_FILE end
+    return self:buildParams()['VA_FILE']
+end
+
+function Request:getMethod()
+    if self.method == nil then self.method = ngx.req.get_method() end
+    return self.method
 end
 
 function Request:getParams()
@@ -61,21 +84,16 @@ function Request:getParams()
 end
 
 function Request:getParam(key)
-    local ok, params_or_err = pcall(function(self) return self.params[key] end)
-    if ok then return params_or_err else return self:buildParams()[key] end
+    if self.params ~= nil then return self.params[key] end
+    return self:buildParams()[key]
 end
 
 function Request:setParam(key, value)
     self.params[key] = value
 end
 
-function Request:getMethod()
-    local method = self.method or ngx.req.get_method()
-    return method
-end
-
 function Request:isGet()
-    if self.method == 'GET' then return true else return false end
+    if self:getMethod() == 'GET' then return true else return false end
 end
 
 return Request
