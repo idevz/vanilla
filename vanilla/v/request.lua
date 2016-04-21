@@ -89,6 +89,7 @@ function Request:getParam(key)
 end
 
 function Request:setParam(key, value)
+    if self.params == nil then self:buildParams() end
     self.params[key] = value
 end
 
