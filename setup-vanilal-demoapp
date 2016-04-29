@@ -6,7 +6,7 @@
 # Description:       Setup Vanilla DemoApp named vademo
 ### END ###
 
-VANILLA_VERSION=0.1.0.rc5
+VANILLA_VERSION=0.1.0.rc6
 VANILLA_VERSION_DIR_STR=0_1_0_rc
 VANILLA_APP_ROOT=/data/vanilla/vademo
 VANILLA_APP_USER=idevz
