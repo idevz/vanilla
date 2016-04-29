@@ -137,6 +137,7 @@ my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
     # ." INSTALL=$root_dir/build/install"
     ." INSTALL=$root_dir/vanilla/install"
     ." VANILLA_BIN_PATH=$vanilla_bin_path"
+    ." VANILLA_ROOT=$vanilla_root"
     ." VANILLA_VERSION=$vanilla_version";
 
 push @make_install_cmds, "cd $root_dir/build/vanilla && " .
