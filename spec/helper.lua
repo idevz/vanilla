@@ -2,6 +2,10 @@ package.loaded['config.routes'] = { }
 package.loaded['config.application'] = {}
 package.loaded['resty.upload'] = {}
 
+LoadV = function ( ... )
+    return require(...)
+end
+
 local reg = require "rex_pcre"
 -- DICT Proxy
 -- https://github.com/bsm/fakengx/blob/master/fakengx.lua
