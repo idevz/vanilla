@@ -7,7 +7,7 @@ function Console.start()
 	-- end
     local cmd = lua .. " -i -e \"_PROMPT='v-console>';package.path='" .. package.path 
               .. "' package.cpath='" .. package.cpath 
-              .. "' require 'vanilla.sys.config';require 'vanilla.v.libs.utils'\""
+              .. "' LoadV 'vanilla.sys.config';LoadV 'vanilla.v.libs.utils'\""
     os.execute(cmd)
 end
 

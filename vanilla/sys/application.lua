@@ -231,7 +231,7 @@ return LibBb
 
 
 local dao = [[
--- local TableDao = require('vanilla.v.model.dao'):new()
+-- local TableDao = LoadV('vanilla.v.model.dao'):new()
 local TableDao = {}
 
 function TableDao:set(key, value)
@@ -270,7 +270,7 @@ return UserService
 
 
 local admin_plugin_tpl = [[
-local AdminPlugin = require('vanilla.v.plugin'):new()
+local AdminPlugin = LoadV('vanilla.v.plugin'):new()
 
 function AdminPlugin:routerStartup(request, response)
     print_r('<pre>')
@@ -307,7 +307,7 @@ local restful = require 'vanilla.v.routes.restful'
 local Bootstrap = {}
 
 function Bootstrap:initWaf()
-    require('vanilla.sys.waf.acc'):check()
+    LoadV('vanilla.sys.waf.acc'):check()
 end
 
 function Bootstrap:initErrorHandle()

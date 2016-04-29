@@ -1,15 +1,15 @@
 -- dep
-local ansicolors = require 'vanilla.v.libs.ansicolors'
+local ansicolors = LoadV 'vanilla.v.libs.ansicolors'
 
 -- perf
 local error = error
 local sgmatch = string.gmatch --cli didn't have ngx.re API
 
 -- vanilla
-local va_conf = require 'vanilla.sys.config'
-local ngx_handle = require 'vanilla.sys.nginx.handle'
-local ngx_config = require 'vanilla.sys.nginx.config'
-local helpers = require 'vanilla.v.libs.utils'
+local va_conf = LoadV 'vanilla.sys.config'
+local ngx_handle = LoadV 'vanilla.sys.nginx.handle'
+local ngx_config = LoadV 'vanilla.sys.nginx.config'
+local helpers = LoadV 'vanilla.v.libs.utils'
 
 -- settings
 local nginx_conf_source = 'config/nginx.conf'

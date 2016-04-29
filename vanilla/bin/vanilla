@@ -1,6 +1,6 @@
 #!/usr/bin/env luajit
 package.path = './?.lua;' .. package.path --;; didn't contains ./?.lua in cli
-local V = require 'vanilla.sys.config'
+local V = LoadV 'vanilla.sys.config'
 
 local help_description = [[Vanilla v]] .. V.version .. [[, A MVC web framework for Lua powered by OpenResty.
 
@@ -10,8 +10,8 @@ The available vanilla commands are:
  new [name]             Create a new Vanilla application
 ]]
 
-local launcher = require 'vanilla.sys.vanilla'
-local application = require 'vanilla.sys.application'
+local launcher = LoadV 'vanilla.sys.vanilla'
+local application = LoadV 'vanilla.sys.application'
 
 -- check trace
 -- V_TRACE = false

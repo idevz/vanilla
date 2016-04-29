@@ -1,10 +1,10 @@
 -- vanilla
-local Controller = require 'vanilla.v.controller'
-local Request = require 'vanilla.v.request'
-local Router = require 'vanilla.v.router'
-local Response = require 'vanilla.v.response'
-local View = require 'vanilla.v.views.rtpl'
-local Error = require 'vanilla.v.error'
+local Controller = LoadV 'vanilla.v.controller'
+local Request = LoadV 'vanilla.v.request'
+local Router = LoadV 'vanilla.v.router'
+local Response = LoadV 'vanilla.v.response'
+local View = LoadV 'vanilla.v.views.rtpl'
+local Error = LoadV 'vanilla.v.error'
 
 -- perf
 local error = error
@@ -79,7 +79,7 @@ function Dispatcher:_route()
 end
 
 local function require_controller(controller_prefix, controller_name)
-    return require(controller_prefix .. controller_name)
+    return LoadApplication(controller_prefix .. controller_name)
 end
 
 local function call_controller(Dispatcher, matched_controller, controller_name, action_name)
@@ -137,7 +137,7 @@ end
 function Dispatcher:raise_error(err)
     if self.controller == nil then self.controller = Controller:new(self.request, self.response, self.application.config) end
     if self.view == nil then self.view = self.application:lpcall(new_view, self.application.config.view) end
-    local error_controller = require(self.controller_prefix .. self.error_controller)
+    local error_controller = LoadApplication(self.controller_prefix .. self.error_controller)
     setmetatable(error_controller, { __index = self.controller })
     self:initView(self.view, self.error_controller, self.error_action)
     local error_instance = Error:new(err.code, err.msg)

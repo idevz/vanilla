@@ -2,7 +2,7 @@
 local error = error
 local ngxgsub = ngx.re.gsub
 local ngxmatch = ngx.re.match
-local Registry = require('vanilla.v.registry'):new('sys')
+local Registry = LoadV('vanilla.v.registry'):new('sys')
 local accept_header_pattern = "^application/vnd." .. ngx.var.app_name .. ".v(\\d+)(.*)+json$"
 local function tappend(t, v) t[#t+1] = v end
 

@@ -2,7 +2,7 @@
 local error = error
 local tconcat = table.concat
 local function tappend(t, v) t[#t+1] = v end
-local simple_route = require 'vanilla.v.routes.simple'
+local simple_route = LoadV 'vanilla.v.routes.simple'
 
 -- init Router and set routes
 local Router = {}
@@ -53,7 +53,7 @@ function Router:route()
                 local ok, controller_name_or_error, action = pcall(route_match, route)
                 if ok and controller_name_or_error ~= nil and package.searchpath(ngx.var.document_root .. '/application/controllers.'
                     .. controller_name_or_error, '/?.lua;/?/init.lua') ~= nil
-                    and type(require('controllers.' .. controller_name_or_error)[action]) == 'function' then
+                    and type(LoadApplication('controllers.' .. controller_name_or_error)[action]) == 'function' then
                 -- if ok and controller_name_or_error then
                     self.current_route = route
                     return controller_name_or_error, action
