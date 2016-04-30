@@ -62,13 +62,28 @@ luac.out
 ]]
 
 
+local base_controller = [[
+local BaseController = {
+    aaa = 'ccc'
+}
+
+function BaseController:fff()
+    self.aaa = 'dddddd'
+end
+
+return BaseController
+]]
+
+
 local index_controller = [[
-local IndexController = {}
-local user_service = require 'models.service.user'
-local aa = require 'aa'
+local IndexController = Class('controllers.index', LoadApplication('controllers.base'))
+-- local IndexController = {}
+local user_service = LoadApplication('models.service.user')
+local aa = LoadLibrary('aa')
 
 function IndexController:index()
-    do return user_service:get() .. sprint_r(aa:idevzDo()) end
+    -- self.parent:fff()
+    do return user_service:get() .. sprint_r(aa:idevzDobb()) .. sprint_r(self.parent.aaa) end
     local view = self:getView()
     local p = {}
     p['vanilla'] = 'Welcome To Vanilla...' .. service:get()
@@ -104,8 +119,8 @@ return IndexController
 
 local idevz_controller = [[
 local IdevzController = {}
-local user_service = require 'models.service.user'
-local bb = require 'bb'
+local user_service = LoadApplication 'models.service.user'
+local bb = LoadLibrary 'bb'
 
 function IdevzController:index()
     -- do return user_service:get() .. sprint_r(bb:idevzDo()) end
@@ -207,7 +222,7 @@ local error_tpl = [[
 
 
 local lib_aa = [[
-local LibAa = {}
+local LibAa = Class("aa", "bb")
 
 function LibAa:idevzDo(params)
     local params = params or { lib_aa = 'idevzDo LibAa'}
@@ -219,7 +234,7 @@ return LibAa
 
 
 local lib_bb = [[
-local LibBb = {}
+local LibBb = Class("bb")
 
 function LibBb:idevzDo(params)
     local params = params or { lib_bb = 'idevzDo LibBb'}
@@ -231,7 +246,6 @@ return LibBb
 
 
 local dao = [[
--- local TableDao = LoadV('vanilla.v.model.dao'):new()
 local TableDao = {}
 
 function TableDao:set(key, value)
@@ -257,7 +271,7 @@ return TableDao
 
 
 local service = [[
-local table_dao = require('application.models.dao.table'):new()
+local table_dao = LoadApplication('models.dao.table'):new()
 local UserService = {}
 
 function UserService:get()
@@ -301,8 +315,8 @@ return AdminPlugin
 
 
 local bootstrap = [[
-local simple = require 'vanilla.v.routes.simple'
-local restful = require 'vanilla.v.routes.restful'
+local simple = LoadV 'vanilla.v.routes.simple'
+local restful = LoadV 'vanilla.v.routes.restful'
 
 local Bootstrap = {}
 
@@ -327,7 +341,7 @@ function Bootstrap:initView()
 end
 
 function Bootstrap:initPlugin()
-    local admin_plugin = require('plugins.admin'):new()
+    local admin_plugin = LoadPlugin('plugins.admin'):new()
     self.dispatcher:registerPlugin(admin_plugin);
 end
 
@@ -355,7 +369,7 @@ return Bootstrap
 
 
 local application_conf = [[
-local APP_ROOT = ngx.var.document_root
+local APP_ROOT = Registry['APP_ROOT']
 local Appconf={}
 Appconf.vanilla_root = '{{VANILLA_ROOT}}'
 Appconf.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
@@ -549,6 +563,7 @@ http {
 
     lua_package_path "/?.lua;/?/init.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;;";
     lua_package_cpath "/?.so;{{VANILLA_ROOT}}/?.so;;";
+    init_worker_by_lua_file {{VANILLA_ROOT}}/init.lua;
     include vhost/*.conf;
 }
 ]]
@@ -603,6 +618,7 @@ http {
 
     lua_package_path "/?.lua;/?/init.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;;";
     lua_package_cpath "/?.so;{{VANILLA_ROOT}}/?.so;;";
+    init_by_lua_file {{VANILLA_ROOT}}/init.lua;
     include dev_vhost/*.conf;
 }
 ]]
@@ -617,8 +633,9 @@ server {
     lua_code_cache on;
     root {{APP_ROOT}};
     listen 80;
-    set $app_name '{{APP_NAME}}';
+    set $APP_NAME '{{APP_NAME}}';
     set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
+    set $VANILLA_ROOT '{{VANILLA_ROOT}}';
     set $template_root '';
 
     location /static {
@@ -642,48 +659,7 @@ server {
 
     # Va runtime
     location / {
-        content_by_lua '
-            local old_require = require
-
-            function require(m_name)
-                local APP_ROOT = ngx.var.document_root
-                local VANILLA_VERSION_DIR_STR = "{{VANILLA_VERSION_DIR_STR}}"
-                local VANILLA_ROOT = "{{VANILLA_ROOT}}"
-
-                local va_m_name = VANILLA_VERSION_DIR_STR .. "/" .. m_name
-                local va_name_no_va_m_name = VANILLA_VERSION_DIR_STR .. "/vanilla/" .. m_name
-                local app_m_name = APP_ROOT .. "/" .. m_name
-                local app_application_m_name = APP_ROOT .. "/application/" .. m_name
-                local app_library_m_name = APP_ROOT .. "/application/library/" .. m_name
-
-                if package.loaded[va_m_name] then return package.loaded[va_m_name]
-                elseif package.loaded[va_name_no_va_m_name] then return package.loaded[va_name_no_va_m_name]
-                elseif package.loaded[app_m_name] then return package.loaded[app_m_name]
-                elseif package.loaded[app_application_m_name] then return package.loaded[app_application_m_name]
-                elseif package.loaded[app_library_m_name] then return package.loaded[app_library_m_name]
-                elseif package.loaded[m_name] then return package.loaded[m_name] end
-                -- ngx.say(m_name .. "<br />")
-
-                local vanilla_module_name
-                local vanilla_framework_path = VANILLA_ROOT .. "/?.lua;" .. VANILLA_ROOT .. "/?/init.lua"
-                if package.searchpath(va_m_name, vanilla_framework_path) ~=nil then
-                    vanilla_module_name = va_m_name
-                elseif package.searchpath(va_name_no_va_m_name, vanilla_framework_path) ~=nil then
-                    vanilla_module_name = va_name_no_va_m_name
-                elseif package.searchpath(app_m_name, "/?.lua;/?/init.lua") ~=nil then
-                    vanilla_module_name = app_m_name
-                elseif package.searchpath(app_application_m_name, "/?.lua;/?/init.lua") ~=nil then
-                    vanilla_module_name = app_application_m_name
-                elseif package.searchpath(app_library_m_name, "/?.lua;/?/init.lua") ~=nil then
-                    vanilla_module_name = app_library_m_name
-                else
-                    vanilla_module_name = m_name
-                end
-                -- ngx.say(vanilla_module_name .. "<-------><br />")
-                return old_require(vanilla_module_name)
-            end
-            require("pub.index"):run(ngx)
-        ';
+        content_by_lua_file $document_root/pub/index.lua;
     }
 }
 ]]
@@ -691,15 +667,15 @@ server {
 
 local dev_nginx_vhost_config_tpl = [[
 #lua_shared_dict idevz 20m;
-#init_by_lua require('nginx.init'):run();
 
 server {
     server_name {{APP_NAME}}.idevz.com;
     lua_code_cache on;
     root {{APP_ROOT}};
     listen 9110;
-    set $app_name '{{APP_NAME}}';
+    set $APP_NAME '{{APP_NAME}}';
     set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
+    set $VANILLA_ROOT '{{VANILLA_ROOT}}';
     set $template_root '';
     set $VA_DEV on;
 
@@ -724,69 +700,7 @@ server {
 
     # Va runtime
     location / {
-        content_by_lua '
-            local old_require = require
-
-            function require(m_name)
-                local APP_ROOT = ngx.var.document_root
-                local VANILLA_VERSION_DIR_STR = "{{VANILLA_VERSION_DIR_STR}}"
-                local VANILLA_ROOT = "{{VANILLA_ROOT}}"
-
-                local va_m_name = VANILLA_VERSION_DIR_STR .. "/" .. m_name
-                local va_name_no_va_m_name = VANILLA_VERSION_DIR_STR .. "/vanilla/" .. m_name
-                local app_m_name = APP_ROOT .. "/" .. m_name
-                local app_application_m_name = APP_ROOT .. "/application/" .. m_name
-                local app_library_m_name = APP_ROOT .. "/application/library/" .. m_name
-
-                if package.loaded[va_m_name] then return package.loaded[va_m_name]
-                elseif package.loaded[va_name_no_va_m_name] then return package.loaded[va_name_no_va_m_name]
-                elseif package.loaded[app_m_name] then return package.loaded[app_m_name]
-                elseif package.loaded[app_application_m_name] then return package.loaded[app_application_m_name]
-                elseif package.loaded[app_library_m_name] then return package.loaded[app_library_m_name]
-                elseif package.loaded[m_name] then return package.loaded[m_name] end
-                -- ngx.say(m_name .. "<br />")
-
-                local vanilla_module_name
-                local vanilla_framework_path = VANILLA_ROOT .. "/?.lua;" .. VANILLA_ROOT .. "/?/init.lua"
-                if package.searchpath(va_m_name, vanilla_framework_path) ~=nil then
-                    vanilla_module_name = va_m_name
-                elseif package.searchpath(va_name_no_va_m_name, vanilla_framework_path) ~=nil then
-                    vanilla_module_name = va_name_no_va_m_name
-                elseif package.searchpath(app_m_name, "/?.lua;/?/init.lua") ~=nil then
-                    vanilla_module_name = app_m_name
-                elseif package.searchpath(app_application_m_name, "/?.lua;/?/init.lua") ~=nil then
-                    vanilla_module_name = app_application_m_name
-                elseif package.searchpath(app_library_m_name, "/?.lua;/?/init.lua") ~=nil then
-                    vanilla_module_name = app_library_m_name
-                else
-                    vanilla_module_name = m_name
-                end
-                -- ngx.say(vanilla_module_name .. "<-------><br />")
-                return old_require(vanilla_module_name)
-            end
-
-            if ngx.var.VA_DEV ~= nil then
-                local helpers = require "vanilla.v.libs.utils"
-                function sprint_r( ... )
-                    return helpers.sprint_r(...)
-                end
-
-                function lprint_r( ... )
-                    local rs = sprint_r(...)
-                    print(rs)
-                end
-
-                function print_r( ... )
-                    local rs = sprint_r(...)
-                    ngx.say(rs)
-                end
-
-                function err_log(msg)
-                    ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
-                end
-            end
-            require("pub.index"):run(ngx)
-        ';
+        content_by_lua_file $document_root/pub/index.lua;
     }
 }
 ]]
@@ -1002,7 +916,7 @@ return restful
 local nginx_init_by_lua_tpl = [[
 local init_by_lua = {}
 function init_by_lua:run()
-    local conf = require 'nginx.init.config'
+    local conf = LoadApplication 'nginx.init.config'
     ngx.zhou = conf
 end
 
@@ -1011,15 +925,18 @@ return init_by_lua
 
 
 local nginx_init_config_tpl = [[
-local config = require('config.application')
+local config = LoadApp('config.application')
 return config
 ]]
 
 
 local vanilla_index = [[
-if ngx.var.VA_DEV == nil then
+init_vanilla()
+--+--------------------------------------------------------------------------------+--
 
-    local helpers = require "vanilla.v.libs.utils"
+
+if Registry['VA_ENV'] == nil then
+    local helpers = LoadV "vanilla.v.libs.utils"
     function sprint_r( ... )
         return helpers.sprint_r(...)
     end
@@ -1038,18 +955,13 @@ if ngx.var.VA_DEV == nil then
         ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
     end
 end
+--+--------------------------------------------------------------------------------+--
 
-local vanilla_application = require 'vanilla.v.application'
-local application_config = require 'config.application'
-local boots = require 'application.bootstrap'
 
-local App = {}
-
-function App:run( ngx )
-    vanilla_application:new(ngx, application_config):bootstrap(boots):run()
-end
-
-return App
+local vanilla_application = LoadV 'vanilla.v.application'
+local application_config = LoadApp 'config.application'
+local boots = LoadApp 'application.bootstrap'
+vanilla_application:new(ngx, application_config):bootstrap(boots):run()
 ]]
 
 
@@ -1082,6 +994,7 @@ local VaApplication = {}
 
 VaApplication.files = {
     ['.gitignore'] = gitignore,
+    ['application/controllers/base.lua'] = base_controller,
     ['application/controllers/index.lua'] = index_controller,
     ['application/controllers/idevz.lua'] = idevz_controller,
     ['application/controllers/error.lua'] = error_controller,
