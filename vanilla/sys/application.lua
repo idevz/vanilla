@@ -222,7 +222,7 @@ local error_tpl = [[
 
 
 local lib_aa = [[
-local LibAa = Class("aa", "bb")
+local LibAa = Class("aa", LoadLibrary('bb'))
 
 function LibAa:idevzDo(params)
     local params = params or { lib_aa = 'idevzDo LibAa'}
@@ -238,6 +238,11 @@ local LibBb = Class("bb")
 
 function LibBb:idevzDo(params)
     local params = params or { lib_bb = 'idevzDo LibBb'}
+    return params
+end
+
+function LibBb:idevzDobb(params)
+    local params = params or { lib_bb = 'idevzDo idevzDobb'}
     return params
 end
 
