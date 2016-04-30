@@ -83,7 +83,7 @@ local aa = LoadLibrary('aa')
 
 function IndexController:index()
     -- self.parent:fff()
-    do return user_service:get() .. sprint_r(aa:idevzDobb()) .. sprint_r(self.parent.aaa) end
+    do return user_service:get() .. sprint_r(aa:idevzDobb()) .. sprint_r(self.parent.aaa) .. Registry['APP_NAME'] end
     local view = self:getView()
     local p = {}
     p['vanilla'] = 'Welcome To Vanilla...' .. service:get()
