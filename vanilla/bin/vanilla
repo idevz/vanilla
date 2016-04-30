@@ -1,5 +1,10 @@
 #!/usr/bin/env luajit
 package.path = './?.lua;' .. package.path --;; didn't contains ./?.lua in cli
+
+LoadV = function ( ... )
+    return require(VANILLA_ROOT .. '/' .. VANILLA_VERSION_DIR_STR .. '/' .. ...)
+end
+
 local V = LoadV 'vanilla.sys.config'
 
 local help_description = [[Vanilla v]] .. V.version .. [[, A MVC web framework for Lua powered by OpenResty.
