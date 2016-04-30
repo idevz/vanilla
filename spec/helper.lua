@@ -6,6 +6,9 @@ LoadV = function ( ... )
     return require(...)
 end
 
+Registry={}
+Registry['APP_NAME'] = 'vanilla-app'
+
 local reg = require "rex_pcre"
 -- DICT Proxy
 -- https://github.com/bsm/fakengx/blob/master/fakengx.lua
