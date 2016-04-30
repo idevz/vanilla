@@ -1,5 +1,5 @@
--- Vanilla Init
--- @since 2016-04-13 22:34
+-- Request moudle
+-- @since 2015-08-17 10:54
 -- @author idevz <zhoujing00k@gmail.com>
 -- version $Id$
 
@@ -78,6 +78,7 @@ end
 init_vanilla = function ()
     Registry.namespace = ngx.var.APP_NAME
     if Registry['VANILLA_INIT'] then return end
+    if Registry['VA_ENV'] == false then Registry['VA_ENV'] = ngx.var.VA_ENV end
     if Registry['APP_NAME'] == false then Registry['APP_NAME'] = Registry.namespace end
     if Registry['APP_ROOT'] == false then Registry['APP_ROOT'] = ngx.var.document_root end
     if Registry['VANILLA_ROOT'] == false then Registry['VANILLA_ROOT'] = ngx.var.VANILLA_ROOT end
