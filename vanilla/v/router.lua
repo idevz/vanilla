@@ -51,7 +51,7 @@ function Router:route()
             if route then
                 alive_route_num = alive_route_num + 1
                 local ok, controller_name_or_error, action = pcall(route_match, route)
-                if ok and controller_name_or_error ~= nil and package.searchpath(ngx.var.document_root .. '/application/controllers.'
+                if ok and controller_name_or_error ~= nil and package.searchpath(Registry['APP_ROOT'] .. '/application/controllers.'
                     .. controller_name_or_error, '/?.lua;/?/init.lua') ~= nil
                     and type(LoadApplication('controllers.' .. controller_name_or_error)[action]) == 'function' then
                 -- if ok and controller_name_or_error then

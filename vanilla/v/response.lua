@@ -50,7 +50,7 @@ function Response:prependBody(prepend_body)
 end
 
 function Response:response()
-    local vanilla_version = ngx.var.VANILLA_VERSION
+    local vanilla_version = Registry['VANILLA_VERSION']
     ngx.header['Power_By'] = 'Vanilla-' .. vanilla_version
     ngx.header['Content_type'] = ngx.header['Content_type'] or 'text/html'
     local body = {[1]=self.append_body, [2]=self.body, [3]=self.prepend_body}
