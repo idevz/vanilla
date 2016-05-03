@@ -33,7 +33,7 @@ local _class = function(_, classname, parent)
         end
         return instance
     end
-    cls["is" .. __cname]  =true
+    cls["is" .. classname]  =true
     cls.__cname = classname
     cls.__index = cls
     setmetatable(cls, baseMt)
