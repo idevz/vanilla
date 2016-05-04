@@ -67,6 +67,10 @@ local BaseController = {
     aaa = 'ccc'
 }
 
+function BaseController:init(info)
+    self.d = info.act
+end
+
 function BaseController:fff()
     self.aaa = 'dddddd'
 end
@@ -76,14 +80,17 @@ return BaseController
 
 
 local index_controller = [[
-local IndexController = Class('controllers.index', LoadApplication('controllers.base'))
+local IndexController = Class('controllers.index', LoadApplication('controllers.base'))({act='test-init'})
 -- local IndexController = {}
 local user_service = LoadApplication('models.service.user')
 local aa = LoadLibrary('aa')
 
 function IndexController:index()
     -- self.parent:fff()
-    do return user_service:get() .. sprint_r(aa:idevzDobb()) .. sprint_r(self.parent.aaa) .. Registry['APP_NAME'] end
+    do return user_service:get() .. sprint_r(aa:idevzDobb()) 
+                                 .. sprint_r(self.parent.aaa) 
+                                 .. Registry['APP_NAME']
+                                 .. self.d end
     local view = self:getView()
     local p = {}
     p['vanilla'] = 'Welcome To Vanilla...' .. service:get()
@@ -568,6 +575,7 @@ http {
 
     lua_package_path "/?.lua;/?/init.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;;";
     lua_package_cpath "/?.so;{{VANILLA_ROOT}}/?.so;;";
+    #init_by_lua_file {{VANILLA_ROOT}}/init.lua;
     init_worker_by_lua_file {{VANILLA_ROOT}}/init.lua;
     include vhost/*.conf;
 }
@@ -624,6 +632,7 @@ http {
     lua_package_path "/?.lua;/?/init.lua;{{VANILLA_ROOT}}/?.lua;{{VANILLA_ROOT}}/?/init.lua;;";
     lua_package_cpath "/?.so;{{VANILLA_ROOT}}/?.so;;";
     init_by_lua_file {{VANILLA_ROOT}}/init.lua;
+    #init_worker_by_lua_file {{VANILLA_ROOT}}/init.lua;
     include dev_vhost/*.conf;
 }
 ]]
