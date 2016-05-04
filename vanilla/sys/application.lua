@@ -63,12 +63,12 @@ luac.out
 
 
 local base_controller = [[
-local BaseController = {
-    aaa = 'ccc'
-}
+local BaseController = Class('controllers.base')
 
-function BaseController:init(info)
-    self.d = info.act
+function BaseController:__construct()
+    print_r('-=-=---------BaseController:init----------------')
+    self.d = 'vddda===========ddd===='
+    self.cc = '----vvvaadd-------'
 end
 
 function BaseController:fff()
@@ -80,17 +80,34 @@ return BaseController
 
 
 local index_controller = [[
-local IndexController = Class('controllers.index', LoadApplication('controllers.base'))({act='test-init'})
+-- local IndexController = Class('controllers.index', LoadApplication('controllers.base'))
+local IndexController = Class('controllers.index')
 -- local IndexController = {}
 local user_service = LoadApplication('models.service.user')
-local aa = LoadLibrary('aa')
+aa = LoadLibrary('aa')
+-- aa = LoadLibrary('aa')({info='ppppp'})
+
+function IndexController:__construct()
+    print_r('===========IndexController:init===============')
+    -- self.aa = LoadLibrary('aa')({info='ppppp'})
+    -- self.parent:__construct()
+    local get = self:getRequest():getParams()
+    self.d = '-----------ccccccc----------' .. get.act
+end
 
 function IndexController:index()
+    -- local get = self:getRequest():getParams()
+    -- print_r(aa.lib)
+    -- print_r(self.aa.lib)
     -- self.parent:fff()
-    do return user_service:get() .. sprint_r(aa:idevzDobb()) 
-                                 .. sprint_r(self.parent.aaa) 
-                                 .. Registry['APP_NAME']
-                                 .. self.d end
+    -- do return '-' end
+    do return user_service:get() 
+              .. sprint_r(aa:idevzDobb()) 
+              -- .. sprint_r(self.aa:idevzDobb()) 
+              -- .. sprint_r(self.parent.aaa) 
+              .. Registry['APP_NAME']
+              .. self.d
+    end
     local view = self:getView()
     local p = {}
     p['vanilla'] = 'Welcome To Vanilla...' .. service:get()
@@ -236,6 +253,12 @@ function LibAa:idevzDo(params)
     return params
 end
 
+-- function LibAa:__construct( data )
+--  print_r('===============init==aaa=======' .. data.info)
+--  -- self.parent:init()
+--  self.lib = 'LibAa----------------------------aaaa'
+-- end
+
 return LibAa
 ]]
 
@@ -246,6 +269,12 @@ local LibBb = Class("bb")
 function LibBb:idevzDo(params)
     local params = params or { lib_bb = 'idevzDo LibBb'}
     return params
+end
+
+function LibBb:__construct( data )
+    print_r('===============init bbb=========')
+    self.lib = 'LibBb---------------xxx' .. data.info
+    -- self.a = 'ppp'
 end
 
 function LibBb:idevzDobb(params)
