@@ -9,34 +9,33 @@ Registry = require('registry'):new()
 
 
 --+--------------------------------------------------------------------------------+--
-local baseMt = {
-    __call = function(self, ...)
-        return self:new(...)
-    end
-}
-
 local _class = function(_, classname, parent)
+    local mttt = {
+        __call = function(self, ... )
+            return self:new(...)
+        end
+    }
     local parent_type = type(parent)
     if parent_type ~= "function" and parent_type ~= "table" then
         parent = nil
     end
     local cls = {}
     if parent then
-        baseMt.__index = parent
+        mttt.__index = parent
         cls.parent = parent
     end
     cls.new = function(self, ...)
         local instance = { class = self }
         setmetatable(instance, self)
-        if instance.init and type(instance.init) == 'function' then
-            instance:init(...)
+        if instance.__construct and type(instance.__construct) == 'function' then
+            instance:__construct(...)
         end
         return instance
     end
     cls["is" .. classname]  =true
     cls.__cname = classname
     cls.__index = cls
-    setmetatable(cls, baseMt)
+    setmetatable(cls, mttt)
     return cls
 end
 
