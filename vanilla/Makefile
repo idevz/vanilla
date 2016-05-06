@@ -14,7 +14,7 @@ install: all
 	# $(INSTALL) -d $(VANILLA_LIB_DIR)/vanilla/resty/
 	$(INSTALL) ./bin/ $(VANILLA_LIB_DIR)/bin
 	$(MKDIR) $(VANILLA_LIB_DIR)/vanilla
-	$(INSTALL) ./base/ $(VANILLA_ROOT)/
+	$(INSTALL) ./base/* $(VANILLA_ROOT)/
 	$(INSTALL) ./v $(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./sys $(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./vanilla-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/vanilla-$(VANILLA_VERSION)

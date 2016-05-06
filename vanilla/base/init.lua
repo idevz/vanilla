@@ -88,11 +88,3 @@ end
 
 
 --+--------------------------------------------------------------------------------+--
-local helpers = require("/Users/zhoujing/data/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils")
-function sprint_r( ... )
-    return helpers.sprint_r(...)
-end
-
-function print_r( ... )
-    ngx.say(sprint_r(...))
-end

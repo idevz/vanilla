@@ -974,7 +974,7 @@ init_vanilla()
 --+--------------------------------------------------------------------------------+--
 
 
-if Registry['VA_ENV'] == nil then
+-- if Registry['VA_ENV'] == nil then
     local helpers = LoadV "vanilla.v.libs.utils"
     function sprint_r( ... )
         return helpers.sprint_r(...)
@@ -993,7 +993,7 @@ if Registry['VA_ENV'] == nil then
     function err_log(msg)
         ngx.log(ngx.ERR, "===zjdebug" .. msg .. "===")
     end
-end
+-- end
 --+--------------------------------------------------------------------------------+--
 
 
