@@ -102,14 +102,20 @@ function Dispatcher:dispatch()
     self.view = self.application:lpcall(new_view, self.application.config.view)
     self:_runPlugins('dispatchLoopStartup')
     self:_runPlugins('preDispatch')
-    -- local matched_controller = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
-    local matched_controller_lib = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
-    local mt = getmetatable(matched_controller_lib)
-    mt.__index = self.controller
-    local matched_controller = matched_controller_lib()
-    setmetatable(matched_controller.class, mt)
-    -- setmetatable(matched_controller.class, { __index = self.controller })
-    local c_rs = self:lpcall(call_controller, self, matched_controller, self.request.controller_name, self.request.action_name)
+    local cls_call = {}
+    local matched_controller = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
+    if matched_controller.parent ~= nil and type(matched_controller.parent) == 'table' then
+        setmetatable(matched_controller.parent, {__index = self.controller})
+        cls_call = matched_controller()
+    elseif matched_controller.__cname ~= nil then
+        local mt = getmetatable(matched_controller)
+        mt.__index = self.controller
+        cls_call = matched_controller()
+        setmetatable(cls_call.class, mt)
+    else
+        cls_call = setmetatable(matched_controller, { __index = self.controller })
+    end
+    local c_rs = self:lpcall(call_controller, self, cls_call, self.request.controller_name, self.request.action_name)
     if type(c_rs) ~= 'string' then
         self:errResponse({ code = 103, msg = {Rs_Error = self.request.controller_name .. '/' .. self.request.action_name .. ' must return a String.'}})
     end
