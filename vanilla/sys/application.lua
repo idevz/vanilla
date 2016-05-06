@@ -66,9 +66,9 @@ local base_controller = [[
 local BaseController = Class('controllers.base')
 
 function BaseController:__construct()
-    print_r('-=-=---------BaseController:init----------------')
-    self.d = 'vddda===========ddd===='
-    self.cc = '----vvvaadd-------'
+    print_r('----------------BaseController:init----------------')
+    local get = self:getRequest():getParams()
+    self.d = '----------------base----------------' .. get.act
 end
 
 function BaseController:fff()
@@ -81,32 +81,28 @@ return BaseController
 
 local index_controller = [[
 -- local IndexController = Class('controllers.index', LoadApplication('controllers.base'))
-local IndexController = Class('controllers.index')
--- local IndexController = {}
+-- local IndexController = Class('controllers.index')
+local IndexController = {}
 local user_service = LoadApplication('models.service.user')
-aa = LoadLibrary('aa')
--- aa = LoadLibrary('aa')({info='ppppp'})
+local aa = LoadLibrary('aa')
 
-function IndexController:__construct()
-    print_r('===========IndexController:init===============')
-    -- self.aa = LoadLibrary('aa')({info='ppppp'})
-    -- self.parent:__construct()
-    local get = self:getRequest():getParams()
-    self.d = '-----------ccccccc----------' .. get.act
-end
+-- function IndexController:__construct()
+-- -- self.parent:__construct()
+--     print_r('===============IndexController:init===============')
+-- -- --     -- self.aa = aa({info='ppppp'})
+-- -- --     -- self.parent:__construct()
+--     local get = self:getRequest():getParams()
+--     self.d = '===============index===============' .. get.act
+-- end
 
 function IndexController:index()
-    -- local get = self:getRequest():getParams()
-    -- print_r(aa.lib)
-    -- print_r(self.aa.lib)
     -- self.parent:fff()
-    -- do return '-' end
     do return user_service:get() 
               .. sprint_r(aa:idevzDobb()) 
               -- .. sprint_r(self.aa:idevzDobb()) 
               -- .. sprint_r(self.parent.aaa) 
               .. Registry['APP_NAME']
-              .. self.d
+              -- .. self.d
     end
     local view = self:getView()
     local p = {}
@@ -253,11 +249,11 @@ function LibAa:idevzDo(params)
     return params
 end
 
--- function LibAa:__construct( data )
---  print_r('===============init==aaa=======' .. data.info)
---  -- self.parent:init()
---  self.lib = 'LibAa----------------------------aaaa'
--- end
+function LibAa:__construct( data )
+ print_r('===============init==aaa=======' .. data.info)
+ -- self.parent:init()
+ self.lib = 'LibAa----------------------------aaaa'
+end
 
 return LibAa
 ]]
