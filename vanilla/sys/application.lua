@@ -355,7 +355,7 @@ local bootstrap = [[
 local simple = LoadV 'vanilla.v.routes.simple'
 local restful = LoadV 'vanilla.v.routes.restful'
 
-local Bootstrap = {}
+local Bootstrap = Class('application.bootstrap')
 
 function Bootstrap:initWaf()
     LoadV('vanilla.sys.waf.acc'):check()
@@ -382,15 +382,6 @@ function Bootstrap:initPlugin()
     self.dispatcher:registerPlugin(admin_plugin);
 end
 
-function Bootstrap:new(dispatcher)
-    local instance = {
-        dispatcher = dispatcher,
-        boot_list = self.boot_list
-    }
-    setmetatable(instance, {__index=self})
-    return instance
-end
-
 function Bootstrap:boot_list()
     return {
         -- Bootstrap.initWaf,
@@ -399,6 +390,10 @@ function Bootstrap:boot_list()
         -- Bootstrap.initView,
         -- Bootstrap.initPlugin,
     }
+end
+
+function Bootstrap:__construct(dispatcher)
+    self.dispatcher = dispatcher
 end
 
 return Bootstrap
