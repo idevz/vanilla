@@ -24,7 +24,7 @@ local function rule_pattern(pattern)
 end
 
 local function get_rules(request)
-    local rules_conf = require 'config.restful'
+    local rules_conf = LoadApp 'config.restful'
     local header_accept = request:getHeader('accept')
     local req_method = request:getMethod()
     local version = ''
