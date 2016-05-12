@@ -51,9 +51,10 @@ function Router:route()
             if route then
                 alive_route_num = alive_route_num + 1
                 local ok, controller_name_or_error, action = pcall(route_match, route)
-                if ok and controller_name_or_error ~= nil and package.searchpath(Registry['APP_ROOT'] .. '/application/controllers.'
+                if ok and controller_name_or_error ~= nil and package.searchpath(Registry['APP_ROOT'] .. '/application/' 
+                    .. Registry['CONTROLLER_PREFIX']
                     .. controller_name_or_error, '/?.lua;/?/init.lua') ~= nil
-                    and type(LoadApplication('controllers.' .. controller_name_or_error)[action]) == 'function' then
+                    and type(LoadApplication(Registry['CONTROLLER_PREFIX'] .. controller_name_or_error)[action]) == 'function' then
                 -- if ok and controller_name_or_error then
                     self.current_route = route
                     return controller_name_or_error, action
