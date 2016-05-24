@@ -99,6 +99,7 @@ function IndexController:index()
     -- self.parent:fff()
     -- do return user_service:get() 
     --           .. sprint_r(aa:idevzDobb()) 
+    --           .. sprint_r(Registry['v_sysconf']['db.client.read']['port']) 
     --           -- .. sprint_r(self.aa:idevzDobb()) 
     --           -- .. sprint_r(self.parent.aaa) 
     --           .. Registry['APP_NAME']
@@ -106,7 +107,7 @@ function IndexController:index()
     -- end
     local view = self:getView()
     local p = {}
-    p['vanilla'] = 'Welcome To Vanilla...' .. service:get()
+    p['vanilla'] = 'Welcome To Vanilla...' .. user_service:get()
     p['zhoujing'] = 'Power by Openresty'
     view:assign(p)
     return view:display()
@@ -403,6 +404,9 @@ return Bootstrap
 local application_conf = [[
 local APP_ROOT = Registry['APP_ROOT']
 local Appconf={}
+Appconf.sysconf = {
+    'v_resource',
+}
 Appconf.vanilla_root = '{{VANILLA_ROOT}}'
 Appconf.vanilla_version = '{{VANILLA_VERSION_DIR_STR}}'
 Appconf.name = '{{APP_NAME}}'
@@ -993,9 +997,34 @@ init_vanilla()
 
 
 local vanilla_application = LoadV 'vanilla.v.application'
-local application_config = LoadApp 'config.application'
 local boots = LoadApp 'application.bootstrap'
-vanilla_application:new(ngx, application_config):bootstrap(boots):run()
+vanilla_application:new(ngx, Registry['APP_CONF']):bootstrap(boots):run()
+]]
+
+
+local vanilla_app_resource = [[
+[mc]
+conf=127.0.0.1:7348 127.0.0.1:11211
+
+[redis]
+conf=127.0.0.1:7348 127.0.0.1:7349
+
+[redisq]
+conf=127.0.0.1:7348 127.0.0.1:7349
+
+[db.user.write]
+host =127.0.0.1
+port =3306
+dbname =user.info
+user =idevz
+passwd =idevz
+
+[db.user.read]
+host =127.0.0.1
+port =3306
+dbname =user.info
+user =idevz
+passwd =idevz
 ]]
 
 
@@ -1053,6 +1082,7 @@ VaApplication.files = {
     ['config/waf-regs/user-agent'] = waf_conf_regs_ua,
     ['config/waf-regs/whiteurl'] = waf_conf_regs_whiteurl,
     ['pub/index.lua'] = vanilla_index,
+    ['sys/v_resource'] = vanilla_app_resource,
     ['logs/hack/.gitkeep'] = "",
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
