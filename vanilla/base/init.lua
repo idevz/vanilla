@@ -75,6 +75,16 @@ end
 
 
 --+--------------------------------------------------------------------------------+--
+local LoadSysConf = function()
+        local sysconf_files = Registry['APP_CONF']['sysconf']
+        local conf_handle = LoadV('vanilla.v.config.handle')('ini')
+        for _,v in ipairs(sysconf_files) do
+            Registry[v] = conf_handle:get('sys/' .. v)
+        end
+end
+
+
+--+--------------------------------------------------------------------------------+--
 init_vanilla = function ()
     Registry.namespace = ngx.var.APP_NAME
     if Registry['VANILLA_INIT'] then return end
@@ -83,6 +93,8 @@ init_vanilla = function ()
     if Registry['APP_ROOT'] == false then Registry['APP_ROOT'] = ngx.var.document_root end
     if Registry['VANILLA_ROOT'] == false then Registry['VANILLA_ROOT'] = ngx.var.VANILLA_ROOT end
     if Registry['VANILLA_VERSION'] == false then Registry['VANILLA_VERSION'] = ngx.var.VANILLA_VERSION end
+    if Registry['APP_CONF'] == false then Registry['APP_CONF'] = LoadApp 'config.application' end
+    LoadSysConf()
     Registry['VANILLA_INIT'] = true
 end
 
