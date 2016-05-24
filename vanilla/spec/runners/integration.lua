@@ -3,14 +3,6 @@ local http = require 'socket.http'
 local url = require 'socket.url'
 local json = require 'cjson'
 
--- vanilla
--- local vanilla = require 'vanilla.v.vanilla'
-local va_conf = require 'vanilla.sys.config'
-local vanilla = require 'vanilla.sys.nginx.config'
-
-local Application = require 'config.application'
-
-
 local IntegrationRunner = {}
 
 -- Code portion taken from:
@@ -45,8 +37,10 @@ end
 local function hit_server(request)
     local full_url = url.build({
         scheme = 'http',
-        host = '127.0.0.1',
-        port = vanilla.PORT,
+        -- host = '127.0.0.1',
+        host = 'fuck.dev',
+        -- port = vanilla.PORT,
+        port = 80,
         path = request.path,
         query = IntegrationRunner.encode_table(request.uri_params)
     })
@@ -66,8 +60,7 @@ local function hit_server(request)
 end
 
 function IntegrationRunner.cgi(request)
-    local va_s = require 'vanilla.sys.vanilla'
-    local ResponseSpec = require 'vanilla.spec.runners.response'
+    local ResponseSpec = LoadV 'vanilla.spec.runners.response'
 
     -- convert body to JSON request
     if request.body ~= nil then
@@ -76,24 +69,13 @@ function IntegrationRunner.cgi(request)
 
     -- ensure content-length is set
     request = ensure_content_length(request)
-
-    -- get major version for caller
-    -- local major_version = major_version_for_caller()
-
-    -- check request.api_version
-    -- local api_version = check_and_get_request_api_version(request, major_version)
-
-    -- set Accept header
-    -- request = set_accept_header(request, api_version)
-
+    
     -- start nginx
-    va_s.start(vanilla.VA_ENV)
 
     -- hit server
     local ok, response_status, response_headers, response_body = hit_server(request)
 
     -- stop nginx
-    va_s.stop(vanilla.VA_ENV)
 
     if ok == nil then error("An error occurred while connecting to the test server.") end
 
