@@ -675,7 +675,7 @@ local nginx_vhost_config_tpl = [[
 #init_by_lua require('nginx.init'):run();
 
 server {
-    server_name {{APP_NAME}}.idevz.com;
+    server_name {{APP_NAME}}.idevz.com 127.0.0.1;
     lua_code_cache on;
     root {{APP_ROOT}};
     listen 80;
@@ -715,7 +715,7 @@ local dev_nginx_vhost_config_tpl = [[
 #lua_shared_dict idevz 20m;
 
 server {
-    server_name {{APP_NAME}}.idevz.com;
+    server_name {{APP_NAME}}.idevz.com 127.0.0.1;
     lua_code_cache on;
     root {{APP_ROOT}};
     listen 9110;
