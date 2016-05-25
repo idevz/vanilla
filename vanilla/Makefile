@@ -17,6 +17,7 @@ install: all
 	$(INSTALL) ./base/* $(VANILLA_ROOT)/
 	$(INSTALL) ./v $(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./sys $(VANILLA_LIB_DIR)/vanilla
+	$(INSTALL) ./spec $(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./vanilla-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/vanilla-$(VANILLA_VERSION)
 	$(INSTALL) ./v-console-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/v-console-$(VANILLA_VERSION)
 

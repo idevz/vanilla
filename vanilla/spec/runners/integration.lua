@@ -37,9 +37,7 @@ end
 local function hit_server(request)
     local full_url = url.build({
         scheme = 'http',
-        -- host = '127.0.0.1',
-        host = 'fuck.dev',
-        -- port = vanilla.PORT,
+        host = '127.0.0.1',
         port = 80,
         path = request.path,
         query = IntegrationRunner.encode_table(request.uri_params)

@@ -96,6 +96,10 @@ local aa = LoadLibrary('aa')
 -- end
 
 function IndexController:index()
+  return 'hello vanilla.'
+end
+
+function IndexController:indext()
     -- self.parent:fff()
     -- do return user_service:get() 
     --           .. sprint_r(aa:idevzDobb()) 
@@ -111,6 +115,10 @@ function IndexController:index()
     p['zhoujing'] = 'Power by Openresty'
     view:assign(p)
     return view:display()
+end
+
+function IndexController:buested()
+  return 'hello buested.'
 end
 
 -- curl http://localhost:9110/get?ok=yes
@@ -1035,21 +1043,49 @@ describe("PagesController", function()
 
     describe("#root", function()
         it("responds with a welcome message", function()
-            local response = hit({
+            local response = cgi({
                 method = 'GET',
                 path = "/"
             })
-
+            
             assert.are.same(200, response.status)
-            assert.are.same({ message = "Hello world from Va!" }, response.body)
+            assert.are.same("hello vanilla.", response.body_raw)
+        end)
+    end)
+
+    describe("#buested", function()
+        it("responds with a welcome message for buested", function()
+            local response = cgi({
+                method = 'GET',
+                path = "/index/buested"
+            })
+            
+            assert.are.same(200, response.status)
+            assert.are.same("hello buested.", response.body_raw)
         end)
     end)
 end)
+
 ]]
 
 
 local spec_helper = [[
-require 'vanilla.spec.runner'
+package.path = package.path .. ";/?.lua;/?/init.lua;{{VANILLA_ROOT}}/{{VANILLA_VERSION_DIR_STR}}/?.lua;{{VANILLA_ROOT}}/{{VANILLA_VERSION_DIR_STR}}/?/init.lua;;";
+package.cpath = package.cpath .. ";/?.so;{{VANILLA_ROOT}}/{{VANILLA_VERSION_DIR_STR}}/?.so;;";
+
+Registry={}
+Registry['APP_ROOT'] = '{{APP_ROOT}}'
+Registry['APP_NAME'] = '{{APP_NAME}}'
+
+LoadV = function ( ... )
+    return require(...)
+end
+
+LoadApp = function ( ... )
+    return require(Registry['APP_ROOT'] .. '/' .. ...)
+end
+
+LoadV 'vanilla.spec.runner'
 ]]
 
 
@@ -1113,6 +1149,12 @@ function VaApplication.new(app_path)
     application_conf = sgsub(application_conf, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
     application_conf = sgsub(application_conf, "{{VANILLA_ROOT}}", VANILLA_ROOT)
     VaApplication.files['config/application.lua'] = application_conf
+
+    spec_helper = sgsub(spec_helper, "{{VANILLA_ROOT}}", VANILLA_ROOT)
+    spec_helper = sgsub(spec_helper, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
+    spec_helper = sgsub(spec_helper, "{{APP_ROOT}}", app_path)
+    spec_helper = sgsub(spec_helper, "{{APP_NAME}}", app_name)
+    VaApplication.files['spec/spec_helper.lua'] = spec_helper
 
     -- vanilla_index = sgsub(vanilla_index, "{{VANILLA_VERSION_DIR_STR}}", VANILLA_VERSION_DIR_STR)
     -- vanilla_index = sgsub(vanilla_index, "{{APP_ROOT}}", app_path)
