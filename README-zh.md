@@ -38,7 +38,7 @@ $ ./setup-framework -v $VANILLA_PROJ_ROOT -o $OPENRESTY_ROOT        #运行 ./se
 **部署你的第一个Vanilla Application**
 
 ``` bash
-$ ./setup-vanilal-demoapp  [-a $VANILLA_APP_ROOT -u $VANILLA_APP_USER -g $VANILLA_APP_GROUP -e $VANILLA_RUNNING_ENV]    #运行 ./setup-vanilal-demoapp -h 查看更多参数细节
+$ ./setup-vanilal-demoapp  [-a $VANILLA_APP_ROOT -u $VANILLA_APP_USER -g $VANILLA_APP_GROUP -e $VANILLA_RUNNING_ENV]    #运行 ./setup-vanilal-demoapp -h  查看更多参数细节
 ```
 
 **启动你的 Vanilla 服务**
