@@ -1004,9 +1004,7 @@ init_vanilla()
 --+--------------------------------------------------------------------------------+--
 
 
-local vanilla_application = LoadV 'vanilla.v.application'
-local boots = LoadApp 'application.bootstrap'
-vanilla_application:new(ngx, Registry['APP_CONF']):bootstrap(boots):run()
+Registry['VANILLA_APPLICATION']:new(ngx, Registry['APP_CONF']):bootstrap(Registry['APP_BOOTS']):run()
 ]]
 
 
