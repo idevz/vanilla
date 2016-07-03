@@ -978,6 +978,7 @@ return config
 
 local vanilla_index = [[
 init_vanilla()
+page_cache()
 --+--------------------------------------------------------------------------------+--
 
 
