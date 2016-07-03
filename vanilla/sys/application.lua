@@ -1086,6 +1086,56 @@ end
 LoadV 'vanilla.spec.runner'
 ]]
 
+local sys_cache = [[
+[shared_dict]
+dict=idevz
+exptime=100
+
+[memcached]
+instances=127.0.0.1:11211 127.0.0.1:11211
+exptime=60
+timeout=100
+poolsize=100
+idletimeout=10000
+
+[redis]
+instances=127.0.0.1:6379 127.0.0.1:6379
+exptime=60
+timeout=100
+poolsize=100
+idletimeout=10000
+
+[lrucache]
+items=200
+exptime=60
+useffi=false
+]]
+
+local sys_v_resource = [[
+[mc]
+conf=127.0.0.1:7348 127.0.0.1:11211
+
+[redis]
+conf=127.0.0.1:7348 127.0.0.1:7349
+
+[redisq]
+conf=127.0.0.1:7348 127.0.0.1:7349
+
+[db.user.write]
+host =127.0.0.1
+port =3306
+dbname =user.info
+user =idevz
+passwd =idevz
+
+[db.user.read]
+host =127.0.0.1
+port =3306
+dbname =user.info
+user =idevz
+passwd =idevz
+]]
+
 
 local VaApplication = {}
 
@@ -1121,6 +1171,8 @@ VaApplication.files = {
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
     ['spec/spec_helper.lua'] = spec_helper
+    ['sys/cache'] = sys_cache
+    ['sys/v_resource'] = sys_v_resource
 }
 
 function VaApplication.new(app_path)
