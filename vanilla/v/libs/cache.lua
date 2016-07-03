@@ -4,6 +4,7 @@ local resty_redis = require 'resty.redis'
 local resty_lrucache = require 'resty.lrucache'
 local resty_lrucache_ffi = require 'resty.lrucache.pureffi'
 local utils = LoadV('vanilla.v.libs.utils')
+local str_sub = string.sub
 
 local ngx_crc32 = ngx.crc32_short
 local ngx_shdict = ngx.shared
@@ -21,21 +22,21 @@ local function __construct(self, handle)
 	elseif handle == 'mc' or handle == 'memcached' then
 		local memc, err = resty_memcached:new()
 		if not memc then
-			error("failed to instantiate memcached cache_instance: " .. err)
+			-- error("failed to instantiate memcached cache_instance: " .. err)
 		end
 		memc:set_timeout(cache_conf['memcached']['timeout'])
 		self.cache_instance = memc
 	elseif handle == 'redis' then
 		local red, err = resty_redis:new()
 		if err then
-			error("failed to instantiate redis: " .. err)
+			-- error("failed to instantiate redis: " .. err)
 		end
 		red:set_timeout(cache_conf['redis']['timeout'])
 		self.cache_instance = red
 	elseif handle == 'lrucache' then
 		local lrucache, err = resty_lrucache.new(cache_conf['lrucache']['content'])
 		if lrucache == nil then
-			error("failed to instantiate lrucache: " .. err)
+			-- error("failed to instantiate lrucache: " .. err)
 		end
 		self.cache_instance = lrucache
 	end
@@ -50,7 +51,7 @@ local function _get_cache_hp(cache_type, cache_conf, key_str, node)
 		if cache_arrs_num >= node then
 			cache_num = node
 		else
-			error('Invanidate Node Num')
+			-- error('Invanidate Node Num')
 		end
 	end
 	local cache_info_arrs = utils.explode(":", cache_arrs[cache_num])
@@ -67,8 +68,9 @@ local function _connect_remote_cache(self, cache_type, key, node)
 	local cache_conf = self.cache_conf
 	local host, port = _get_cache_hp(cache_type, cache_conf, key, node)
 	local ok, err = self.cache_instance:connect(host, port)
+	print_r(host)
 	if not ok then
-		error(handle .. " failed to connect: " .. err)
+		-- error(handle .. " failed to connect: " .. err)
 	end
 end
 
@@ -95,20 +97,23 @@ end
 Cache.useSharedDict = _useSharedDict
 
 local function _gen_cache_key(key)
-	return Registry['APP_NAME'] .. '_' .. string.sub(ngx.md5(key),1,10)
+	return Registry['APP_NAME'] .. '_' .. str_sub(ngx.md5(key),1,10)
 end
+Cache.cacheKey = _gen_cache_key
 
 local function _get(self, key)
 	local handle = self.handle
 	local cache_instance = self.cache_instance
 	local res, flags, get_err = cache_instance:get(_gen_cache_key(key))
+	print_r(res)
 	if get_err then
-		error(handle .. " failed to get : " .. get_err)
+		print_r(get_err)
+		-- error(handle .. " failed to get : " .. get_err)
 		return false, get_err
 	end
 
 	if not res then
-		error(handle .. " not found " .. _gen_cache_key(key))
+		-- error(handle .. " not found " .. _gen_cache_key(key))
 		return false
 	end
 	return res
@@ -123,12 +128,15 @@ local function _set(self, key, value, expiretime)
 	if handle == 'redis' then
 		local redis_key = _gen_cache_key(key)
 		set_ok, set_err = cache_instance:set(redis_key, value)
+		print_r(cache_instance)
+		print_r(self)
+		print_r(set_ok)
 		cache_instance:expire(redis_key, expiretime)
 	else
 		set_ok, set_err = cache_instance:set(_gen_cache_key(key), value, expiretime)
 	end
 	if not set_ok and handle ~= 'lrucache' then
-		error(handle .. "failed to set: " .. set_err)
+		-- error(handle .. "failed to set: " .. set_err)
 		return false, set_err
 	end
 	return true
