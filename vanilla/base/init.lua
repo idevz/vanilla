@@ -92,27 +92,30 @@ end
 
 
 --+--------------------------------------------------------------------------------+--
+local ngx_var = ngx.var
+local ngx_req = ngx.req
 init_vanilla = function ()
-    Registry.namespace = ngx.var.APP_NAME
+    Registry.namespace = ngx_var.APP_NAME
 
-    Registry['REQ_URI'] = ngx.var.request_uri
-    Registry['REQ_ARGS'] = ngx.var.args
-    Registry['REQ_HEADERS'] = ngx.req.get_headers()
-    Registry['APP_CACHE_PURGE'] = ngx.var.arg_vapurge
+    Registry['REQ_URI'] = ngx_var.request_uri
+    Registry['REQ_ARGS'] = ngx_var.args
+    Registry['REQ_ARGS_ARR'] = ngx_req.get_uri_args()
+    Registry['REQ_HEADERS'] = ngx_req.get_headers()
+    Registry['APP_CACHE_PURGE'] = ngx_var.arg_vapurge
 
 
     if Registry['VANILLA_INIT'] then return end
-    Registry['VA_ENV'] = ngx.var.VA_ENV
+    Registry['VA_ENV'] = ngx_var.VA_ENV
     Registry['APP_NAME'] = Registry.namespace
-    Registry['APP_ROOT'] = ngx.var.document_root
-    Registry['APP_HOST'] = ngx.var.host
-    Registry['APP_PORT'] = ngx.var.server_port
-    Registry['VANILLA_ROOT'] = ngx.var.VANILLA_ROOT
-    Registry['VANILLA_VERSION'] = ngx.var.VANILLA_VERSION
+    Registry['APP_ROOT'] = ngx_var.document_root
+    Registry['APP_HOST'] = ngx_var.host
+    Registry['APP_PORT'] = ngx_var.server_port
+    Registry['VANILLA_ROOT'] = ngx_var.VANILLA_ROOT
+    Registry['VANILLA_VERSION'] = ngx_var.VANILLA_VERSION
 
     Registry['VANILLA_APPLICATION'] = LoadV 'vanilla.v.application'
     Registry['VANILLA_UTILS'] = LoadV 'vanilla.v.libs.utils'
-    Registry['VANILLA_CACHE_LIB'] = LoadV 'vanilla.v.libs.cache'
+    Registry['VANILLA_CACHE_LIB'] = LoadV 'vanilla.v.cache'
     Registry['VANILLA_COOKIE_LIB'] = LoadV 'vanilla.v.libs.cookie'
 
     Registry['APP_CONF'] = LoadApp 'config.application'
@@ -124,12 +127,29 @@ end
 
 
 --+--------------------------------------------------------------------------------+--
+-- local helpers = require '/Users/zhoujing/data/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils'
+-- function sprint_r( ... )
+--     return helpers.sprint_r(...)
+-- end
+
+-- function lprint_r( ... )
+--     local rs = sprint_r(...)
+--     print(rs)
+-- end
+
+-- function print_r( ... )
+--     local rs = sprint_r(...)
+--     ngx.say(rs)
+-- end
+
+
+--+--------------------------------------------------------------------------------+--
 use_page_cache = function ()
     local cookie_lib = Registry['VANILLA_COOKIE_LIB']
     local cookie = cookie_lib()
     Registry['COOKIES'] = cookie:getAll()
-    if Registry['APP_PAGE_CACHE_CONF'] then
-        if Registry['COOKIES'] and Registry['COOKIES'][Registry['APP_CONF']['no_cache_cookie']] then return false else return true end
+    if Registry['APP_PAGE_CACHE_CONF']['cache_on'] then
+        if Registry['COOKIES'] and Registry['COOKIES'][Registry['APP_PAGE_CACHE_CONF']['no_cache_cookie']] then return false else return true end
     else
         return false
     end
@@ -139,7 +159,7 @@ end
 --+--------------------------------------------------------------------------------+--
 local tab_concat = table.concat
 local function clean_args(args)
-    local del_keys = {'va_refresh'}
+    local del_keys = Registry['APP_PAGE_CACHE_CONF']['build_cache_key_without_args']
     for _,v in pairs(del_keys) do
         args[v] = nil
     end
@@ -158,14 +178,17 @@ end
 
 local ngx_re_find = ngx.re.find
 page_cache = function ()
-    if not use_page_cache() then return end
+    Registry['USE_PAGE_CACHE'] = use_page_cache()
+    if not Registry['USE_PAGE_CACHE'] then ngx.header['X-Cache'] = 'PASSBY' return end
     local cache_lib = Registry['VANILLA_CACHE_LIB']
-    local cache = cache_lib()
+    Registry['cache_handle'] = Registry['APP_PAGE_CACHE_CONF']['cache_handle'] or 'shared_dict'
+    local cache = cache_lib(Registry['cache_handle'])
+    Registry['APP_PAGE_CACHE_KEY'] = ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
     
-    local rs = cache:get(Registry['REQ_URI'])
+    local rs = cache:get(Registry['APP_PAGE_CACHE_KEY'])
     if rs then
         ngx.header['X-Cache'] = 'HIT'
-        ngx.var.va_cache_status = 'HIT'
+        ngx_var.va_cache_status = 'HIT'
         ngx.header['Power_By'] = 'Vanilla-Page-Cache'
         if ngx_re_find(Registry['REQ_HEADERS']['accept'], 'json') then
             ngx.header['Content_type'] = 'application/json'
@@ -176,7 +199,7 @@ page_cache = function ()
         ngx.exit(ngx.HTTP_OK)
     else
         ngx.header['X-Cache'] = 'MISS'
-        ngx.var.va_cache_status = 'MISS'
+        ngx_var.va_cache_status = 'MISS'
     end
 end
 
