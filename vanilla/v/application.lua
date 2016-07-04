@@ -4,11 +4,11 @@ local pcall = pcall
 local setmetatable = setmetatable
 
 -- vanilla
-local Error = require 'vanilla.v.error'
-local Dispatcher = require 'vanilla.v.dispatcher'
--- local Registry = require('vanilla.v.registry'):new('sys')
-local Utils = require 'vanilla.v.libs.utils'
-local Bootstrap = require 'vanilla.v.bootstrap'
+local Error = LoadV 'vanilla.v.error'
+local Dispatcher = LoadV 'vanilla.v.dispatcher'
+-- local Registry = LoadV('vanilla.v.registry'):new('sys')
+local Utils = LoadV 'vanilla.v.libs.utils'
+local Bootstrap = LoadV 'vanilla.v.bootstrap'
 
 local function new_dispatcher(self)
     return Dispatcher:new(self)
@@ -47,7 +47,7 @@ function Application:new(ngx, config)
 end
 
 function Application:bootstrap(lboots)
-    bootstrap_instance = Bootstrap:new(lboots:new(self.dispatcher))
+    bootstrap_instance = Bootstrap:new(lboots(self.dispatcher))
     self:lpcall(bootstrap_instance.bootstrap, bootstrap_instance)
     return self
 end

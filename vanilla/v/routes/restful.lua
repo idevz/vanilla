@@ -2,8 +2,7 @@
 local error = error
 local ngxgsub = ngx.re.gsub
 local ngxmatch = ngx.re.match
-local Registry = require('vanilla.v.registry'):new('sys')
-local accept_header_pattern = "^application/vnd." .. ngx.var.app_name .. ".v(\\d+)(.*)+json$"
+local accept_header_pattern = "^application/vnd." .. Registry['APP_NAME'] .. ".v(\\d+)(.*)+json$"
 local function tappend(t, v) t[#t+1] = v end
 
 local http_methods = {
@@ -25,7 +24,7 @@ local function rule_pattern(pattern)
 end
 
 local function get_rules(request)
-    local rules_conf = require 'config.restful'
+    local rules_conf = LoadApp 'config.restful'
     local header_accept = request:getHeader('accept')
     local req_method = request:getMethod()
     local version = ''

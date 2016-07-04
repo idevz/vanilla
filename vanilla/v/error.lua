@@ -1,5 +1,5 @@
 -- vanilla
-local helpers = require 'vanilla.v.libs.utils'
+local helpers = LoadV 'vanilla.v.libs.utils'
 
 -- perf
 local error = error
