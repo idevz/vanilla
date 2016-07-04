@@ -689,6 +689,7 @@ server {
     set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
     set $VANILLA_ROOT '{{VANILLA_ROOT}}';
     set $template_root '';
+    set $va_cache_status '';
 
     location /static {
         access_log  off;
@@ -729,6 +730,7 @@ server {
     set $VANILLA_VERSION '{{VANILLA_VERSION_DIR_STR}}';
     set $VANILLA_ROOT '{{VANILLA_ROOT}}';
     set $template_root '';
+    set $va_cache_status '';
     set $VA_DEV on;
 
     location /static {
