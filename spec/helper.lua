@@ -1,10 +1,47 @@
 package.loaded['config.routes'] = { }
 package.loaded['config.application'] = {}
 package.loaded['resty.upload'] = {}
+package.loaded['resty.memcached'] = {}
+package.loaded['resty.lrucache'] = {}
+package.loaded['resty.lrucache.pureffi'] = {}
+package.loaded['resty.redis'] = {}
 
 LoadV = function ( ... )
     return require(...)
 end
+
+local _class = function(_, classname, parent)
+    local mttt = {
+        __call = function(self, ... )
+            return self:new(...)
+        end
+    }
+    local parent_type = type(parent)
+    if parent_type ~= "function" and parent_type ~= "table" then
+        parent = nil
+    end
+    local cls = {}
+    if parent then
+        mttt.__index = parent
+        cls.parent = parent
+    end
+    cls.new = function(self, ...)
+        local instance = { class = self }
+        setmetatable(instance, self)
+        if instance.__construct and type(instance.__construct) == 'function' then
+            instance:__construct(...)
+        end
+        return instance
+    end
+    cls["is" .. classname]  =true
+    cls.__cname = classname
+    cls.__index = cls
+    setmetatable(cls, mttt)
+    return cls
+end
+
+local class = {}
+Class = setmetatable(class, { __call = function(...) return _class(...) end })
 
 Registry={}
 Registry['APP_NAME'] = 'vanilla-app'
