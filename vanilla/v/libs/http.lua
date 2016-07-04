@@ -1,29 +1,55 @@
--- dep
--- https://github.com/pintsized/lua-resty-http
-local http_handle = require('resty.http').new()
+-- dep:https://github.com/pintsized/lua-resty-http
+local resty_http = require 'resty.http'
 
--- perf
-local setmetatable = setmetatable
+local str_upper = string.upper
+local ngx_encode_args = ngx.encode_args
 
-local Http = {}
+local Http = Class('vanilla.v.libs.http')
 
-function Http:new()
-	local instance = {
-		http_handle = http_handle,
-		get = self.get
-	}
-	setmetatable(instance, Http)
-	return instance
+local function __construct(self)
+	local http_handle = resty_http.new()
+	self.http_handle = http_handle
 end
+Http.__construct = __construct
 
-function Http:get(url, method, params, headers, timeout)
-	self.http_handle:set_timeout(timeout)
-	local res, err = self.http_handle:request_uri(url, {
+local function _request(self, method, url, body, headers, timeout)
+	local http_handle = self.http_handle
+	local method = method or 'GET'
+	local timeout = timeout or 500
+	local headers = headers or {}
+	local body = body or nil
+
+	if type(body) == 'table' then
+		body = ngx_encode_args(body)
+	end
+
+	headers["User-Agent"] = 'Vanilla-OpenResty-' .. Registry['VANILLA_VERSION']
+	if str_upper(method) == 'POST' then
+		headers["Content-Type"] = "application/x-www-form-urlencoded"
+	end
+
+	http_handle:set_timeout(timeout)
+
+	local res, err = http_handle:request_uri(url, {
 		method = method,
-		body = params,
-		headers = headers
+		headers = headers,
+		body = body
 		})
-        return res, err
+	if res ~= nil then
+		return res
+	else
+		return false, err
+	end
 end
+
+local function get(self, ... )
+	return _request(self, 'GET', ... )
+end
+Http.get = get
+
+local function post(self, ... )
+	return _request(self, 'POST', ... )
+end
+Http.post = post
 
 return Http
