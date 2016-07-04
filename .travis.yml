@@ -1,0 +1,41 @@
+language: c
+
+sudo: false
+
+env:
+  global:
+    - LUAROCKS=2.2.2
+  matrix:
+      # Lua 5.1
+      - LUA=lua5.1
+      # LuaJIT latest stable version (2.0.4)
+      - LUA=luajit
+      # Openresty + LuaJIT + mysql
+      - LUA=luajit SERVER=openresty
+      # - LUA=luajit2.0  # current head of 2.0 branch
+      # - LUA=luajit2.1  # current head of 2.1 branch
+      # Not supported
+      # - LUA=lua5.2 
+      # - LUA=lua5.3 
+      # - How
+
+branches:
+  only: master
+
+before_install:
+  - source .travis/setenv_lua.sh
+
+install:
+  - luarocks install https://luarocks.org/manifests/olivine-labs/busted-2.0.rc12-1.rockspec
+  - luarocks install lrexlib-pcre 2.7.2-1
+  - luarocks install luaposix
+  - luarocks install lua-cjson
+  - luarocks install luasocket
+  - luarocks make
+
+script: busted
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
