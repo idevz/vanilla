@@ -1,15 +1,8 @@
 -- vanilla
-local helpers = LoadV "vanilla.v.libs.utils"
-function sprint_r( ... )
-    return helpers.sprint_r(...)
-end
+local helpers = require 'vanilla.v.libs.utils'
 
-function lprint_r( ... )
-    local rs = sprint_r(...)
-    print(rs)
-end
-
-function print_r( ... )
-    local rs = sprint_r(...)
-    ngx.say(rs)
-end
+-- ensure test environment is specified
+VA_ENV = 'test'
+-- getOsEnv through nginx config file
+local posix = require "posix"
+posix.setenv("VA_ENV", 'test')

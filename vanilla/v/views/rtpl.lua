@@ -6,7 +6,7 @@ local template = require "resty.template"
 local error = error
 local pairs = pairs
 local setmetatable = setmetatable
-local app_root = Registry['APP_NAME']
+local app_root = ngx.var.app_name
 
 local View = {}
 

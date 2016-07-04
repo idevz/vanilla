@@ -1,8 +1,8 @@
 -- vanilla
-LoadV 'vanilla.spec.init'
+require 'vanilla.spec.init'
 
 -- add integration runner
-local IntegrationRunner = LoadV 'vanilla.spec.runners.integration'
+local IntegrationRunner = require 'vanilla.spec.runners.integration'
 
 -- helpers
 function cgi(request)
