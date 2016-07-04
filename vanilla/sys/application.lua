@@ -1177,9 +1177,9 @@ VaApplication.files = {
     ['logs/hack/.gitkeep'] = "",
     ['spec/controllers/index_controller_spec.lua'] = index_controller_spec,
     ['spec/models/.gitkeep'] = "",
-    ['spec/spec_helper.lua'] = spec_helper
-    ['sys/cache'] = sys_cache
-    ['sys/v_resource'] = sys_v_resource
+    ['spec/spec_helper.lua'] = spec_helper,
+    ['sys/cache'] = sys_cache,
+    ['sys/v_resource'] = sys_v_resource,
 }
 
 function VaApplication.new(app_path)
