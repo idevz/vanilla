@@ -14,8 +14,8 @@ sub auto_complete ($);
 sub usage ($);
 sub trim ($);
 
-our $vanilla_version = '0.1.0.rc6';
-our $vanilla_version_dir_str = '0_1_0_rc6';
+our $vanilla_version = '0.1.0.rc5';
+our $vanilla_version_dir_str = '0_1_0_rc5';
 
 my (@make_cmds, @make_install_cmds);
 
@@ -137,7 +137,6 @@ my $vanilla_extra_opts = " DESTDIR=\$(DESTDIR) VANILLA_LIB_DIR=$prefix"
     # ." INSTALL=$root_dir/build/install"
     ." INSTALL=$root_dir/vanilla/install"
     ." VANILLA_BIN_PATH=$vanilla_bin_path"
-    ." VANILLA_ROOT=$vanilla_root"
     ." VANILLA_VERSION=$vanilla_version";
 
 push @make_install_cmds, "cd $root_dir/build/vanilla && " .
@@ -309,7 +308,7 @@ sub gen_vanilla_bins {
 
         my $cmd_str = <<"_EOC_";
 #!/bin/sh
-exec '$luajit_or_lua_bin' -e 'VANILLA_ROOT="$vanilla_root"; VANILLA_VERSION_DIR_STR="$vanilla_version_dir_str"; VANILLA_VERSION="$vanilla_version"; VANILLA_NGX_PATH="$ngx_path"; VANILLA_JIT_BIN="$luajit_or_lua_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua;/?.lua;/?/init.lua;"; package.cpath="$prefix/?.so"' '$prefix/bin/$bin_name' "\$@"
+exec '$luajit_or_lua_bin' -e 'VANILLA_ROOT="$vanilla_root"; VANILLA_VERSION_DIR_STR="$vanilla_version_dir_str"; VANILLA_VERSION="$vanilla_version"; VANILLA_NGX_PATH="$ngx_path"; VANILLA_JIT_BIN="$luajit_or_lua_bin"; package.path="$prefix/?.lua;$prefix/?/init.lua"; package.cpath="$prefix/?.so"' '$prefix/bin/$bin_name' "\$@"
 _EOC_
 
         print $out $cmd_str;

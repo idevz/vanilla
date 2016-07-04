@@ -1,4 +1,4 @@
-local va_conf = LoadV 'vanilla.sys.config'
+local va_conf = require 'vanilla.sys.config'
 
 local function create_dirs(necessary_dirs)
     for _, dir in pairs(necessary_dirs) do

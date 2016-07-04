@@ -1,7 +1,7 @@
 local utils = require'vanilla.v.libs.utils'
 
 local app_waf_conf = utils.lpcall(function() return require('config.waf') end)
-local waf_conf = utils.lpcall(function() return LoadV('vanilla.sys.waf.config') end)
+local waf_conf = utils.lpcall(function() return require('vanilla.sys.waf.config') end)
 if app_waf_conf ~= nil then
     for k,v in pairs(app_waf_conf) do
         waf_conf[k] = app_waf_conf[k]
