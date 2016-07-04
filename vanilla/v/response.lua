@@ -1,5 +1,6 @@
 -- perf
 local setmetatable = setmetatable
+local cache = LoadV('vanilla.v.cache')
 
 local Response = {}
 Response.__index = Response
@@ -9,7 +10,8 @@ function Response:new()
         headers = {},
         append_body = '',
         body = '',
-        prepend_body = ''
+        prepend_body = '',
+        page_cache_timeout = 1000,
     }
     setmetatable(instance, Response)
     return instance
@@ -50,12 +52,23 @@ function Response:prependBody(prepend_body)
 end
 
 function Response:response()
-    local vanilla_version = ngx.var.VANILLA_VERSION
+    local vanilla_version = Registry['VANILLA_VERSION']
     ngx.header['Power_By'] = 'Vanilla-' .. vanilla_version
     ngx.header['Content_type'] = ngx.header['Content_type'] or 'text/html'
     local body = {[1]=self.append_body, [2]=self.body, [3]=self.prepend_body}
-    ngx.print(table.concat( body, ""))
+    local rs = table.concat( body, "")
+    ngx.print(rs)
+    if Registry['USE_PAGE_CACHE'] then
+        local cache_lib = Registry['VANILLA_CACHE_LIB']
+        local page_cache = cache_lib(Registry['cache_handle'])
+        page_cache:set(Registry['APP_PAGE_CACHE_KEY'], rs, self.page_cache_timeout)
+    end
     return true
+end
+
+function Response:setPageCacheTimeOut(timeout)
+    local timeout = timeout or 1000
+    self.page_cache_timeout = timeout
 end
 
 function Response:setBody(body)

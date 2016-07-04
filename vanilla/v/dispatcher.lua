@@ -1,10 +1,10 @@
 -- vanilla
-local Controller = require 'vanilla.v.controller'
-local Request = require 'vanilla.v.request'
-local Router = require 'vanilla.v.router'
-local Response = require 'vanilla.v.response'
-local View = require 'vanilla.v.views.rtpl'
-local Error = require 'vanilla.v.error'
+local Controller = LoadV 'vanilla.v.controller'
+local Request = LoadV 'vanilla.v.request'
+local Router = LoadV 'vanilla.v.router'
+local Response = LoadV 'vanilla.v.response'
+local View = LoadV 'vanilla.v.views.rtpl'
+local Error = LoadV 'vanilla.v.error'
 
 -- perf
 local error = error
@@ -28,10 +28,11 @@ function Dispatcher:new(application)
     self.request = Request:new()
     self.response = Response:new()
     self.router = Router:new(self.request)
+    Registry['CONTROLLER_PREFIX'] = 'controllers.'
     local instance = {
         application = application,
         plugins = {},
-        controller_prefix = 'controllers.',
+        -- controller_prefix = 'controllers.',
         error_controller = 'error',
         error_action = 'error'
     }
@@ -79,7 +80,7 @@ function Dispatcher:_route()
 end
 
 local function require_controller(controller_prefix, controller_name)
-    return require(controller_prefix .. controller_name)
+    return LoadApplication(controller_prefix .. controller_name)
 end
 
 local function call_controller(Dispatcher, matched_controller, controller_name, action_name)
@@ -102,9 +103,20 @@ function Dispatcher:dispatch()
     self.view = self.application:lpcall(new_view, self.application.config.view)
     self:_runPlugins('dispatchLoopStartup')
     self:_runPlugins('preDispatch')
-    local matched_controller = self:lpcall(require_controller, self.controller_prefix, self.request.controller_name)
-    setmetatable(matched_controller, { __index = self.controller })
-    local c_rs = self:lpcall(call_controller, self, matched_controller, self.request.controller_name, self.request.action_name)
+    local cls_call = {}
+    local matched_controller = self:lpcall(require_controller, Registry['CONTROLLER_PREFIX'], self.request.controller_name)
+    if matched_controller.parent ~= nil and type(matched_controller.parent) == 'table' then
+        setmetatable(matched_controller.parent, {__index = self.controller})
+        cls_call = matched_controller()
+    elseif matched_controller.__cname ~= nil then
+        local mt = getmetatable(matched_controller)
+        mt.__index = self.controller
+        cls_call = matched_controller()
+        setmetatable(cls_call.class, mt)
+    else
+        cls_call = setmetatable(matched_controller, { __index = self.controller })
+    end
+    local c_rs = self:lpcall(call_controller, self, cls_call, self.request.controller_name, self.request.action_name)
     if type(c_rs) ~= 'string' then
         self:errResponse({ code = 103, msg = {Rs_Error = self.request.controller_name .. '/' .. self.request.action_name .. ' must return a String.'}})
     end
@@ -137,7 +149,7 @@ end
 function Dispatcher:raise_error(err)
     if self.controller == nil then self.controller = Controller:new(self.request, self.response, self.application.config) end
     if self.view == nil then self.view = self.application:lpcall(new_view, self.application.config.view) end
-    local error_controller = require(self.controller_prefix .. self.error_controller)
+    local error_controller = LoadApplication(Registry['CONTROLLER_PREFIX'] .. self.error_controller)
     setmetatable(error_controller, { __index = self.controller })
     self:initView(self.view, self.error_controller, self.error_action)
     local error_instance = Error:new(err.code, err.msg)

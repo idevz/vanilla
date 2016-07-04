@@ -8,7 +8,7 @@ local error = error
 local pairs = pairs
 local pcall = pcall
 local setmetatable = setmetatable
-local Reqargs = require 'vanilla.v.libs.reqargs'
+local Reqargs = LoadV 'vanilla.v.libs.reqargs'
 
 local Request = {}
 

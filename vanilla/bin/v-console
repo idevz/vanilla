@@ -1,3 +1,8 @@
 #!/usr/bin/env luajit
-local console = require('vanilla.sys.console')
+
+LoadV = function ( ... )
+    return require(VANILLA_ROOT .. '/' .. VANILLA_VERSION_DIR_STR .. '/' .. ...)
+end
+
+local console = LoadV('vanilla.sys.console')
 console.start()
