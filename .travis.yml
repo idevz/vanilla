@@ -17,6 +17,7 @@ env:
       # Not supported
       # - LUA=lua5.2 
       # - LUA=lua5.3 
+      # - How
 
 branches:
   only: master
