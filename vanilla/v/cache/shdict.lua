@@ -32,4 +32,11 @@ local function _get(self, key)
 end
 Shdict.get = _get
 
+local function _del(self, key)
+	local key = self.parent:cacheKey(key)
+	local cache_instance = self.cache_instance
+	return cache_instance:delete(key)
+end
+Shdict.del = _del
+
 return Shdict

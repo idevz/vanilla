@@ -42,4 +42,11 @@ local function _get(self, key)
 end
 Lru.get = _get
 
+local function _del(self, key)
+	local key = self.parent:cacheKey(key)
+	local cache_instance = Registry['lrucache_instance']
+	return cache_instance:delete(key)
+end
+Lru.del = _del
+
 return Lru

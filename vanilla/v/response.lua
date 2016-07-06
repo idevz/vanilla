@@ -60,7 +60,7 @@ function Response:response()
     ngx.print(rs)
     if Registry['USE_PAGE_CACHE'] then
         local cache_lib = Registry['VANILLA_CACHE_LIB']
-        local page_cache = cache_lib(Registry['cache_handle'])
+        local page_cache = cache_lib(Registry['page_cache_handle'])
         page_cache:set(Registry['APP_PAGE_CACHE_KEY'], rs, self.page_cache_timeout)
     end
     return true

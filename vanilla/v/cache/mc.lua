@@ -52,4 +52,18 @@ local function _get(self, key)
 end
 Mc.get = _get
 
+local function _del(self, key)
+	local cache_conf = self.cache_conf
+	local cache_instance = self.cache_instance
+	local key = self.parent:cacheKey(key)
+	self.parent:connect(self, key, node)
+	local rs, err = cache_instance:delete(key)
+	if err then
+		-- error(err)
+	end
+	self.parent:set_keepalive(self)
+	return rs
+end
+Mc.del = _del
+
 return Mc
