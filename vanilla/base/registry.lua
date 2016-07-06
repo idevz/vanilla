@@ -53,7 +53,7 @@ end
 function Registry:__newindex(index, value)
     -- ngx.say('----__newindex----')
     if VANILLA_REGISTRY[self.namespace] == nil then VANILLA_REGISTRY[self.namespace] = {} end
-    if index ~=nil and value ~= nil then
+    if index ~= nil then
         VANILLA_REGISTRY[self.namespace][index]=value
     end
 end

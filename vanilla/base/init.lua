@@ -101,7 +101,7 @@ init_vanilla = function ()
     Registry['REQ_ARGS'] = ngx_var.args
     Registry['REQ_ARGS_ARR'] = ngx_req.get_uri_args()
     Registry['REQ_HEADERS'] = ngx_req.get_headers()
-    Registry['APP_CACHE_PURGE'] = ngx_var.arg_vapurge
+    Registry['APP_CACHE_PURGE'] = Registry['REQ_ARGS_ARR']['vapurge']
 
 
     if Registry['VANILLA_INIT'] then return end
@@ -125,28 +125,31 @@ init_vanilla = function ()
     Registry['VANILLA_INIT'] = true
 end
 
+    -- local helpers = require '/Users/zhoujing/data/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils'
+    -- function sprint_r( ... )
+    --     return helpers.sprint_r(...)
+    -- end
 
---+--------------------------------------------------------------------------------+--
--- local helpers = require '/Users/zhoujing/data/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils'
--- function sprint_r( ... )
---     return helpers.sprint_r(...)
--- end
+    -- function lprint_r( ... )
+    --     local rs = sprint_r(...)
+    --     print(rs)
+    -- end
 
--- function lprint_r( ... )
---     local rs = sprint_r(...)
---     print(rs)
--- end
-
--- function print_r( ... )
---     local rs = sprint_r(...)
---     ngx.say(rs)
--- end
+    -- function print_r( ... )
+    --     local rs = sprint_r(...)
+    --     ngx.say(rs)
+    -- end
 
 
 --+--------------------------------------------------------------------------------+--
+local ngx_re_find = ngx.re.find
 use_page_cache = function ()
     local cookie_lib = Registry['VANILLA_COOKIE_LIB']
     local cookie = cookie_lib()
+    local no_cache_uris = Registry['APP_PAGE_CACHE_CONF']['no_cache_uris']
+    for _, uri in ipairs(no_cache_uris) do
+        if ngx_re_find(Registry['REQ_URI'], uri) ~= nil then return false end
+    end
     Registry['COOKIES'] = cookie:getAll()
     if Registry['APP_PAGE_CACHE_CONF']['cache_on'] then
         if Registry['COOKIES'] and Registry['COOKIES'][Registry['APP_PAGE_CACHE_CONF']['no_cache_cookie']] then return false else return true end
@@ -163,6 +166,7 @@ local function clean_args(args)
     for _,v in pairs(del_keys) do
         args[v] = nil
     end
+    if args['vapurge'] ~= nil then args['vapurge'] = nil end
     return args
 end
 
@@ -176,15 +180,20 @@ local function build_url_key(args)
     return tab_concat( rs, "_")
 end
 
-local ngx_re_find = ngx.re.find
 page_cache = function ()
     Registry['USE_PAGE_CACHE'] = use_page_cache()
     if not Registry['USE_PAGE_CACHE'] then ngx.header['X-Cache'] = 'PASSBY' return end
     local cache_lib = Registry['VANILLA_CACHE_LIB']
-    Registry['cache_handle'] = Registry['APP_PAGE_CACHE_CONF']['cache_handle'] or 'shared_dict'
-    local cache = cache_lib(Registry['cache_handle'])
+    Registry['page_cache_handle'] = Registry['APP_PAGE_CACHE_CONF']['cache_handle'] or 'shared_dict'
+    local cache = cache_lib(Registry['page_cache_handle'])
     Registry['APP_PAGE_CACHE_KEY'] = ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
-    
+
+    if Registry['APP_CACHE_PURGE'] then
+        cache:del(Registry['APP_PAGE_CACHE_KEY'])
+        ngx.header['X-Cache'] = 'XX'
+        return 
+    end
+
     local rs = cache:get(Registry['APP_PAGE_CACHE_KEY'])
     if rs then
         ngx.header['X-Cache'] = 'HIT'

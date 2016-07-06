@@ -36,4 +36,10 @@ local function _get(self, ...)
 end
 Cache.get = _get
 
+local function _del(self, ... )
+	local cache_instance = self.cache_instance
+	return cache_instance:del(...)
+end
+Cache.del = _del
+
 return Cache

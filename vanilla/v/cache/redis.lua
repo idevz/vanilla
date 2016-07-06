@@ -39,13 +39,7 @@ local function _get(self, key)
 	local cache_instance = self.cache_instance
 	local key = self.parent:cacheKey(key)
 	self.parent:connect(self, key, node)
-	local rs, err
-	if type(key) == 'string' then
-		local flags
-		rs, flags, err = cache_instance:get(key)
-	else
-		rs, err = cache_instance(key)
-	end
+	local rs, err = cache_instance:get(key)
 	if err then
 		error(err)
 	end
@@ -53,5 +47,19 @@ local function _get(self, key)
 	return rs
 end
 Redis.get = _get
+
+local function _del(self, key)
+	local cache_conf = self.cache_conf
+	local cache_instance = self.cache_instance
+	local key = self.parent:cacheKey(key)
+	self.parent:connect(self, key, node)
+	local rs, err = cache_instance:del(key)
+	if err then
+		error(err)
+	end
+	self.parent:set_keepalive(self)
+	return rs
+end
+Redis.del = _del
 
 return Redis
