@@ -421,7 +421,7 @@ Appconf.page_cache.cache_on = true
 -- Appconf.page_cache.cache_handle = 'lru'
 Appconf.page_cache.no_cache_cookie = 'va-no-cache'
 Appconf.page_cache.no_cache_uris = {
-    'cca'
+    'uris'
 }
 Appconf.page_cache.build_cache_key_without_args = {'rd'}
 Appconf.vanilla_root = '{{VANILLA_ROOT}}'
