@@ -5,6 +5,7 @@ local redis = LoadV('vanilla.v.cache.redis')
 local shdict = LoadV('vanilla.v.cache.shdict')
 
 local function __construct(self, handle)
+	local handle = handle or 'shared_dict'
 	local cache_instance
 	if handle == 'sh' or handle == 'shared_dict' then
 		self.cache_instance = shdict()
