@@ -97,7 +97,8 @@ local ngx_req = ngx.req
 init_vanilla = function ()
     Registry.namespace = ngx_var.APP_NAME
 
-    Registry['REQ_URI'] = ngx_var.request_uri
+    Registry['REQ_REQUEST_URI'] = ngx_var.request_uri
+    Registry['REQ_URI'] = ngx_var.uri
     Registry['REQ_ARGS'] = ngx_var.args
     Registry['REQ_ARGS_ARR'] = ngx_req.get_uri_args()
     Registry['REQ_HEADERS'] = ngx_req.get_headers()
@@ -148,7 +149,7 @@ use_page_cache = function ()
     local cookie = cookie_lib()
     local no_cache_uris = Registry['APP_PAGE_CACHE_CONF']['no_cache_uris']
     for _, uri in ipairs(no_cache_uris) do
-        if ngx_re_find(Registry['REQ_URI'], uri) ~= nil then return false end
+        if ngx_re_find(Registry['REQ_REQUEST_URI'], uri) ~= nil then return false end
     end
     Registry['COOKIES'] = cookie:getAll()
     if Registry['APP_PAGE_CACHE_CONF']['cache_on'] then
@@ -186,7 +187,7 @@ page_cache = function ()
     local cache_lib = Registry['VANILLA_CACHE_LIB']
     Registry['page_cache_handle'] = Registry['APP_PAGE_CACHE_CONF']['cache_handle'] or 'shared_dict'
     local cache = cache_lib(Registry['page_cache_handle'])
-    Registry['APP_PAGE_CACHE_KEY'] = ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
+    Registry['APP_PAGE_CACHE_KEY'] = Registry['REQ_URI'] .. ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
 
     if Registry['APP_CACHE_PURGE'] then
         cache:del(Registry['APP_PAGE_CACHE_KEY'])
