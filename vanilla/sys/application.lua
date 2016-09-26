@@ -725,7 +725,7 @@ lua_shared_dict idevz 20m;
 
 server {
     server_name {{APP_NAME}}.idevz.com 127.0.0.1;
-    lua_code_cache on;
+    lua_code_cache off;
     root {{APP_ROOT}};
     listen 9110;
     set $APP_NAME '{{APP_NAME}}';
