@@ -61,5 +61,4 @@ MIT
 - *Openresty:34782325(Discuss OpenResty and all kinds of advanced technology)*
 - *WeChat public no. of Vanilla Dev:Vanilla-OpenResty(Vanilla related information, document push)*
 
-
 [![QQ](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=673157ee0f0207ce2fb305d15999225c5aa967e88913dfd651a8cf59e18fd459)
