@@ -37,7 +37,7 @@ $ ./setup-framework -v $VANILLA_PROJ_ROOT -o $OPENRESTY_ROOT        #see ./setup
 **Setup your Own Application**
 
 ``` bash
-$ ./setup-vanilal-demoapp  [-a $VANILLA_APP_ROOT -u $VANILLA_APP_USER -g $VANILLA_APP_GROUP -e $VANILLA_RUNNING_ENV]    #see ./setup-vanilal-demoapp -h for more details
+$ ./setup-vanilla-demoapp  [-a $VANILLA_APP_ROOT -u $VANILLA_APP_USER -g $VANILLA_APP_GROUP -e $VANILLA_RUNNING_ENV]    #see ./setup-vanilla-demoapp -h for more details
 ```
 
 **Start the server**
