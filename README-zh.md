@@ -58,8 +58,11 @@ MIT
 
 ### 社区组织
 #### *QQ群&&微信公众号*
-- *Openresty/Vanilla开发QQ群：205773855（专题讨论Vanilla相关话题）*
-- *Openresty 技术交流QQ群：34782325（讨论OpenResty和各种高级技术）*
+- *Openresty/Vanilla 开发 1 群：205773855*
+- *Openresty/Vanilla 开发 2 群：419191655*
+- *Openresty 技术交流 1 群：34782325*
+- *Openresty 技术交流 2 群：481213820*
+- *Openresty 技术交流 3 群：124613000*
 - *Vanilla开发微信公众号:Vanilla-OpenResty(Vanilla相关资讯、文档推送)*
 
 
