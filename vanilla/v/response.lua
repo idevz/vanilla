@@ -88,7 +88,7 @@ function Response:setHeaders(headers)
 end
 
 function Response:setHeader(key, value)
-	ngx.header[key] = value
+    ngx.header[key] = value
 end
 
 return Response
