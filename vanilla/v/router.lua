@@ -65,7 +65,7 @@ function Router:route()
             end
         end
         error({ code = 201, msg = {
-            Routes_No_Match = alive_route_num .. "Routes All Didn't Match. Errs Like: " .. tconcat( route_err, ", ")}})
+            Routes_No_Match = alive_route_num .. " Routes All Didn't Match. Errs Like: " .. tconcat( route_err, ", ")}})
     end
     error({ code = 201, msg = {Empty_Routes = 'Null routes added.'}})
 end
