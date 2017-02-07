@@ -97,7 +97,7 @@ local ngx_req = ngx.req
 init_vanilla = function ()
     Registry.namespace = ngx_var.APP_NAME
 
-    Registry['REQ_URI'] = ngx_var.request_uri
+    Registry['REQ_URI'] = ngx_var.uri
     Registry['REQ_ARGS'] = ngx_var.args
     Registry['REQ_ARGS_ARR'] = ngx_req.get_uri_args()
     Registry['REQ_HEADERS'] = ngx_req.get_headers()
@@ -125,7 +125,7 @@ init_vanilla = function ()
     Registry['VANILLA_INIT'] = true
 end
 
-    -- local helpers = require '/Users/zhoujing/data/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils'
+    -- local helpers = require '/media/psf/g/idevz/code/www/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils'
     -- function sprint_r( ... )
     --     return helpers.sprint_r(...)
     -- end
@@ -186,14 +186,14 @@ page_cache = function ()
     local cache_lib = Registry['VANILLA_CACHE_LIB']
     Registry['page_cache_handle'] = Registry['APP_PAGE_CACHE_CONF']['cache_handle'] or 'shared_dict'
     local cache = cache_lib(Registry['page_cache_handle'])
-    Registry['APP_PAGE_CACHE_KEY'] = ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
+    Registry['APP_PAGE_CACHE_KEY'] = Registry['REQ_URI'] .. ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
 
     if Registry['APP_CACHE_PURGE'] then
         cache:del(Registry['APP_PAGE_CACHE_KEY'])
         ngx.header['X-Cache'] = 'XX'
         return 
     end
-
+    
     local rs = cache:get(Registry['APP_PAGE_CACHE_KEY'])
     if rs then
         ngx.header['X-Cache'] = 'HIT'
