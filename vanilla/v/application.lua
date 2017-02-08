@@ -65,7 +65,7 @@ function Application:raise_syserror(err)
     end
     ngx.say('<pre />')
     ngx.say(Utils.sprint_r(err))
-    ngx.eof()
+    ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
 end
 
 return Application
