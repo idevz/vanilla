@@ -102,9 +102,9 @@ function Dispatcher:dispatch()
     self.controller = Controller:new(self.request, self.response, self.application.config)
     self.view = self.application:lpcall(new_view, self.application.config.view)
     self:_runPlugins('dispatchLoopStartup')
-    self:_runPlugins('preDispatch')
     local cls_call = {}
     local matched_controller = self:lpcall(require_controller, Registry['CONTROLLER_PREFIX'], self.request.controller_name)
+    self:_runPlugins('preDispatch')
     if matched_controller.parent ~= nil and type(matched_controller.parent) == 'table' then
         setmetatable(matched_controller.parent, {__index = self.controller})
         cls_call = matched_controller()
