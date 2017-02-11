@@ -1,4 +1,4 @@
-local Cache = Class('vanilla.v.libs.cache')
+local Cache = Class('vanilla.v.cache')
 local mc = LoadV('vanilla.v.cache.mc')
 local lru = LoadV('vanilla.v.cache.lru')
 local redis = LoadV('vanilla.v.cache.redis')
