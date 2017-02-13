@@ -21,7 +21,7 @@ function View:new(view_config)
 end
 
 function View:init(controller_name, action)
-    self.view_handle = template.new(controller_name .. '/' .. action .. self.view_config.suffix)
+    self.view_handle = template.new(controller_name .. '-' .. action .. self.view_config.suffix)
     self.controller_name = controller_name
     self.action = action
 end
