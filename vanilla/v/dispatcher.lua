@@ -100,7 +100,7 @@ function Dispatcher:dispatch()
     self:_route()
     self:_runPlugins('routerShutdown')
     self.controller = Controller:new(self.request, self.response, self.application.config)
-    self.view = self.application:lpcall(new_view, self.application.config.view)
+    self.view = self.view or self.application:lpcall(new_view, self.application.config.view)
     self:_runPlugins('dispatchLoopStartup')
     local cls_call = {}
     local matched_controller = self:lpcall(require_controller, Registry['CONTROLLER_PREFIX'], self.request.controller_name)
@@ -117,9 +117,6 @@ function Dispatcher:dispatch()
         cls_call = setmetatable(matched_controller, { __index = self.controller })
     end
     local c_rs = self:lpcall(call_controller, self, cls_call, self.request.controller_name, self.request.action_name)
-    if type(c_rs) ~= 'string' then
-        self:errResponse({ code = 103, msg = {Rs_Error = self.request.controller_name .. '/' .. self.request.action_name .. ' must return a String.'}})
-    end
     self.response.body = c_rs
     self:_runPlugins('postDispatch')
     self.response:response()
