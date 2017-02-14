@@ -56,12 +56,14 @@ function Response:response()
     ngx.header['Power_By'] = 'Vanilla-' .. vanilla_version
     ngx.header['Content_type'] = ngx.header['Content_type'] or 'text/html'
     local body = {[1]=self.append_body, [2]=self.body, [3]=self.prepend_body}
-    local rs = table.concat( body, "")
-    ngx.print(rs)
+    
+    ngx.print(body)
     if Registry['USE_PAGE_CACHE'] then
         local cache_lib = Registry['VANILLA_CACHE_LIB']
         local page_cache = cache_lib(Registry['page_cache_handle'])
-        page_cache:set(Registry['APP_PAGE_CACHE_KEY'], rs, self.page_cache_timeout)
+        -- local rs = table.concat( body, "")
+        -- page_cache:set(Registry['APP_PAGE_CACHE_KEY'], rs, self.page_cache_timeout)
+        page_cache:set(Registry['APP_PAGE_CACHE_KEY'], body, self.page_cache_timeout)
     end
     return true
 end
@@ -88,7 +90,7 @@ function Response:setHeaders(headers)
 end
 
 function Response:setHeader(key, value)
-    ngx.header[key] = value
+	ngx.header[key] = value
 end
 
 return Response
