@@ -61,9 +61,8 @@ function Response:response()
     if Registry['USE_PAGE_CACHE'] then
         local cache_lib = Registry['VANILLA_CACHE_LIB']
         local page_cache = cache_lib(Registry['page_cache_handle'])
-        -- local rs = table.concat( body, "")
-        -- page_cache:set(Registry['APP_PAGE_CACHE_KEY'], rs, self.page_cache_timeout)
-        page_cache:set(Registry['APP_PAGE_CACHE_KEY'], body, self.page_cache_timeout)
+        local rs = table.concat( body, "")
+        page_cache:set(Registry['APP_PAGE_CACHE_KEY'], rs, self.page_cache_timeout)
     end
     return true
 end
@@ -90,7 +89,7 @@ function Response:setHeaders(headers)
 end
 
 function Response:setHeader(key, value)
-	ngx.header[key] = value
+    ngx.header[key] = value
 end
 
 return Response
