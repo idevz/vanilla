@@ -906,6 +906,11 @@ case "$1" in
             die "Config Test Fail."
         fi
         ;;
+    ltpl)
+        echo $ECHO_E"Start using lemplate compile TT2 template ..."
+        TT2_TEMPLATE_PATH=$VA_APP_PATH/application/views/
+            lemplate-{{VANILLA_VERSION}} --compile $TT2_TEMPLATE_PATH/*.html > $TT2_TEMPLATE_PATH/templates.lua
+        ;;
     *)
         echo $ECHO_E"Usage: ./va-ok-service {start|stop|restart|reload|force-reload|confinit[-f]|configtest} [dev]" >&2
         exit 1
@@ -1195,6 +1200,7 @@ function VaApplication.new(app_path)
 
     service_manage_sh = sgsub(service_manage_sh, "{{APP_NAME}}", app_name)
     service_manage_sh = sgsub(service_manage_sh, "{{OPENRESTY_NGINX_ROOT}}", VANILLA_NGX_PATH)
+    service_manage_sh = sgsub(service_manage_sh, "{{VANILLA_VERSION}}", VANILLA_VERSION)
     VaApplication.files['va-' .. app_name .. '-service'] = sgsub(service_manage_sh, "{{VA_APP_PATH}}", app_path)
 
     dev_nginx_vhost_config_tpl = sgsub(dev_nginx_vhost_config_tpl, "{{APP_NAME}}", app_name)
