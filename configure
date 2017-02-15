@@ -14,8 +14,8 @@ sub auto_complete ($);
 sub usage ($);
 sub trim ($);
 
-our $vanilla_version = '0.1.0.rc6';
-our $vanilla_version_dir_str = '0_1_0_rc6';
+our $vanilla_version = '0.1.0.rc7';
+our $vanilla_version_dir_str = '0_1_0_rc7';
 
 my (@make_cmds, @make_install_cmds);
 

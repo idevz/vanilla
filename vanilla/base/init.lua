@@ -125,7 +125,7 @@ init_vanilla = function ()
     Registry['VANILLA_INIT'] = true
 end
 
-    -- local helpers = require '/media/psf/g/idevz/code/www/vanilla/framework/0_1_0_rc6/vanilla.v.libs.utils'
+    -- local helpers = require '/media/psf/g/idevz/code/www/vanilla/framework/0_1_0_rc7/vanilla.v.libs.utils'
     -- function sprint_r( ... )
     --     return helpers.sprint_r(...)
     -- end

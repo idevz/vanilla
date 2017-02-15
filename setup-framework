@@ -6,8 +6,8 @@
 # Description:       Setup Vanilla Framework
 ### END ###
 
-VANILLA_VERSION=0.1.0.rc6
-VANILLA_VERSION_DIR_STR=0_1_0_rc6
+VANILLA_VERSION=0.1.0.rc7
+VANILLA_VERSION_DIR_STR=0_1_0_rc7
 VANILLA_PROJ_ROOT=/data/vanilla
 OPENRESTY_ROOT=/usr/local/openresty
 TIME_MARK=`date "+%Y_%m_%d_%H_%M_%S"`
