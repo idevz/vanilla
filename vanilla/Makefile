@@ -20,6 +20,7 @@ install: all
 	$(INSTALL) ./spec $(VANILLA_LIB_DIR)/vanilla
 	$(INSTALL) ./vanilla-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/vanilla-$(VANILLA_VERSION)
 	$(INSTALL) ./v-console-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/v-console-$(VANILLA_VERSION)
+	$(INSTALL) ./lemplate-$(VANILLA_VERSION) $(VANILLA_BIN_PATH)/lemplate-$(VANILLA_VERSION)
 
 test: all
 	PATH=$(OPENRESTY_PREFIX)/nginx/sbin:$$PATH prove -I../test-nginx/lib -r t

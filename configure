@@ -316,6 +316,7 @@ _EOC_
         close $out;
         chmod 0755, "vanilla/$rs_bin_name";
     }
+    shell "cp -p vanilla/bin/lemplate ./vanilla/lemplate-$vanilla_version";
 }
 
 sub gen_makefile {
