@@ -7,7 +7,14 @@ end
 
 local V = LoadV 'vanilla.sys.config'
 
-local help_description = [[Vanilla v]] .. V.version .. [[, A MVC web framework for Lua powered by OpenResty.
+local help_description = [[
+_|      _|    _|_|    _|      _|  _|_|_|  _|        _|          _|_|
+_|      _|  _|    _|  _|_|    _|    _|    _|        _|        _|    _|
+_|      _|  _|_|_|_|  _|  _|  _|    _|    _|        _|        _|_|_|_|
+  _|  _|    _|    _|  _|    _|_|    _|    _|        _|        _|    _|
+    _|      _|    _|  _|      _|  _|_|_|  _|_|_|_|  _|_|_|_|  _|    _|
+
+Vanilla v]] .. V.version .. [[, A MVC web framework for Lua powered by OpenResty.
 
 Usage: vanilla COMMAND [ARGS] [OPTIONS]
 

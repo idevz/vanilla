@@ -6,7 +6,7 @@ local ogetenv = os.getenv
 local Sysconf = {}
 
 -- version
-Sysconf.version = '0.1.0-rc7'
+Sysconf.version = '0.1.0-rc5'
 
 -- environment
 -- Sysconf.env = ogetenv("VA_ENV") or 'development'
