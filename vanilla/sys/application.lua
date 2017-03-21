@@ -387,7 +387,7 @@ function Bootstrap:initView()
 end
 
 function Bootstrap:initPlugin()
-    local admin_plugin = LoadPlugin('plugins.admin'):new()
+    local admin_plugin = LoadPlugin('admin'):new()
     self.dispatcher:registerPlugin(admin_plugin);
 end
 
