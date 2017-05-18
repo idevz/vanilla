@@ -25,8 +25,8 @@ alert()
 install_vanilla_framework()
 {
     echo $ECHO_E"\033[45mBegin install Vanilla Frameowrk! \033[0m\n"
-    VANILLA_PROJ_ROOT=$1
-    VANILLA_FRAMEWORK_ROOT=$1/framework
+    VANILLA_PROJ_ROOT=$2
+    VANILLA_FRAMEWORK_ROOT=$2/framework
     VANILLA_FRAMEWORK_V=$VANILLA_FRAMEWORK_ROOT/$VANILLA_VERSION_DIR_STR
     [ -n $2 ] && OPENRESTY_ROOT=$2
     [ ! -d $OPENRESTY_ROOT ] && alert "OPENRESTY_ROOT set ERROR, OpenResty Path "$OPENRESTY_ROOT" didn't exist, and -o to set the ture OPENRESTY_ROOT" && exit 1
