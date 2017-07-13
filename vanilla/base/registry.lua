@@ -3,65 +3,61 @@
 -- @author idevz <zhoujing00k@gmail.com>
 -- version $Id$
 
-local setmetatable = setmetatable
-
-local Registry = {}
-
-function Registry:del(key)
-    VANILLA_REGISTRY[self.namespace][key] = nil
-    return true
+local ok, new_tab = pcall(require, "table.new")
+if not ok or type(new_tab) ~= "function" then
+    new_tab = function (narr, nrec) return {} end
 end
 
-function Registry:get(key)
-    if VANILLA_REGISTRY[self.namespace][key] ~= nil then
-        return VANILLA_REGISTRY[self.namespace][key]
-    else
-        return false
+local setmetatable = setmetatable
+
+local Registry = new_tab(0, 6)
+
+function Registry:del(key)
+    local data = rawget(self, "_data")
+    if data[self.namespace] ~= nil and data[self.namespace][key] ~= nil then
+        data[self.namespace][key] = nil
     end
+    return true
 end
 
 function Registry:has(key)
-    if VANILLA_REGISTRY[self.namespace][key] ~= nil then
-        return true 
+    local data = rawget(self, "_data")
+    if data[self.namespace][key] ~= nil then
+        return true
     else
         return false
     end
 end
 
-function Registry:set(key, value)
-    VANILLA_REGISTRY[self.namespace][key] = value
-    return true
-end
-
 function Registry:dump(namespace)
-    if namespace ~= nil then return VANILLA_REGISTRY[namespace] else return VANILLA_REGISTRY end
+    local data = rawget(self, "_data")
+    if namespace ~= nil then return data[namespace] else return data end
 end
 
 function Registry:new()
+    local data = new_tab(0, 36)
     local instance = {
         namespace = 'vanilla_app',
         del = self.del,
-        get = self.get,
         has = self.has,
         dump = self.dump,
-        set = self.set
+        _data = data
     }
-    setmetatable(instance, Registry)
-    return instance
+    return setmetatable(instance, {__index = self.__index, __newindex = self.__newindex})
 end
 
 function Registry:__newindex(index, value)
-    -- ngx.say('----__newindex----')
-    if VANILLA_REGISTRY[self.namespace] == nil then VANILLA_REGISTRY[self.namespace] = {} end
+    local data = rawget(self, "_data")
+    if data[self.namespace] == nil then data[self.namespace] = {} end
     if index ~= nil then
-        VANILLA_REGISTRY[self.namespace][index]=value
+        data[self.namespace][index]=value
     end
 end
 
 function Registry:__index(index)
-    -- ngx.say('----__index----')
-    if VANILLA_REGISTRY[self.namespace] == nil then VANILLA_REGISTRY[self.namespace] = {} end
-    local out = rawget(VANILLA_REGISTRY[self.namespace], index)
+    local data = rawget(self, "_data")
+    if data[self.namespace] == nil then data[self.namespace] = {} end
+    local out = data[self.namespace][index]
     if out then return out else return false end
 end
 
