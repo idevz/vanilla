@@ -3,8 +3,22 @@
 -- @author idevz <zhoujing00k@gmail.com>
 -- version $Id$
 
-VANILLA_G = _G
-VANILLA_REGISTRY = {}
+
+-- local helpers = require '/media/psf/g/idevz/code/www/vanilla/framework/0_1_0_rc7/vanilla.v.libs.utils'
+-- function sprint_r( ... )
+--     return helpers.sprint_r(...)
+-- end
+
+-- function lprint_r( ... )
+--     local rs = sprint_r(...)
+--     print(rs)
+-- end
+
+-- function print_r( ... )
+--     local rs = sprint_r(...)
+--     ngx.say(rs)
+-- end
+
 Registry = require('registry'):new()
 
 
@@ -92,16 +106,20 @@ end
 
 
 --+--------------------------------------------------------------------------------+--
-local ngx_var = ngx.var
-local ngx_req = ngx.req
 init_vanilla = function ()
+    local ngx_var = ngx.var
+    local ngx_req = ngx.req
     Registry.namespace = ngx_var.APP_NAME
 
-    Registry['REQ_URI'] = ngx_var.uri
-    Registry['REQ_ARGS'] = ngx_var.args
-    Registry['REQ_ARGS_ARR'] = ngx_req.get_uri_args()
-    Registry['REQ_HEADERS'] = ngx_req.get_headers()
-    Registry['APP_CACHE_PURGE'] = Registry['REQ_ARGS_ARR']['vapurge']
+    local REQ_Registry = require('registry'):new()
+    REQ_Registry.namespace = ngx_var.APP_NAME
+
+    REQ_Registry['REQ_URI'] = ngx_var.uri
+    REQ_Registry['REQ_ARGS'] = ngx_var.args
+    REQ_Registry['REQ_ARGS_ARR'] = ngx_req.get_uri_args()
+    REQ_Registry['REQ_HEADERS'] = ngx_req.get_headers()
+    REQ_Registry['APP_CACHE_PURGE'] = REQ_Registry['REQ_ARGS_ARR']['vapurge']
+    ngx.ctx.REQ_Registry = REQ_Registry
 
 
     if Registry['VANILLA_INIT'] then return end
@@ -125,34 +143,19 @@ init_vanilla = function ()
     Registry['VANILLA_INIT'] = true
 end
 
-    -- local helpers = require '/media/psf/g/idevz/code/www/vanilla/framework/0_1_0_rc7/vanilla.v.libs.utils'
-    -- function sprint_r( ... )
-    --     return helpers.sprint_r(...)
-    -- end
-
-    -- function lprint_r( ... )
-    --     local rs = sprint_r(...)
-    --     print(rs)
-    -- end
-
-    -- function print_r( ... )
-    --     local rs = sprint_r(...)
-    --     ngx.say(rs)
-    -- end
-
-
 --+--------------------------------------------------------------------------------+--
 local ngx_re_find = ngx.re.find
 use_page_cache = function ()
+    local REQ_Registry = ngx.ctx.REQ_Registry
     local cookie_lib = Registry['VANILLA_COOKIE_LIB']
     local cookie = cookie_lib()
     local no_cache_uris = Registry['APP_PAGE_CACHE_CONF']['no_cache_uris']
     for _, uri in ipairs(no_cache_uris) do
-        if ngx_re_find(Registry['REQ_URI'], uri) ~= nil then return false end
+        if ngx_re_find(REQ_Registry['REQ_URI'], uri) ~= nil then return false end
     end
-    Registry['COOKIES'] = cookie:getAll()
+    REQ_Registry['COOKIES'] = cookie:getAll()
     if Registry['APP_PAGE_CACHE_CONF']['cache_on'] then
-        if Registry['COOKIES'] and Registry['COOKIES'][Registry['APP_PAGE_CACHE_CONF']['no_cache_cookie']] then return false else return true end
+        if REQ_Registry['COOKIES'] and REQ_Registry['COOKIES'][Registry['APP_PAGE_CACHE_CONF']['no_cache_cookie']] then return false else return true end
     else
         return false
     end
@@ -181,25 +184,27 @@ local function build_url_key(args)
 end
 
 page_cache = function ()
-    Registry['USE_PAGE_CACHE'] = use_page_cache()
-    if not Registry['USE_PAGE_CACHE'] then ngx.header['X-Cache'] = 'PASSBY' return end
+    local ngx_var = ngx.var
+    local REQ_Registry = ngx.ctx.REQ_Registry
+    REQ_Registry['USE_PAGE_CACHE'] = use_page_cache()
+    if not REQ_Registry['USE_PAGE_CACHE'] then ngx.header['X-Cache'] = 'PASSBY' return end
     local cache_lib = Registry['VANILLA_CACHE_LIB']
     Registry['page_cache_handle'] = Registry['APP_PAGE_CACHE_CONF']['cache_handle'] or 'shared_dict'
     local cache = cache_lib(Registry['page_cache_handle'])
-    Registry['APP_PAGE_CACHE_KEY'] = Registry['REQ_URI'] .. ngx.encode_args(clean_args(Registry['REQ_ARGS_ARR']))
+    REQ_Registry['APP_PAGE_CACHE_KEY'] = REQ_Registry['REQ_URI'] .. ngx.encode_args(clean_args(REQ_Registry['REQ_ARGS_ARR']))
 
-    if Registry['APP_CACHE_PURGE'] then
-        cache:del(Registry['APP_PAGE_CACHE_KEY'])
+    if REQ_Registry['APP_CACHE_PURGE'] then
+        cache:del(REQ_Registry['APP_PAGE_CACHE_KEY'])
         ngx.header['X-Cache'] = 'XX'
         return 
     end
     
-    local rs = cache:get(Registry['APP_PAGE_CACHE_KEY'])
+    local rs = cache:get(REQ_Registry['APP_PAGE_CACHE_KEY'])
     if rs then
         ngx.header['X-Cache'] = 'HIT'
         ngx_var.va_cache_status = 'HIT'
         ngx.header['Power_By'] = 'Vanilla-Page-Cache'
-        if ngx_re_find(Registry['REQ_HEADERS']['accept'], 'json') then
+        if ngx_re_find(REQ_Registry['REQ_HEADERS']['accept'], 'json') then
             ngx.header['Content_type'] = 'application/json'
         else
             ngx.header['Content_type'] = 'text/html'
