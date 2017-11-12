@@ -53,7 +53,7 @@ local function _get(self, key)
 	local key = key
 	local ok, err = ck:get(key)
 	if not ok then
-		ngx.log(ngx.ERR, err)
+		-- ngx.log(ngx.ERR, err)
 		return false, err
 	end
 	return ok
@@ -64,7 +64,7 @@ local function _get_all(self)
 	local ck = self.ck
 	local ok, err = ck:get_all()
 	if not ok then
-		ngx.log(ngx.ERR, err)
+		-- ngx.log(ngx.ERR, err)
 		return false, err
 	end
 	return ok
