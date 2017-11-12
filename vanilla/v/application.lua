@@ -47,7 +47,7 @@ function Application:new(ngx, config)
 end
 
 function Application:bootstrap(lboots)
-    bootstrap_instance = Bootstrap:new(lboots(self.dispatcher))
+    local bootstrap_instance = Bootstrap:new(lboots(self.dispatcher))
     self:lpcall(bootstrap_instance.bootstrap, bootstrap_instance)
     return self
 end

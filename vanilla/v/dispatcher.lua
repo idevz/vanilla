@@ -10,6 +10,7 @@ local Error = LoadV 'vanilla.v.error'
 local error = error
 local pairs = pairs
 local pcall = pcall
+local ngx = ngx
 local require = require
 local setmetatable = setmetatable
 local function tappend(t, v) t[#t+1] = v end
@@ -23,21 +24,24 @@ local function run_route(router_instance)
 end
 
 local Dispatcher = {}
+local mt = {__index = Dispatcher}
 
 function Dispatcher:new(application)
-    self.request = Request:new()
-    self.response = Response:new()
-    self.router = Router:new(self.request)
+    local request = Request:new()
+    local response = Response:new()
+    local router = Router:new(request)
     Registry['CONTROLLER_PREFIX'] = 'controllers.'
     local instance = {
         application = application,
+        request = request,
+        response = response,
+        router = router,
         plugins = {},
         -- controller_prefix = 'controllers.',
         error_controller = 'error',
         error_action = 'error'
     }
-    setmetatable(instance, {__index = self})
-    return instance
+    return setmetatable(instance, mt)
 end
 
 function Dispatcher:getRequest()
